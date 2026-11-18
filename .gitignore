@@ -1,0 +1,10 @@
+﻿.env
+.env.*
+*.pem
+*.key
+secrets/
+node_modules/
+__pycache__/
+.venv/
+*.zip
+.DS_Store
