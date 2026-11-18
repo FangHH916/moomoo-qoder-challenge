@@ -1,3 +1,5 @@
+﻿> ⚠️ 已作废：策略改成多因子后由 prompts/02-prd-multifactor.md 取代。保留仅作记录。
+
 # Prompt 01 — 生成 PRD 和项目结构
 
 用法：在 Qoder（工作区打开 D:\Python\moomoo-qoder-challenge）新开一个对话，把下面 EN 部分整段粘贴进去。中文对照只给你看，不用贴。
