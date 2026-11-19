@@ -19,7 +19,10 @@ from lab_factors import library
 from panel import DATA, build_panel
 from pipeline_v3 import extra_factors, residual_target, H
 
-CACHE = DATA / "cache"
+import os  # noqa: E402
+
+# QR_CACHE_DIR lets the live job build its own cache (data/cache_live) without touching the research cache
+CACHE = Path(os.environ.get("QR_CACHE_DIR") or DATA / "cache")
 CACHE.mkdir(exist_ok=True)
 BATCH = 8
 

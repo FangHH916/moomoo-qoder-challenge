@@ -40,6 +40,20 @@ at 4.8% on long exposure above 100% charged.
 - Competition cap: peak SPY-equivalent weight 0.76 → either scale the whole book by ~0.5 (Sharpe unchanged, ~3% p.a.)
   or route exposure above 38% to DIA/QQQ.
 
+## Deployment check (2026-11-19) — P* adopted
+- `research/r10_deploy.py reference` re-runs the pick while recording every ticker weight and reproduces
+  `daily_R10_pick.csv` exactly (max abs difference 0 for sleeve returns and weights, 3e-18 for portfolio returns).
+- **Realistic $100k execution** (`r10_deploy.py realistic`): whole shares at the next open, $0.99 per order charged
+  once at portfolio level (the ideal backtest scaled fixed fees with sleeve weights and charged nothing for
+  re-weighting), 5/2 bp slippage, borrow, financing, competition caps with SPY overflow routed to DIA then QQQ.
+  Execution rules fixed in advance, not tuned: re-size a position only when it is off target by > 0.25% of equity;
+  between rebalances trim any ticker above 39% of initial assets back to 38% and cut margin above 95% to 90%.
+  **Sharpe 0.93 selection / 1.55 holdout / 1.05 full five years, 6.5% p.a., max drawdown −6.8%**, every calendar
+  year positive; fees $380–560 a year; at most 84 orders a day and 87 positions; SPY never above 39.1% of initial
+  assets. Without the trade band (re-size everything at every rebalance) fees triple and Sharpe falls to 0.97.
+- Today's book is mostly ETF trend (minimum-variance weight on D77 is 11%): about UUP 29%, SPY 22%, IWM 8%, QQQ 6%,
+  USO 3%, and 77 shorts totalling 6% (≈$80 each), margin ≈ 38%.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
@@ -52,3 +66,5 @@ assets (40% rule) with the remaining hedge in QQQ, and total positions ≤ 100.
 - `reports/lab/registry_val.csv` — every trial, selection-window metrics.
 - `reports/lab/FINAL.json` — the pre-registered pick, validation vs. holdout, deflated Sharpe.
 - `research/lab_*.py` — factor library, cache, experiment runner, fixed pipeline, final selection.
+- `research/r10_deploy.py` — deployed strategy P* (reference replay, realistic $100k simulation, live targets);
+  `reports/lab/R10_DEPLOY.json`, `R10_REALISTIC.json`, `R10_reference_targets.csv` (replay-test fixture).

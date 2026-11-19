@@ -25,7 +25,7 @@ import pipeline_v2 as v2
 from pipeline_v3 import make_target_fn
 
 ROOT = Path(__file__).resolve().parents[1]
-CACHE = ROOT / "data" / "cache"
+CACHE = Path(__import__("os").environ.get("QR_CACHE_DIR") or ROOT / "data" / "cache")   # live job: data/cache_live
 LAB = ROOT / "reports" / "lab"
 LAB.mkdir(parents=True, exist_ok=True)
 BT_START = pd.Timestamp("2021-11-18")

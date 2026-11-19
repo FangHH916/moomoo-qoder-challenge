@@ -187,10 +187,11 @@ def round6() -> None:
 PRIOR_SET = ["bm", "ep", "sp", "mom12_1", "ivol60", "roe", "gpa", "ag", "accr", "nsi", "ear"]
 
 
-def round7() -> None:
-    """Pre-registered (ROUND7_PREREG.md): no-estimation literature-prior composite."""
+def prior_scores() -> pd.DataFrame:
+    """Round-7 composite: equal-weight mean of the 11 cleaned literature-prior factors (missing -> 0),
+    on the tradable universe, from BT_START on. Shared by round 7/8, round 10 and live (r10_deploy.py)."""
     m = tradable()
-    acc, cnt = None, None
+    acc = None
     for k in PRIOR_SET:
         f = np.asarray(L.factor(k), dtype=np.float32)
         v = np.where(np.isfinite(f), f, 0.0)
@@ -198,7 +199,12 @@ def round7() -> None:
     s = np.where(m, acc / len(PRIOR_SET), np.nan).astype(np.float32)
     bt0 = int(np.searchsorted(L.DATES, L.BT_START))
     s[:bt0] = np.nan
-    scores = pd.DataFrame(s, index=L.DATES, columns=L.SYMS)
+    return pd.DataFrame(s, index=L.DATES, columns=L.SYMS)
+
+
+def round7() -> None:
+    """Pre-registered (ROUND7_PREREG.md): no-estimation literature-prior composite."""
+    scores = prior_scores()
     scores.to_parquet(L.LAB / "scores_R7.parquet")
     ic = L.composite_ic(scores)
     print(f"composite {ic}", flush=True)

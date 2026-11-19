@@ -1,0 +1,83 @@
+{
+  "strategy": "R10 pick S1_MV: T9 ETF trend + D77 short book, Ledoit-Wolf minimum variance",
+  "k_scale": 1.4633955775862155,
+  "n_short": 77,
+  "etfs": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "SLV",
+    "USO",
+    "UUP"
+  ],
+  "route": [
+    "DIA",
+    "QQQ"
+  ],
+  "ticker_cap_of_initial": 0.38,
+  "margin_cap": 0.9,
+  "rebalance_anchor": "2021-11-18",
+  "rebalance_every": 5,
+  "reproduction_check_max_abs_diff": {
+    "scores_vs_saved": 0.0,
+    "d77_net": 0.0,
+    "weights": 0.0,
+    "portfolio": 3.469446951953614e-18
+  },
+  "metrics": {
+    "selection": {
+      "sharpe": 0.9795164083005589,
+      "ann": 0.05553494278013549,
+      "mdd": -0.05587066748001179,
+      "vol": 0.056831375462427426
+    },
+    "holdout": {
+      "sharpe": 1.2873547477927718,
+      "ann": 0.07696924403727912,
+      "mdd": -0.035432881797873295,
+      "vol": 0.058953375739736275
+    },
+    "full": {
+      "sharpe": 1.0434385471534016,
+      "ann": 0.059804377043442436,
+      "mdd": -0.05587066748001179,
+      "vol": 0.05724219261311222
+    }
+  },
+  "last_complete_session": "2026-11-17",
+  "last_session": {
+    "sleeve_weights": {
+      "T9": 1.3012417264355831,
+      "D77": 0.16215385115063244
+    },
+    "diag": {
+      "equity": 100000.0,
+      "ticker_cap_weight": 0.38,
+      "scale": 1.0,
+      "routed": {},
+      "clipped": [],
+      "spy_weight_uncapped": 0.22141794017746935,
+      "long_gross": 0.6783563760743082,
+      "short_gross": 0.06119216180425572,
+      "hold_long": 0.0,
+      "hold_short": 0.0,
+      "margin": 0.37589348511970755,
+      "positions": 82,
+      "n_short": 77,
+      "ok": true
+    },
+    "etfs": {
+      "IWM": 0.0774,
+      "QQQ": 0.0585,
+      "SPY": 0.2214,
+      "USO": 0.0317,
+      "UUP": 0.2893
+    },
+    "n_shorts": 77,
+    "short_gross": 0.06119216180425572
+  },
+  "max_spy_weight_uncapped_30d": 0.3123082446071972
+}
