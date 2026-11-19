@@ -1,0 +1,258 @@
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.2873547477927723, "full": 1.0434385471534013}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv1"], "hold": 1.2025642154812657, "full": 1.067381925063458}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv3"], "hold": 1.457641895518256, "full": 1.0640587111910507}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv4"], "hold": 1.3267035480447549, "full": 1.1208609705593893}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv5"], "hold": 1.253069823034684, "full": 1.0182575037667307}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv6"], "hold": 0.9758577280131472, "full": 1.0921960273325981}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv7"], "hold": 1.1082714789326422, "full": 1.0549168074032051}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv8"], "hold": 1.3233390744934062, "full": 1.032678137273436}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv9"], "hold": 1.2995885808061256, "full": 1.1152070702509527}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv10"], "hold": 1.077740939238648, "full": 1.0271987715774225}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.2722952190636168, "full": 1.1596588504145995}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv12"], "hold": 1.302000476241788, "full": 1.0901738145987556}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dc1_approx"], "hold": 1.4839784318492049, "full": 1.0798794978271768}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-dc2_approx"], "hold": 1.512236926490011, "full": 1.1206267747103327}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-dc3_approx"], "hold": 1.546103016416636, "full": 1.1183450609385845}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dc4_approx"], "hold": 1.280854123692987, "full": 1.114024134609627}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+md1_gap"], "hold": 1.2798879892740957, "full": 1.0615444658738595}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-rev21"], "hold": 1.376057462058035, "full": 1.0880219474140147}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+high52"], "hold": 1.2526162460045325, "full": 1.148684376972774}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-amihud"], "hold": 1.4978010438137885, "full": 1.1287832675193574}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+resid_mom"], "hold": 1.3450894494976944, "full": 1.1355132031996253}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+max21"], "hold": 1.2904254461698117, "full": 1.0780537731811066}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom1"], "hold": 1.376057462058035, "full": 1.0880219474140147}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom6_1"], "hold": 1.2900764714122455, "full": 1.1235855843757825}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom12_7"], "hold": 1.3563955646540997, "full": 1.0631154930864053}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ind_mom6"], "hold": 1.285527661011727, "full": 1.0535748806585095}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom6_ind_adj"], "hold": 1.2930195359626255, "full": 1.1154929875897985}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+frog_id"], "hold": 1.3412885191635253, "full": 1.0870584890745698}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ma50_gap"], "hold": 1.3835484755940217, "full": 1.1920174990684325}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ma200_gap"], "hold": 1.2822651662428401, "full": 1.1423549461323146}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+low52_gap"], "hold": 1.506375175006568, "full": 1.120685454004079}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+rev5"], "hold": 1.3038700143800224, "full": 1.0900314549204937}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-rev21_ind_adj"], "hold": 1.3099908343772886, "full": 1.0807302266518217}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-resid_rev21"], "hold": 1.294326438206337, "full": 1.0778308676452937}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-overnight_mom21"], "hold": 1.3022070617729964, "full": 1.059398788034284}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+intraday_rev21"], "hold": 1.3644224885883327, "full": 0.9825577681134322}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-overnight_mom63"], "hold": 1.30218560548208, "full": 1.0915244013028573}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+vol21"], "hold": 1.07394691509076, "full": 1.011134650515381}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+downvol63"], "hold": 1.3360824537986251, "full": 1.1416048364754885}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+park_vol21"], "hold": 1.0994936018953778, "full": 1.0248422867646942}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ivol21"], "hold": 1.0344073283617878, "full": 0.9776929244965537}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+max5"], "hold": 1.1015901151316858, "full": 1.0422919474079837}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+min21"], "hold": 1.309014689559166, "full": 1.0312051806722788}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+bab"], "hold": 0.9748517331785372, "full": 0.9990930210255036}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+skew63"], "hold": 1.243050836867923, "full": 1.0349397943214609}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+turn21"], "hold": 1.1291612531632682, "full": 1.0233980026145977}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-abn_turn"], "hold": 1.5010223153161097, "full": 1.0747493408836328}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dvol_log"], "hold": 1.2867861782529713, "full": 1.0595735682946956}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+vol_shock5"], "hold": 1.4333514391731628, "full": 1.071841064346353}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-signed_vol5"], "hold": 1.3815237860223453, "full": 1.1607567303160786}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-trade_size_chg"], "hold": 1.4411631406559953, "full": 1.100922687000064}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv_corr21"], "hold": 1.2024952496158112, "full": 0.9953684298642578}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+clv21"], "hold": 1.2964908206074854, "full": 1.077934213091717}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-log_price"], "hold": 1.1702104453931752, "full": 1.104529492892405}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-season_month"], "hold": 1.3304761239046012, "full": 1.1488853991377401}
+{"members": ["+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.1686338136602843, "full": 0.9907946340644762}
+{"members": ["+bm", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.3293821502192509, "full": 1.1536573028745818}
+{"members": ["+bm", "+ep", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.340862906557251, "full": 1.086997250465491}
+{"members": ["+bm", "+ep", "+sp", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.323769414337014, "full": 1.0388171936138555}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+roe", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.5027460732476248, "full": 1.2025917481438873}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.3178764164225332, "full": 1.2102079880733165}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.3044624377122125, "full": 1.06030997753017}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+accr", "+nsi", "+ear"], "hold": 1.2668895814250725, "full": 0.9489127055216189}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+nsi", "+ear"], "hold": 1.2008901373052971, "full": 1.012373137857296}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+ear"], "hold": 1.4537234224508686, "full": 1.1350598539720704}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+roe", "+gpa", "+ag", "+accr", "+nsi"], "hold": 1.3086136800602253, "full": 1.1323847696406963}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv1"], "hold": 1.2749160783793987, "full": 1.243603502925084}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv3"], "hold": 1.2755851869911068, "full": 1.1523135688142565}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv4"], "hold": 1.2578574200434334, "full": 1.2012034873970645}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv5"], "hold": 1.2304850920336905, "full": 1.1158551004203978}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv6"], "hold": 1.2827654821850323, "full": 1.1973724977984974}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv7"], "hold": 1.495334374956697, "full": 1.1024971929425376}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv8"], "hold": 1.112114967042761, "full": 1.0112280154658242}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv9"], "hold": 1.4243554381734929, "full": 1.2157035378078989}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv10"], "hold": 1.4950268745305964, "full": 1.127522073449226}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.4291880303876876, "full": 1.2911595296784268}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv12"], "hold": 1.3452929985933908, "full": 1.2443424142308386}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dc1_approx"], "hold": 1.1385710383911452, "full": 1.1070406695974104}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-dc2_approx"], "hold": 1.0155469077205652, "full": 1.0851565838520894}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-dc3_approx"], "hold": 1.3540903844106877, "full": 1.189856786872631}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dc4_approx"], "hold": 1.3815518492066072, "full": 1.2199732323535555}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+md1_gap"], "hold": 1.468793239703267, "full": 1.1628315664356088}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-rev21"], "hold": 1.1380262243323784, "full": 1.1236876463851262}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+high52"], "hold": 1.218787149409507, "full": 1.187871758337711}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-amihud"], "hold": 1.37761927289634, "full": 1.2382305234120865}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+resid_mom"], "hold": 1.0642945376736324, "full": 1.2072126205490945}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+max21"], "hold": 1.1871816767062329, "full": 1.1624099030620738}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom1"], "hold": 1.1380262243323784, "full": 1.1236876463851262}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom6_1"], "hold": 1.0639694685605934, "full": 1.1261104307542555}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom12_7"], "hold": 1.0249599868822417, "full": 1.147512528520793}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ind_mom6"], "hold": 1.337395193242272, "full": 1.2068443929395123}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+mom6_ind_adj"], "hold": 1.052735808039417, "full": 1.1467502335515973}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+frog_id"], "hold": 1.4377014301616002, "full": 1.124809654363567}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ma50_gap"], "hold": 1.153946332884502, "full": 1.101165495846189}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ma200_gap"], "hold": 1.4066460661233386, "full": 1.1712897596788012}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+low52_gap"], "hold": 1.4079817407241968, "full": 1.2657081709746743}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+rev5"], "hold": 1.1844081107266649, "full": 1.1626366999302316}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-rev21_ind_adj"], "hold": 1.1556185922901303, "full": 1.1329353434929665}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-resid_rev21"], "hold": 1.0728191042703532, "full": 1.145709264426434}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-overnight_mom21"], "hold": 1.3921814573821114, "full": 1.220580801527976}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+intraday_rev21"], "hold": 1.2777089043857681, "full": 1.0925845346273626}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-overnight_mom63"], "hold": 1.3876507878923183, "full": 1.1813298315530556}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+vol21"], "hold": 1.2242669574050267, "full": 1.1870153839008386}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+downvol63"], "hold": 1.3086796518744777, "full": 1.1906587268933164}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+park_vol21"], "hold": 1.1981264141062815, "full": 1.1723351774944957}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+ivol21"], "hold": 1.2115232703352723, "full": 1.1617379782135717}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+max5"], "hold": 1.0577201541509202, "full": 1.0738444845006037}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+min21"], "hold": 1.2070261404037397, "full": 1.1305120790856924}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+bab"], "hold": 1.33699934157888, "full": 1.212766326338052}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+skew63"], "hold": 1.3674387211314785, "full": 1.1863208893009443}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+turn21"], "hold": 1.0604400218507049, "full": 1.0134433942003043}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-abn_turn"], "hold": 1.3448598112976242, "full": 1.1455436476901124}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+dvol_log"], "hold": 1.4115843165092132, "full": 1.239555433079077}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+vol_shock5"], "hold": 1.459814225761601, "full": 1.1740803816386727}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-signed_vol5"], "hold": 1.410043538121053, "full": 1.2226521789528877}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-trade_size_chg"], "hold": 1.3887569752973246, "full": 1.147274562015879}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+pv_corr21"], "hold": 1.341410643833471, "full": 1.1329211848545018}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "+clv21"], "hold": 1.0903113833816058, "full": 1.1013276453378962}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-log_price"], "hold": 1.3346541099564049, "full": 1.2586283269034955}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-season_month"], "hold": 1.2414355584796213, "full": 1.1890567269290677}
+{"members": ["+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.095285464488281, "full": 1.083702889461903}
+{"members": ["+bm", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.2952044162993501, "full": 1.1717688221509481}
+{"members": ["+bm", "+ep", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.3504946988001547, "full": 1.1179354744991539}
+{"members": ["+bm", "+ep", "+sp", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.315457628626086, "full": 1.1340972700094603}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.2029502237051437, "full": 1.1646179419156435}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.199948768838735, "full": 1.098172132089473}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+accr", "+nsi", "+ear"], "hold": 1.4056226928753395, "full": 1.0276675481288953}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+nsi", "+ear"], "hold": 1.5983591265255899, "full": 1.1200657600173476}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+ear"], "hold": 1.2849718363817388, "full": 1.168762951629711}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi"], "hold": 1.468380894728873, "full": 1.2352567499899794}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv1"], "hold": 1.3086088681623478, "full": 1.1630824870543348}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-pv3"], "hold": 1.479848436859902, "full": 1.229601248786958}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-pv4"], "hold": 1.2865658111219385, "full": 1.1633822452922524}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv5"], "hold": 1.3523066881086503, "full": 1.191412458444563}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv6"], "hold": 1.2531756598611639, "full": 1.1650209020479965}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv7"], "hold": 1.3522810866700097, "full": 1.0978888837035479}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv8"], "hold": 1.1203277389148933, "full": 1.0144076949785192}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv9"], "hold": 1.4472517325995493, "full": 1.244421653978351}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv10"], "hold": 1.3568998107429397, "full": 1.1653110418992256}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv12"], "hold": 1.349936539103049, "full": 1.2514953835216882}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+dc1_approx"], "hold": 1.072518428031466, "full": 1.149729320495213}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-dc2_approx"], "hold": 1.2659263846606343, "full": 1.2228586556746253}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-dc3_approx"], "hold": 1.3313237245149083, "full": 1.2756465197129052}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+dc4_approx"], "hold": 1.2547267991280175, "full": 1.1628854649817764}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+md1_gap"], "hold": 1.3453423488810112, "full": 1.141294363740233}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-rev21"], "hold": 1.2897774007501202, "full": 1.1380830751879345}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+high52"], "hold": 1.12582777374956, "full": 1.1849189923205503}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-amihud"], "hold": 1.3597516301651538, "full": 1.1920331764522698}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+resid_mom"], "hold": 1.2448418244009891, "full": 1.1712042284698314}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+max21"], "hold": 1.2696095576527775, "full": 1.170648512030161}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+mom1"], "hold": 1.2897774007501202, "full": 1.1380830751879345}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+mom6_1"], "hold": 1.234916072984976, "full": 1.1070584230065814}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+mom12_7"], "hold": 1.285473179349423, "full": 1.2562418998225715}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+ind_mom6"], "hold": 1.4414344534381542, "full": 1.3004850961630297}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+mom6_ind_adj"], "hold": 1.2277461005604031, "full": 1.1410282464163382}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+frog_id"], "hold": 1.403376445215094, "full": 1.2453140465762227}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+ma50_gap"], "hold": 1.2287674508548487, "full": 1.1378827349774587}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+ma200_gap"], "hold": 1.3166288203384624, "full": 1.2081520789216607}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+low52_gap"], "hold": 1.3338379079504374, "full": 1.1882733134984638}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+rev5"], "hold": 1.2540884908529988, "full": 1.0594641945164147}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-rev21_ind_adj"], "hold": 1.318358381106018, "full": 1.1416619713915104}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-resid_rev21"], "hold": 1.2278074479194998, "full": 1.1320323888797894}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-overnight_mom21"], "hold": 1.1474956751184386, "full": 1.1133489279435929}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+intraday_rev21"], "hold": 1.2486437734616103, "full": 1.0690749637391521}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-overnight_mom63"], "hold": 1.3190650949003548, "full": 1.1484401445467574}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+vol21"], "hold": 1.3343190881406046, "full": 1.21593970789331}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+downvol63"], "hold": 1.2983846656713642, "full": 1.2199739192137937}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+park_vol21"], "hold": 1.3339475175613587, "full": 1.1816484538681362}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+ivol21"], "hold": 1.1331768643357059, "full": 1.1837101548806503}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+max5"], "hold": 1.3426688302950143, "full": 1.169604046959911}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+min21"], "hold": 1.3091813825794916, "full": 1.2333971986730168}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+bab"], "hold": 1.4062040757784886, "full": 1.2601438191859098}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+skew63"], "hold": 1.4275861837738615, "full": 1.2423001489319045}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+turn21"], "hold": 0.940732344014875, "full": 1.0227420263109488}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-abn_turn"], "hold": 1.2619680904942385, "full": 1.1234289784651732}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+dvol_log"], "hold": 1.2987342023684127, "full": 1.2254880595812607}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+vol_shock5"], "hold": 1.4405387392506321, "full": 1.2053186011675954}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-signed_vol5"], "hold": 1.2867055271807006, "full": 1.189304919425223}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-trade_size_chg"], "hold": 1.2355600751225078, "full": 1.0986294884659693}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+pv_corr21"], "hold": 1.4152015402550764, "full": 1.2072681902091196}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "+clv21"], "hold": 1.2273153478583632, "full": 1.1898726106066302}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.1789313853263295, "full": 1.3122455034870768}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-season_month"], "hold": 1.070698687657598, "full": 1.0857197147514885}
+{"members": ["+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.2380735803865224, "full": 1.0924638162093048}
+{"members": ["+bm", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.2137432376772026, "full": 1.1577385248424894}
+{"members": ["+bm", "+ep", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.3252719143896583, "full": 1.1248300305915049}
+{"members": ["+bm", "+ep", "+sp", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.3470156396727508, "full": 1.0855016875061387}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.3186946525556438, "full": 1.1696963054251504}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.4418454682336739, "full": 1.2957487056766708}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.286707849221895, "full": 1.0123019436165963}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+nsi", "+ear", "-pv11"], "hold": 1.383552003493013, "full": 1.146427400935933}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+ear", "-pv11"], "hold": 1.2523130318252542, "full": 1.1905870156469356}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "-pv11"], "hold": 1.4798764518040082, "full": 1.2524053436143594}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear"], "hold": 1.3178764164225332, "full": 1.2102079880733165}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv1"], "hold": 1.2500042483142548, "full": 1.2604637816290878}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-pv3"], "hold": 1.2385913413378966, "full": 1.2383371575115274}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-pv4"], "hold": 1.2596848263704323, "full": 1.2373043042994665}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv5"], "hold": 1.2639496054635262, "full": 1.2507857396093358}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv6"], "hold": 1.2594364578666646, "full": 1.211465164896977}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv7"], "hold": 1.3705018717719437, "full": 1.1823700094428786}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv8"], "hold": 1.4678525440799726, "full": 1.277905591568205}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv9"], "hold": 1.4232607729896765, "full": 1.290812480828552}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv10"], "hold": 1.3225277486921956, "full": 1.1504089068579073}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv12"], "hold": 1.2853665743573646, "full": 1.3108916327170332}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+dc1_approx"], "hold": 1.3010412074622477, "full": 1.2795574726753078}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-dc2_approx"], "hold": 1.3013400148266387, "full": 1.2595465501806546}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-dc3_approx"], "hold": 1.2331800448480024, "full": 1.2569625843879937}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+dc4_approx"], "hold": 1.3328194238135738, "full": 1.249593702111755}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+md1_gap"], "hold": 1.0891184841646022, "full": 1.1233544568468636}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-rev21"], "hold": 1.2811672292524177, "full": 1.2413147893923642}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+high52"], "hold": 1.0800238268660451, "full": 1.269888096370527}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-amihud"], "hold": 1.308228153873642, "full": 1.232894931132105}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+resid_mom"], "hold": 1.3722521723293326, "full": 1.3191283590816765}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+max21"], "hold": 1.1920080634492627, "full": 1.1595368076274462}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+mom1"], "hold": 1.2811672292524177, "full": 1.2413147893923642}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+mom6_1"], "hold": 1.2746040553772542, "full": 1.184143514602361}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+mom12_7"], "hold": 0.9613094635184499, "full": 1.2608469080583948}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+ind_mom6"], "hold": 1.1870194318922618, "full": 1.3124660251851485}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+mom6_ind_adj"], "hold": 1.2778672226344867, "full": 1.2014810386070405}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+frog_id"], "hold": 1.3084117838078164, "full": 1.294009534281294}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+ma50_gap"], "hold": 1.2488070161033533, "full": 1.195336971336573}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+ma200_gap"], "hold": 1.3707670190870458, "full": 1.305705612275295}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+low52_gap"], "hold": 1.6727727678188444, "full": 1.361000698087904}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+rev5"], "hold": 1.2246429090834388, "full": 1.1616407267174638}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-rev21_ind_adj"], "hold": 1.3019258930123916, "full": 1.2467114979077787}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-resid_rev21"], "hold": 1.302968126217878, "full": 1.2730414119247848}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-overnight_mom21"], "hold": 1.2700307689878567, "full": 1.2335117059145941}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+intraday_rev21"], "hold": 1.2420384104390938, "full": 1.1611260570701942}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-overnight_mom63"], "hold": 1.3500733238981208, "full": 1.246586432390563}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+vol21"], "hold": 1.2597181792715442, "full": 1.2887807785517706}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+downvol63"], "hold": 1.1992698425174713, "full": 1.205444200491942}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+park_vol21"], "hold": 1.3845487217599302, "full": 1.2810167037033475}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+ivol21"], "hold": 1.1907415326489044, "full": 1.2299214361807709}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+max5"], "hold": 1.1723713629974168, "full": 1.2312604364751236}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+min21"], "hold": 1.3315080242419264, "full": 1.251066437219936}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+bab"], "hold": 1.2965790890636248, "full": 1.2612957660453998}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+skew63"], "hold": 1.3684889274732706, "full": 1.323227178888344}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+turn21"], "hold": 1.3527603924220388, "full": 1.1406276734545895}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-abn_turn"], "hold": 1.1403874125654687, "full": 1.1815247930213404}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+dvol_log"], "hold": 1.422266648300615, "full": 1.3254202764664453}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+vol_shock5"], "hold": 1.3094754281107561, "full": 1.243445306204318}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-signed_vol5"], "hold": 1.1285439773542678, "full": 1.2447535836790482}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-trade_size_chg"], "hold": 1.3608939965097613, "full": 1.3163701454202068}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+pv_corr21"], "hold": 1.4261787462769127, "full": 1.2074119221110342}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "+clv21"], "hold": 1.1942540694607184, "full": 1.1994856244870302}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price", "-season_month"], "hold": 0.9684150497058122, "full": 1.2361543266253823}
+{"members": ["+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.3157529834419313, "full": 1.2823792994054681}
+{"members": ["+bm", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.3489099036384495, "full": 1.251502541908664}
+{"members": ["+bm", "+ep", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.252608944003471, "full": 1.2190992737755255}
+{"members": ["+bm", "+ep", "+sp", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.3673508157170893, "full": 1.2853175962253476}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.240913732973142, "full": 1.1777554243111064}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+ag", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.1409866462533564, "full": 1.3162379660350951}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+accr", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.3443206795027498, "full": 1.1871037599148957}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+nsi", "+ear", "-pv11", "-log_price"], "hold": 1.3605272798508434, "full": 1.2147740239828788}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+ear", "-pv11", "-log_price"], "hold": 1.0369711633356615, "full": 1.1956358891176149}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "-pv11", "-log_price"], "hold": 1.4717157713021032, "full": 1.310897895692584}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-log_price"], "hold": 1.3346541099564049, "full": 1.2586283269034955}
+{"members": ["+bm", "+ep", "+sp", "+mom12_1", "+ivol60", "+gpa", "+ag", "+accr", "+nsi", "+ear", "-pv11"], "hold": 1.4291880303876876, "full": 1.2911595296784268}

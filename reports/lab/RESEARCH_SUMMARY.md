@@ -65,9 +65,26 @@ at 4.8% on long exposure above 100% charged.
 - No candidate meets the decision rule (+0.10 full Sharpe and better in both windows). P* stays; the search ends.
   Deflated Sharpe of P* over all trials ever run (including rounds 10–11): 0.60.
 
+## Round 12 — factor search for the short book to a local maximum (pre-registered)
+- Greedy stepwise search over the D77 composite's factor set (start: the 11 literature factors; candidates: the other
+  54 cached factors, oriented by their selection-window IC). Objective: selection-window Sharpe of the whole
+  portfolio (T9 + D77, minimum variance, everything else frozen); a move is taken only if it adds ≥ 0.02.
+  Holdout metrics were sealed until the search stopped.
+- 258 evaluations, 4 steps (drop roe; add −pv11, turnover variability; add −log_price, share price), then no single
+  add/drop helped by ≥ 0.02: a **local maximum at selection Sharpe 1.35** (from 0.98). Deflated Sharpe of that
+  selection-window result over the 258 evaluations: 0.98.
+- **Holdout: 1.18 vs P*'s 1.29** (full five years 1.31 vs 1.04, inflated by the search window). The D77 sleeve alone
+  went from −0.00 to 0.61 in selection but from 0.85 down to 0.70 in the holdout. The in-sample gain did not carry
+  out of sample, and the two added signals have no strong prior (share price also tilts shorts toward high-priced
+  names, which a $100k account cannot short in whole shares at ~$80 per name).
+- Pre-registered rule (holdout ≥ P*, full +0.10, realistic check, user approval): not met. P* stays deployed.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
+Rounds 11–12 searched beyond P* (extra sleeves; a factor search run to a local maximum of the in-sample
+Sharpe, 1.35) and neither improved the holdout, so the out-of-sample evidence puts the attainable Sharpe for
+this data at about 1.0–1.3, with P* the most robust choice.
 The Sharpe of the *strategy portfolio* is maximised not by more fitting but by diversification: adding a literature-spec
 ETF trend sleeve that is negatively correlated with the short book lifts the five-year Sharpe to ~1.0, positive in both
 the selection window and the holdout and in every calendar year. For the competition: SPY (and any ETF) ≤ 38% of initial
