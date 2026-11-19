@@ -104,6 +104,12 @@ at 4.8% on long exposure above 100% charged.
   `pstar15` in `research/r10_deploy.py` (a one-line switch, `DEPLOYED`). The contrast with rounds 12–13 matters:
   theory-signed new information helped, data-mined selection from the existing library did not.
 
+## Round 15 — investment and intangibles family on top of P*15 (pre-registered, single trial)
+- Added minus capex growth (Titman-Wei-Xie), minus inventory growth (Thomas-Zhang) and R&D-to-market
+  (Chan-Lakonishok-Sougiannis), from three new SEC frames concepts, literature signs, no estimation.
+- P*18: selection 1.20 (P*15 1.12), **holdout 0.95 (P*15 1.40)**, full 1.15 (1.18); the D77 sleeve's holdout fell
+  from 1.06 to 0.50. Not proposed; P*15 remains the research best. Not every theory-signed family helps.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
