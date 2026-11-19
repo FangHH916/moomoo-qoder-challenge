@@ -12,3 +12,12 @@ __pycache__/
 data/
 
 reports/**/*.parquet
+.cache/
+live/cache/
+live/out/
+live/state/
+journal/*.sqlite*
+journal/incoming/
+journal/.*.tmp
+!journal/decisions.jsonl
+!journal/fills.jsonl
