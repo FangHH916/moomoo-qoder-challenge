@@ -22,7 +22,7 @@ Read first: `reports/lab/RESEARCH_SUMMARY.md` (round 10), `reports/lab/R10_DEPLO
    - On rebalance sessions, an existing position is re-sized only if it is off target by more than 0.25% of equity. Entries and exits always trade.
    - Between rebalances, only two risk rules trade: a ticker above 39% of initial assets is cut back to 38%, and margin above 95% is cut back to 90%.
    - Total drawdown of −8% from the peak → flatten everything and halt (unchanged). Keep the existing final-exit schedule for 11-27.
-7. **Discretionary positions** (for example the Anthropic IPO trade from prompts 03/04) are listed explicitly in config (`discretionary_symbols`). The strategy never trades them, but they count toward margin, the per-ticker cap and the position count. Every other position in the account belongs to the strategy.
+7. **Discretionary positions** (for example the Anthropic IPO trade from prompts 03/04) are listed in config (`discretionary_symbols`). The strategy never trades them, but they count toward margin, the per-ticker cap and the position count. Safety default: a position the strategy did not open (no matching strategy order in the journal) is never sold by the strategy either. Treat it as discretionary and flag it in Slack as unclassified.
 
 The composition at the 2026-11-17 close ($100k, from `R10_DEPLOY.json`) was UUP 28.9%, SPY 22.1%, IWM 7.7%, QQQ 5.9%, USO 3.2%, plus 77 shorts totalling 6.1%. That is a margin of 37.6% and 82 positions. Most of the risk sits in the ETF trend sleeve, and the short book is small (about $80 per name). This is expected: the minimum-variance weight on D77 is 11% today.
 
@@ -97,7 +97,7 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
    - 调仓日只有当已有仓位偏离目标超过权益的 0.25% 才调整。新开仓和清仓总是执行。
    - 两次调仓之间只有两条风控规则会交易：单只超过初始资金 39% 就减回 38%；保证金超过 95% 就降回 90%。
    - 从高点回撤 −8% → 全部平仓并停机（不变）。11-27 现有的收尾平仓安排保持不变。
-7. **人工判断的仓位**（比如 prompt 03/04 的 Anthropic 新股交易）要在配置里明确列出（`discretionary_symbols`）。策略永远不交易它们，但它们要计入保证金、单只上限和持仓数。账户里其他所有仓位都属于策略。
+7. **人工判断的仓位**（比如 prompt 03/04 的 Anthropic 新股交易）列在配置的 `discretionary_symbols` 里。策略永远不交易它们，但它们要计入保证金、单只上限和持仓数。安全默认：不是策略开的仓（日志里找不到对应的策略订单），策略也绝不卖出，按人工判断仓位处理，并在 Slack 里标记为"未分类"。
 
 2026-11-17 收盘时（10 万美元，数据来自 `R10_DEPLOY.json`）的持仓：UUP 28.9%、SPY 22.1%、IWM 7.7%、QQQ 5.9%、USO 3.2%，另有 77 只空头合计 6.1%。保证金占用 37.6%，持仓 82 个。大部分风险在 ETF 趋势子策略上，空头组合很小（每只约 80 美元）。这是正常的：现在最小方差给 D77 的权重是 11%。
 
