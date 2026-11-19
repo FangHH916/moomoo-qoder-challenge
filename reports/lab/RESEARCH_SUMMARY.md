@@ -54,6 +54,17 @@ at 4.8% on long exposure above 100% charged.
 - Today's book is mostly ETF trend (minimum-variance weight on D77 is 11%): about UUP 29%, SPY 22%, IWM 8%, QQQ 6%,
   USO 3%, and 77 shorts totalling 6% (≈$80 each), margin ≈ 38%.
 
+## Round 11 — third-sleeve candidates (pre-registered; P* stays deployed regardless)
+- Candidates on top of P* with the frozen minimum-variance method: SEC3 (industry momentum, top 3 of 11 SPDR
+  sector ETFs by 12-1 month return, Moskowitz-Grinblatt) and TOM (turn-of-the-month SPY). B0 = P* reproduced
+  exactly as the control.
+- Full / selection / holdout Sharpe: **B0 1.04 / 0.98 / 1.29**; +SEC3 1.03 / 0.92 / 1.45; +TOM 0.80 / 0.53 / 2.26;
+  both 0.81 / 0.53 / 2.27. SEC3 alone is decent (0.79) but highly correlated with T9's equity legs, so it only adds
+  noise. TOM has little variance (in the market ~20% of days), so minimum variance over-weights it, and its weak
+  selection-window return (Sharpe 0.04) drags the portfolio down.
+- No candidate meets the decision rule (+0.10 full Sharpe and better in both windows). P* stays; the search ends.
+  Deflated Sharpe of P* over all trials ever run (including rounds 10–11): 0.60.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
