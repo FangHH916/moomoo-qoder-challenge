@@ -184,7 +184,33 @@ def round6() -> None:
                                         "rebal": 5, "smooth": 5, "fix": "carry_forward+guard"}, bt, ic)
 
 
+PRIOR_SET = ["bm", "ep", "sp", "mom12_1", "ivol60", "roe", "gpa", "ag", "accr", "nsi", "ear"]
+
+
+def round7() -> None:
+    """Pre-registered (ROUND7_PREREG.md): no-estimation literature-prior composite."""
+    m = tradable()
+    acc, cnt = None, None
+    for k in PRIOR_SET:
+        f = np.asarray(L.factor(k), dtype=np.float32)
+        v = np.where(np.isfinite(f), f, 0.0)
+        acc = v if acc is None else acc + v
+    s = np.where(m, acc / len(PRIOR_SET), np.nan).astype(np.float32)
+    bt0 = int(np.searchsorted(L.DATES, L.BT_START))
+    s[:bt0] = np.nan
+    scores = pd.DataFrame(s, index=L.DATES, columns=L.SYMS)
+    scores.to_parquet(L.LAB / "scores_R7.parquet")
+    ic = L.composite_ic(scores)
+    print(f"composite {ic}", flush=True)
+    for book in ("shortspy", "ls"):
+        bt = run_guarded(scores, book, 20)
+        L.log_trial(f"R7_{book}_n20", {"model": "literature_prior_equal_weight_11", "book": book, "n": 20,
+                                        "rebal": 5, "smooth": 5, "fix": "no_estimation+guard"}, bt, ic)
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "round7":
+        round7()
     if sys.argv[1] == "round4":
         round4()
     elif sys.argv[1] == "round5":
