@@ -20,11 +20,22 @@
 7. **No estimation** — equal-weight literature-prior composite of 11 factors (value, momentum, low risk, quality, investment, accruals, issuance, PEAD). Best and least-fitted signal (5-day IC 0.018, t 2.87, monotone deciles), but 20-name tail books were dominated by a few high-volatility names (selection max drawdown −59% before scaling).
 8. **Breadth** (fundamental law: IR ≈ IC·√breadth) — same composite, 100 names per side. Primary endpoint (long/short) holdout Sharpe +1.13 but selection −0.17; the short-alpha version is the only design positive in both windows: **selection +0.13, holdout +0.94, full five years +0.35 (2.5% p.a., vol 7.9%, max drawdown −17.9%)**; the deployable 95-name variant gives the same numbers.
 
+## Round 9 — strategy portfolio (pre-registered; result decides deployment)
+- **T: ETF time-series momentum** (Moskowitz-Ooi-Pedersen): SPY, QQQ, IWM, TLT, IEF, GLD, SLV, USO, UUP; long when the
+  252-day return is positive, flat otherwise (no shorting, so no 6% borrow); inverse-volatility weights; weekly.
+  Sharpe 0.90 selection / 1.05 holdout / **0.93 full**, max drawdown −5.6%.
+- **P = T + D**, weekly risk parity on trailing 126-day volatility (strict 2-day lag), scaled to the 90% margin cap.
+  Correlation(T, D) = −0.29. **Sharpe 0.82 selection / 1.75 holdout / 1.02 full five years**, 5.2% p.a. at 5.1% vol,
+  max drawdown −6.6%, no losing calendar year. Deployable variant (88 shorts so that shorts + 9 ETFs + 1 discretionary
+  position ≤ 100 positions): **0.78 / 1.70 / 0.98**, max drawdown −7.5%.
+
 ## Conclusion
-Across 53 trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most robust design is the
-no-estimation, broadly diversified short-alpha book with a beta-matched index hedge. Its honest Sharpe is modest (~0.35
-over five years) and regime-dependent (weak in 2021–22, strong in 2025–26). For the competition, the SPY hedge must be
-capped at 38% of initial assets (40% per-ticker rule) with the remainder in QQQ, and total positions kept ≤ 100.
+Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
+robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
+The Sharpe of the *strategy portfolio* is maximised not by more fitting but by diversification: adding a literature-spec
+ETF trend sleeve that is negatively correlated with the short book lifts the five-year Sharpe to ~1.0, positive in both
+the selection window and the holdout and in every calendar year. For the competition: SPY (and any ETF) ≤ 38% of initial
+assets (40% rule) with the remaining hedge in QQQ, and total positions ≤ 100.
 
 ## Files
 - `reports/lab/registry_val.csv` — every trial, selection-window metrics.

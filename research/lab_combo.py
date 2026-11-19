@@ -67,9 +67,10 @@ def main() -> None:
     idx = T.index.intersection(D.index)
     T, D = T.loc[idx], D.loc[idx]
     rT, rD = T["net"], D["net"]
-    # weekly risk parity on trailing 126-day vol, using data up to t-1
-    vT = rT.rolling(126, min_periods=60).std().shift(1)
-    vD = rD.rolling(126, min_periods=60).std().shift(1)
+    # weekly risk parity on trailing 126-day vol. The net return stamped at day s is realised at the
+    # open of s+2, so at the decision time (close of t) only returns up to s = t-2 are known: shift(2).
+    vT = rT.rolling(126, min_periods=60).std().shift(2)
+    vD = rD.rolling(126, min_periods=60).std().shift(2)
     wT, wD = (1 / vT), (1 / vD)
     s = wT + wD
     wT, wD = (wT / s).fillna(0.5), (wD / s).fillna(0.5)
