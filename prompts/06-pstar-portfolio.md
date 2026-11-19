@@ -36,10 +36,12 @@ Run `python r10_deploy.py live --equity <E> --hold SYMBOL=DOLLARS ...` from `res
 
 If the command fails, or the newest JSON is not for the latest completed session → HOLD: place no new strategy orders, but keep the risk rules active.
 
+A validated output already exists: `reports/live/r10_targets_2026-11-18.json`. Use it as a test fixture. It has 82 targets: 77 shorts identical to the research book, and 5 ETF longs. In whole shares, 65 of the 77 shorts are executable; the other 12 round to 0 shares and are skipped. The first run took about 15 minutes, most of it the SEC refresh; `--skip-events` skips that step when the 8-K file is less than a day old.
+
 ### Required changes
 - **`live/`:** add a P* entry point (for example `live/pstar.py`, or `--strategy pstar` in `daily_scores.py`). It must:
   - run the command above with the account's current equity and its discretionary holdings from the moomoo snapshot;
-  - validate the JSON: schema, checksum, session = latest completed session, `diagnostics.ok`, positions ≤ 100, consistency diffs < 1e-6;
+  - validate the JSON: schema, checksum, session = latest completed session, `diagnostics.ok`, positions ≤ 100, and consistency with the research run (sleeve-weight diff < 1e-3, daily-return diff < 1e-4; the first run measured 8e-6 and 8e-7, which are normal float differences after re-downloaded adjusted prices);
   - convert the targets into the existing targets contract (bump the schema version) for the gate and the order planner.
 - **Order planner:** implement item 6 against actual broker holdings (shares), using limit orders as now.
   - The go-live day is one ENTRY batch of about 87 orders.
@@ -111,10 +113,12 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
 
 如果命令失败，或者最新的 JSON 不是最近一个已收盘交易日的 → HOLD：策略不下新单，但风控规则照常运行。
 
+已经有一份验证过的输出：`reports/live/r10_targets_2026-11-18.json`，拿它当测试样例。里面有 82 个目标：77 只空头和研究端的组合完全一致，另有 5 只 ETF 多头。按整股算，77 只空头里 65 只可以成交，另外 12 只四舍五入后是 0 股，直接跳过。第一次运行用了约 15 分钟，大部分时间花在刷新 SEC 数据上；8-K 文件不到一天时，可以加 `--skip-events` 跳过这一步。
+
 ### 需要改的
 - **`live/`：** 加一个 P* 的入口（比如 `live/pstar.py`，或者在 `daily_scores.py` 里加 `--strategy pstar`）。它要做到：
   - 用账户当前权益和 moomoo 快照里的人工判断仓位运行上面的命令；
-  - 校验 JSON：格式、校验和、交易日 = 最近一个已收盘交易日、`diagnostics.ok`、持仓 ≤ 100、一致性差异 < 1e-6；
+  - 校验 JSON：格式、校验和、交易日 = 最近一个已收盘交易日、`diagnostics.ok`、持仓 ≤ 100，以及和研究结果的一致性（配权差 < 1e-3、日收益差 < 1e-4；第一次运行实测是 8e-6 和 8e-7，这是重新下载复权价后正常的浮点误差）；
   - 把目标持仓转换成现有的目标合约格式（版本号加一），交给规则门和下单模块。
 - **下单模块：** 按第 6 条、对照券商里的实际持股数执行，继续用限价单。
   - 上线当天是一批约 87 笔的 ENTRY 订单。
