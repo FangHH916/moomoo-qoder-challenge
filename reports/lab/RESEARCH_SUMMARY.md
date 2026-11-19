@@ -15,6 +15,17 @@
 4. **Final pre-registered pick: LASSO on all 56 factors, tradable universe, carry-forward, short 20 + SPY hedge.** Selection window: Sharpe 0.70, 8.9% p.a., max drawdown −17.9% (scaled to the margin cap). **Holdout: Sharpe −0.30, −4.0% p.a., max drawdown −10.7%.** Gross alpha fell from +14.8% to −0.4% p.a.; the 6% borrow rate (~3% p.a. drag) and costs did the rest.
 5. **Deflated Sharpe (47 trials) = 0.435; rankings flipped in the holdout** (models that were weak in selection were best in holdout). Conclusion: with daily price/volume data and realistic shorting constraints, no out-of-sample-robust alpha was found. More in-sample tuning would only overfit further; new information (fundamentals, short interest, earnings events) is needed.
 
+## Rounds 6–8 (each pre-registered in git before running; one primary endpoint each)
+6. **New information** — SEC fundamentals (bm, ep, sp, gpa, roe, asset growth, accruals), net share issuance and 8-K earnings-announcement returns (PEAD) added to the frozen round-4 LASSO pipeline. Selection Sharpe rose to 0.78, **holdout fell to −0.53**: more fitted inputs, more overfitting.
+7. **No estimation** — equal-weight literature-prior composite of 11 factors (value, momentum, low risk, quality, investment, accruals, issuance, PEAD). Best and least-fitted signal (5-day IC 0.018, t 2.87, monotone deciles), but 20-name tail books were dominated by a few high-volatility names (selection max drawdown −59% before scaling).
+8. **Breadth** (fundamental law: IR ≈ IC·√breadth) — same composite, 100 names per side. Primary endpoint (long/short) holdout Sharpe +1.13 but selection −0.17; the short-alpha version is the only design positive in both windows: **selection +0.13, holdout +0.94, full five years +0.35 (2.5% p.a., vol 7.9%, max drawdown −17.9%)**; the deployable 95-name variant gives the same numbers.
+
+## Conclusion
+Across 53 trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most robust design is the
+no-estimation, broadly diversified short-alpha book with a beta-matched index hedge. Its honest Sharpe is modest (~0.35
+over five years) and regime-dependent (weak in 2021–22, strong in 2025–26). For the competition, the SPY hedge must be
+capped at 38% of initial assets (40% per-ticker rule) with the remainder in QQQ, and total positions kept ≤ 100.
+
 ## Files
 - `reports/lab/registry_val.csv` — every trial, selection-window metrics.
 - `reports/lab/FINAL.json` — the pre-registered pick, validation vs. holdout, deflated Sharpe.
