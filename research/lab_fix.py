@@ -208,7 +208,19 @@ def round7() -> None:
                                         "rebal": 5, "smooth": 5, "fix": "no_estimation+guard"}, bt, ic)
 
 
+def round8() -> None:
+    """Pre-registered (ROUND8_PREREG.md): round-7 composite, broad 100-name books."""
+    scores = pd.read_parquet(L.LAB / "scores_R7.parquet")
+    ic = L.composite_ic(scores)
+    for book in ("ls", "shortspy"):
+        bt = run_guarded(scores, book, 100)
+        L.log_trial(f"R8_{book}_n100", {"model": "literature_prior_equal_weight_11", "book": book, "n": 100,
+                                         "rebal": 5, "smooth": 5, "fix": "no_estimation+guard"}, bt, ic)
+
+
 if __name__ == "__main__":
+    if sys.argv[1] == "round8":
+        round8()
     if sys.argv[1] == "round7":
         round7()
     if sys.argv[1] == "round4":
