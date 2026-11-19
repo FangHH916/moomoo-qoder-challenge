@@ -29,6 +29,17 @@
   max drawdown −6.6%, no losing calendar year. Deployable variant (88 shorts so that shorts + 9 ETFs + 1 discretionary
   position ≤ 100 positions): **0.78 / 1.70 / 0.98**, max drawdown −7.5%.
 
+## Round 10 — systematic portfolio-level search (pre-registered, 32 combinations)
+Sleeves T9, T21 (21 cross-asset ETFs, 1/3/12-month trend), RP (static risk parity), D77 (77-short book); sets
+{T9,D77}, {T21,D77}, {T21,D77,RP}, {T21,RP}; methods inverse-vol, Ledoit-Wolf minimum variance, ERC, shrunk max-Sharpe,
+each with/without a volatility-managed overlay. Weights always from trailing data (2-day lag); portfolio-level financing
+at 4.8% on long exposure above 100% charged.
+- **Pick: T9 + D77, minimum variance — Sharpe 0.98 selection / 1.29 holdout / 1.04 full five years**, 6.0% p.a. at 5.7%
+  vol, max drawdown −5.6%, every calendar year positive. Deflated Sharpe 0.78 (32 combinations) / 0.65 (all trials).
+- Broader trend universe (T21), static risk parity and the vol overlay all lowered Sharpe.
+- Competition cap: peak SPY-equivalent weight 0.76 → either scale the whole book by ~0.5 (Sharpe unchanged, ~3% p.a.)
+  or route exposure above 38% to DIA/QQQ.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
