@@ -153,9 +153,42 @@ def round5() -> None:
     trial("E11w504", s, "lasso_tradable_allfactors_cf_win504")
 
 
+NEW_FACTORS = ["bm", "ep", "sp", "gpa", "roe", "ag", "accr", "nsi", "ear"]
+
+
+def round6() -> None:
+    """Pre-registered (ROUND6_PREREG.md): the round-4 pick plus 9 new-information factors."""
+    import json
+    names = json.loads((L.CACHE / "factors.json").read_text())
+    assert all(k in names for k in NEW_FACTORS), "run lab_factors2.py first"
+    # single-factor IC of the new factors on the selection window (reporting only)
+    m = pd.DataFrame(tradable(), index=L.DATES, columns=L.SYMS)
+    sel = (L.DATES >= L.BT_START) & (L.DATES <= L.VAL_END)
+    f5 = L.df("fwd5").where(m).loc[sel]
+    for k in NEW_FACTORS:
+        f = pd.DataFrame(np.asarray(L.factor(k)), index=L.DATES, columns=L.SYMS).loc[sel]
+        ic = L.v1.rank_ic(f, f5).dropna()
+        print(f"new factor {k:5s} tradable IC5 {ic.mean():+.4f}  NW t {L.v1.nw_tstat(ic, 10):+.2f}", flush=True)
+    L.TRAIN_DAYS = 252
+    _, co = L.fit_scores(names, "lasso", universe="tradable")
+    co.to_csv(L.LAB / "coefs_R6.csv")
+    nz = (co.abs() > 1e-9)
+    print(f"all-zero retrains {int((nz.sum(1) == 0).sum())}/{len(co)}; most used: "
+          f"{nz.mean().sort_values(ascending=False).head(10).round(2).to_dict()}", flush=True)
+    s = rescore_carry_forward("R6", names, tradable())
+    s.to_parquet(L.LAB / "scores_R6.parquet")
+    ic = L.composite_ic(s)
+    for book in ("shortspy", "ls"):
+        bt = run_guarded(s, book, 20)
+        L.log_trial(f"R6_{book}_n20", {"model": "lasso_tradable_65factors_cf", "book": book, "n": 20,
+                                        "rebal": 5, "smooth": 5, "fix": "carry_forward+guard"}, bt, ic)
+
+
 if __name__ == "__main__":
     if sys.argv[1] == "round4":
         round4()
     elif sys.argv[1] == "round5":
         round5()
+    elif sys.argv[1] == "round6":
+        round6()
     print("done", flush=True)
