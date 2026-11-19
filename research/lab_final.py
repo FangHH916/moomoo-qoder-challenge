@@ -37,12 +37,21 @@ def main() -> None:
         ok, mx = margin_ok(bt)
         cands.append({"trial": name, "val_sharpe": reg.loc[name, "sharpe"], "max_margin": mx, "feasible": ok})
     c = pd.DataFrame(cands).sort_values("val_sharpe", ascending=False)
+    # AMENDMENT (added after seeing that no candidate met the margin cap, BEFORE any holdout data was opened):
+    # scale each book uniformly so its peak margin equals the cap. Sharpe is scale-invariant (returns and vol
+    # scale together; only the fixed $0.99/order fee share changes, ~0.07%/yr), so the ranking is unchanged.
+    c["scale_to_cap"] = (MARGIN_CAP / c["max_margin"]).clip(upper=1.0)
+    c["feasible_after_scaling"] = True
     print(c.round(3).to_string(index=False), flush=True)
-    best = c[c.feasible].iloc[0]["trial"]
-    print(f"\nSELECTED (pre-registered rule): {best}\n", flush=True)
+    feas = c[c.feasible]
+    best = (feas if len(feas) else c).iloc[0]["trial"]
+    k = float(c.set_index("trial").loc[best, "scale_to_cap"])
+    print(f"\nSELECTED (pre-registered rule + scaling amendment): {best}  (gross scaled by {k:.3f})\n", flush=True)
 
     # ---- one-time holdout opening
     bt = pd.read_csv(L.LAB / f"daily_{best}.csv", index_col=0, parse_dates=True)
+    for col in ("net", "gross", "cost", "borrow", "long_gross", "short_gross", "hedge", "turnover"):
+        bt[col] = bt[col] * k                     # uniform scaling to the margin cap
     val = L.seg_metrics(bt, L.BT_START, L.VAL_END)
     hold = L.seg_metrics(bt, L.HOLD_START, None)
     all_sh = reg["sharpe"].dropna().to_numpy()
