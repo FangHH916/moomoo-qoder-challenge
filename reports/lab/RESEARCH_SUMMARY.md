@@ -118,6 +118,14 @@ at 4.8% on long exposure above 100% charged.
   data-driven searches of rounds 12–13. Every factor family available without new data has now been tested;
   P*15 is the best result that holds out of sample.
 
+## Round 17 — earnings-announcement premium on top of P*15 (pre-registered, single trial)
+- Indicator for an expected earnings announcement within 30 days (anniversary of last year's 8-K Item 2.02;
+  Frazzini-Lamont 2007), literature sign, from data on disk. P*16: 1.14 / 1.52 / 1.22 vs P*15 1.12 / 1.40 / 1.18.
+- Better in both windows but only +0.04 in full-period Sharpe, below the pre-registered +0.10 bar: not proposed.
+- Gains are now small: across the last four families the best addition is worth +0.04. With the data on disk
+  the attainable out-of-sample Sharpe has levelled off at about 1.2 (P*15). The next step would need new data
+  (FINRA short volume, SEC Form 4 insider trades), which needs the user's approval to download.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
