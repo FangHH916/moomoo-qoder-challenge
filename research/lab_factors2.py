@@ -108,6 +108,26 @@ def build() -> dict[str, pd.DataFrame]:
     return {k: v.replace([np.inf, -np.inf], np.nan).astype("float32") for k, v in f.items()}
 
 
+def family2(mcap: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    """Round-14 factor family (literature signs, same point-in-time lags): cash-flow yield, operating
+    profitability, cash profitability, minus revenue growth. Identical to lab_round14.build_new."""
+    fr = pd.read_parquet(DATA / "fund_frames.parquet")
+    cmap = cik_map()
+
+    def annual(c):
+        return daily_from_frames(fr[(fr.concept == c) & (fr.period == "annual")], 100, cmap)
+
+    def instant(c):
+        return daily_from_frames(fr[(fr.concept == c) & (fr.period == "q_instant")], 75, cmap)
+
+    cfo, oi = annual("NetCashProvidedByUsedInOperatingActivities"), annual("OperatingIncomeLoss")
+    rev = annual("Revenues").combine_first(annual("RevenueFromContractWithCustomerExcludingAssessedTax"))
+    eq, assets = instant("StockholdersEquity"), instant("Assets")
+    pos_eq, pos_as = eq.where(eq > 0), assets.where(assets > 0)
+    raw = {"cfp": cfo / mcap, "op": oi / pos_eq, "cop": cfo / pos_as, "sg": -(rev / rev.shift(252) - 1)}
+    return {k: v.replace([np.inf, -np.inf], np.nan).astype("float32") for k, v in raw.items()}
+
+
 def main() -> None:
     U = pd.DataFrame(np.load(CACHE / "U.npy"), index=DATES, columns=SYMS)
     ind = pd.Series(_meta["industry"], index=SYMS).replace("NA", np.nan)

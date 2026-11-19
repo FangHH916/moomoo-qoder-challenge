@@ -90,6 +90,20 @@ at 4.8% on long exposure above 100% charged.
 - So searching the factor set has negative out-of-sample value here: every in-sample gain is fitted noise. Among
   procedures that can be evaluated honestly, P* gives the highest Sharpe. The Sharpe search ends with P*.
 
+## Round 14 — a new factor family with literature signs, single trial (pre-registered)
+- Added four factors never used before, from SEC data already on disk, each with its literature sign and no
+  estimation: cash-flow yield (LSV 1994), operating profitability (Fama-French 2015), cash profitability (Ball et al.
+  2016), minus revenue growth (LSV 1994). One trial, P*15 = the D77 composite with 15 factors, everything else frozen.
+- **Ideal: Sharpe 1.12 selection / 1.40 holdout / 1.18 full** (P*: 0.98 / 1.29 / 1.04). The D77 sleeve alone goes from
+  −0.00 / 0.85 / 0.25 to 0.18 / 1.06 / 0.41.
+- **Realistic $100k execution: 1.05 / 1.68 / 1.17** (P*: 0.93 / 1.55 / 1.05), 7.5% p.a., max drawdown −6.9%, every
+  calendar year positive, lower fees; 70 of 77 shorts executable in whole shares today (P*: 65).
+- Deflated Sharpe over portfolio-level trials (rounds 10, 11, 14; 37 trials): 0.79 (P* 0.78). Over all 348 trials,
+  including round 12's in-sample search evaluations: 0.43.
+- Better in both windows and in realistic execution → meets the pre-registered rule; proposed to the user as variant
+  `pstar15` in `research/r10_deploy.py` (a one-line switch, `DEPLOYED`). The contrast with rounds 12–13 matters:
+  theory-signed new information helped, data-mined selection from the existing library did not.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).

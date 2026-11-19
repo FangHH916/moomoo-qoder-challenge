@@ -9,12 +9,18 @@
 
 The deployment strategy changes. Plan A from prompt 05 (LASSO short book + SPY) had a holdout Sharpe of −0.30 and is retired: keep its code and tests, but make it non-default (`strategy: legacy-a`, execution disabled). The new default is the round-10 portfolio **P\***. The research is finished and frozen; this task is production wiring only.
 
-Read first: `reports/lab/RESEARCH_SUMMARY.md` (round 10), `reports/lab/R10_DEPLOY.json`, `reports/lab/R10_REALISTIC.json`, `research/ROUND10_PREREG.md` and `research/r10_deploy.py`, which is the single source of truth (`run_pstar`, `ticker_weights`, `apply_caps`, `simulate`, `cmd_live`). Do not re-implement the strategy anywhere; call or import this file, so live and backtest can never drift apart.
+Read first: `reports/lab/RESEARCH_SUMMARY.md` (rounds 10 and 14), `reports/lab/R10_DEPLOY.json`, `reports/lab/R10_REALISTIC.json`, `reports/lab/R14_DEPLOY.json`, `reports/lab/R14_REALISTIC.json`, `research/ROUND10_PREREG.md`, `research/ROUND14_PREREG.md` and `research/r10_deploy.py`. The last file is the single source of truth (`run_pstar`, `ticker_weights`, `apply_caps`, `simulate`, `cmd_live`, `VARIANTS`, `DEPLOYED`). Do not re-implement the strategy anywhere; call or import this file, so live and backtest can never drift apart.
+
+**Two variants, one switch.** P* has two frozen variants, selected by a single config value `variant` and passed to the command as `--variant`:
+- `pstar` — round 10, the 11-factor short-book composite;
+- `pstar15` — round 14, the same composite plus 4 literature-signed factors.
+
+Everything else is identical. Set `variant` to the value of `DEPLOYED` in `research/r10_deploy.py`; the user decides which one is deployed. Changing the variant must be a one-line config change, with no code change.
 
 ### Frozen strategy P* (change no number)
 1. **Sleeve T9, ETF trend:** SPY QQQ IWM TLT IEF GLD SLV USO UUP. Long when the 252-day return is positive, flat otherwise. Weight = (0.10 / 60-day annualised vol) / 9, capped at 38%.
-2. **Sleeve D77, no-estimation short book:** equal-weight composite of 11 literature factors (bm ep sp mom12_1 ivol60 roe gpa ag accr nsi ear), each cleaned and neutralised on industry + log market cap. Short the 77 lowest-scored shortable, easy-to-borrow names with market cap ≥ $1B: inverse-vol weights capped at 3× equal weight, 3× rank buffer, 5-day score smoothing, vol-targeted entries, SPY beta hedge.
-3. **Combination:** long-only Ledoit-Wolf minimum variance on the two sleeves' trailing 252 daily returns (2-session lag), times the frozen scale K = 1.4634.
+2. **Sleeve D77, no-estimation short book:** equal-weight composite of 11 literature factors (bm ep sp mom12_1 ivol60 roe gpa ag accr nsi ear); `pstar15` adds cfp op cop sg (cash-flow yield, operating profitability, cash profitability, minus revenue growth), for 15 factors. Each factor is cleaned and neutralised on industry + log market cap. Short the 77 lowest-scored shortable, easy-to-borrow names with market cap ≥ $1B: inverse-vol weights capped at 3× equal weight, 3× rank buffer, 5-day score smoothing, vol-targeted entries, SPY beta hedge.
+3. **Combination:** long-only Ledoit-Wolf minimum variance on the two sleeves' trailing 252 daily returns (2-session lag), times the frozen scale K = 1.4634 (`pstar`) or 1.4886 (`pstar15`).
 4. **Rebalance** every 5 sessions counted from 2021-11-18. The next decision is after the close of 2026-11-19 (trade at the 11-20 open); the one after that is after the 11-27 close, i.e. after the competition. Between rebalances, positions drift and only the risk rules in item 6 may trade.
 5. **Competition caps** (`apply_caps`): any ticker ≤ 38% of initial assets ($38,000). SPY above that moves to DIA, then QQQ, sized by their 60-day beta to SPY. Margin 0.5 × long + 0.6 × short, including discretionary positions, ≤ 90% of equity; above that, the strategy book is scaled down. Positions ≤ 100.
 6. **Execution rules** (fixed in advance; see `R10_REALISTIC.json`):
@@ -27,16 +33,16 @@ Read first: `reports/lab/RESEARCH_SUMMARY.md` (round 10), `reports/lab/R10_DEPLO
 The composition at the 2026-11-17 close ($100k, from `R10_DEPLOY.json`) was UUP 28.9%, SPY 22.1%, IWM 7.7%, QQQ 5.9%, USO 3.2%, plus 77 shorts totalling 6.1%. That is a margin of 37.6% and 82 positions. Most of the risk sits in the ETF trend sleeve, and the short book is small (about $80 per name). This is expected: the minimum-variance weight on D77 is 11% today.
 
 ### How live gets its targets
-Run `python r10_deploy.py live --equity <E> --hold SYMBOL=DOLLARS ...` from `research/` with the project venv. It takes about 10–15 minutes and does the following:
+Run `python r10_deploy.py live --variant <variant> --equity <E> --hold SYMBOL=DOLLARS ...` from `research/` with the project venv. It takes about 10–15 minutes and does the following:
 - refreshes Alpaca bars (adjusted and raw, completed sessions only; a symbol's full history is re-downloaded when its adjustment basis changes);
 - refreshes 8-K earnings dates from the SEC;
 - rebuilds a lean cache in `data/cache_live`;
 - recomputes the whole P* backtest through the latest completed session;
-- writes `reports/live/r10_targets_<session>.json`, which contains the targets (weight, dollars, sleeve), `diagnostics`, `checksum_sha256`, data provenance and a consistency check against the research run.
+- writes `reports/live/r10_targets_<session>.json` (`pstar`) or `reports/live/r14_targets_<session>.json` (`pstar15`). The file contains `strategy_id`, the targets (weight, dollars, sleeve), `diagnostics`, `checksum_sha256`, data provenance and a consistency check against the research run.
 
 If the command fails, or the newest JSON is not for the latest completed session → HOLD: place no new strategy orders, but keep the risk rules active.
 
-A validated output already exists: `reports/live/r10_targets_2026-11-18.json`. Use it as a test fixture. It has 82 targets: 77 shorts identical to the research book, and 5 ETF longs. In whole shares, 65 of the 77 shorts are executable; the other 12 round to 0 shares and are skipped. The first run took about 15 minutes, most of it the SEC refresh; `--skip-events` skips that step when the 8-K file is less than a day old.
+Validated outputs already exist for both variants: `reports/live/r10_targets_2026-11-18.json` and `reports/live/r14_targets_2026-11-18.json`. Use them as test fixtures. Each has 82 targets: 77 shorts identical to the research book, and 5 ETF longs. In whole shares, 65 (`pstar`) or 70 (`pstar15`) of the 77 shorts are executable; the rest round to 0 shares and are skipped. The first run took about 15 minutes, most of it the SEC refresh; `--skip-events` skips that step when the 8-K file is less than a day old.
 
 ### Required changes
 - **`live/`:** add a P* entry point (for example `live/pstar.py`, or `--strategy pstar` in `daily_scores.py`). It must:
@@ -58,24 +64,27 @@ A validated output already exists: `reports/live/r10_targets_2026-11-18.json`. U
   - −8% drawdown halt;
   - the plan-A rules apply only when strategy = legacy-a.
 - **Risk monitor:** run after the open fills and before every order batch. It checks the 39% trim, margin above 95% and drawdown.
-- **Replay test:** feed `reports/lab/R10_reference_targets.csv` (30 sessions; `weight` = before caps, `weight_capped_100k` = after caps at $100k equity) through your conversion and gate. Check that:
+- **Replay test:** for each variant, feed `reports/lab/R10_reference_targets.csv` (`pstar`) or `reports/lab/R14_reference_targets.csv` (`pstar15`) through your conversion and gate. Each file covers 30 sessions; `weight` = before caps, `weight_capped_100k` = after caps at $100k equity. Check that:
   - your capped weights equal `weight_capped_100k` within 1e-9 (calling `apply_caps` is fine);
   - every ticker ≤ 38% of initial assets;
   - margin ≤ 90%;
   - positions ≤ 100;
   - there are no long single stocks;
   - shorts ≤ 77.
-- **Config:** add `live/config.pstar.json` with the frozen constants (copy them from `R10_DEPLOY.json`), plus `strategy: pstar`, `mode: test`, `execution_enabled: false` and `discretionary_symbols: []`.
-- **Docs:** update `docs/PRD.md`, `AGENTS.md` (timestamped entry), `agents/*.md` and `README.md` to describe P*, with honest numbers:
+- **Config:** add `live/config.pstar.json` with the frozen constants of both variants (copy them from `R10_DEPLOY.json` and `R14_DEPLOY.json`), plus `strategy: pstar`, `variant` (= `DEPLOYED` in `research/r10_deploy.py`), `mode: test`, `execution_enabled: false` and `discretionary_symbols: []`. The gate must reject a targets file whose `strategy_id` does not match the configured variant.
+- **Docs:** update `docs/PRD.md`, `AGENTS.md` (timestamped entry), `agents/*.md` and `README.md` to describe P* and its two variants, with honest numbers:
 
   | Five-year Sharpe | Full | Selection | Holdout |
   |---|---|---|---|
-  | Ideal backtest | 1.04 | 0.98 | 1.29 |
-  | Realistic $100k execution | 1.05 | 0.93 | 1.55 |
+  | `pstar` ideal backtest | 1.04 | 0.98 | 1.29 |
+  | `pstar` realistic $100k execution | 1.05 | 0.93 | 1.55 |
+  | `pstar15` ideal backtest | 1.18 | 1.12 | 1.40 |
+  | `pstar15` realistic $100k execution | 1.17 | 1.05 | 1.68 |
 
-  - Max drawdown: −5.6% ideal, −6.8% realistic. Every calendar year is positive.
-  - Deflated Sharpe: 0.78 over the 32 round-10 combinations, 0.65 over all trials.
-  - Expected return is about 6% a year, so over the six remaining competition sessions the result is mostly noise. The point of P* is a robust, risk-controlled process.
+  - Max drawdown is about −5.6% ideal and −6.8% realistic for both variants. Every calendar year is positive.
+  - Deflated Sharpe over portfolio-level trials: 0.78 (`pstar`, 32 combinations), 0.79 (`pstar15`, 37).
+  - `pstar15` was a single pre-registered trial with literature signs and no estimation. Rounds 12–13 showed that data-driven factor search does not help out of sample: the walk-forward search lost to P* in all four out-of-sample years.
+  - Expected return is about 6–7% a year, so over the six remaining competition sessions the result is mostly noise. The point of P* is a robust, risk-controlled process.
   - Plan A was retired because its holdout Sharpe was −0.30.
 
 Keep MODE=test (account 5322438) as the default. Do not place orders, do not create schedules, and do not change cloud configuration in this task. Show me the diff summary and the test results when done.
@@ -86,12 +95,18 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
 
 部署策略要换。prompt 05 里的方案 A（LASSO 空头组合 + SPY）留出期夏普是 −0.30，现在停用：代码和测试保留，但不再作为默认（`strategy: legacy-a`，禁止执行）。新的默认策略是第十轮的组合 **P\***。研究已经结束并冻结，这次只做生产环境的接入。
 
-先读：`reports/lab/RESEARCH_SUMMARY.md`（第十轮）、`reports/lab/R10_DEPLOY.json`、`reports/lab/R10_REALISTIC.json`、`research/ROUND10_PREREG.md` 和 `research/r10_deploy.py`。最后这个文件是唯一的标准实现（`run_pstar`、`ticker_weights`、`apply_caps`、`simulate`、`cmd_live`）。任何地方都不要重写策略，直接调用或导入这个文件，这样实盘和回测永远不会不一致。
+先读：`reports/lab/RESEARCH_SUMMARY.md`（第十轮和第十四轮）、`reports/lab/R10_DEPLOY.json`、`reports/lab/R10_REALISTIC.json`、`reports/lab/R14_DEPLOY.json`、`reports/lab/R14_REALISTIC.json`、`research/ROUND10_PREREG.md`、`research/ROUND14_PREREG.md` 和 `research/r10_deploy.py`。最后这个文件是唯一的标准实现（`run_pstar`、`ticker_weights`、`apply_caps`、`simulate`、`cmd_live`、`VARIANTS`、`DEPLOYED`）。任何地方都不要重写策略，直接调用或导入这个文件，这样实盘和回测永远不会不一致。
+
+**两个版本，一个开关。** P* 有两个冻结的版本，用一个配置项 `variant` 选择，运行命令时以 `--variant` 传入：
+- `pstar`：第十轮，空头组合用 11 个因子合成；
+- `pstar15`：第十四轮，在同一个合成里再加 4 个按文献定方向的因子。
+
+其他部分完全一样。`variant` 的取值要和 `research/r10_deploy.py` 里的 `DEPLOYED` 一致；部署哪一个由用户决定。切换版本只能是改一行配置，不允许改代码。
 
 ### 冻结的策略 P*（任何数字都不要改）
 1. **T9 子策略，ETF 趋势：** SPY QQQ IWM TLT IEF GLD SLV USO UUP。过去 252 天收益为正就做多，否则空仓。权重 = (0.10 / 60 日年化波动率) / 9，单只上限 38%。
-2. **D77 子策略，不做估计的空头组合：** 11 个文献因子（bm ep sp mom12_1 ivol60 roe gpa ag accr nsi ear）等权合成，每个因子都先清洗，再对行业 + 对数市值做中性化。做空得分最低的 77 只可融券、容易借到、市值 ≥ 10 亿美元的股票：按波动率倒数分配权重，单只不超过等权的 3 倍；排名缓冲带 3 倍；得分取 5 日平均；新开仓按目标波动率缩放；用 SPY 对冲 beta。
-3. **组合方式：** 用两个子策略过去 252 天的日收益（滞后 2 个交易日）做 Ledoit-Wolf 只做多的最小方差配权，再乘以冻结的缩放系数 K = 1.4634。
+2. **D77 子策略，不做估计的空头组合：** 11 个文献因子（bm ep sp mom12_1 ivol60 roe gpa ag accr nsi ear）等权合成；`pstar15` 再加上 cfp op cop sg（现金流收益率、经营利润率、现金盈利能力、营收增长取负），共 15 个。每个因子都先清洗，再对行业 + 对数市值做中性化。做空得分最低的 77 只可融券、容易借到、市值 ≥ 10 亿美元的股票：按波动率倒数分配权重，单只不超过等权的 3 倍；排名缓冲带 3 倍；得分取 5 日平均；新开仓按目标波动率缩放；用 SPY 对冲 beta。
+3. **组合方式：** 用两个子策略过去 252 天的日收益（滞后 2 个交易日）做 Ledoit-Wolf 只做多的最小方差配权，再乘以冻结的缩放系数 K = 1.4634（`pstar`）或 1.4886（`pstar15`）。
 4. **调仓：** 从 2021-11-18 起每 5 个交易日调一次。下一次是 2026-11-19 收盘后决策（11-20 开盘成交）；再下一次是 11-27 收盘后，也就是比赛结束以后。两次调仓之间仓位自然漂移，只有第 6 条里的风控规则可以交易。
 5. **比赛上限**（`apply_caps`）：任何一只标的 ≤ 初始资金的 38%（38,000 美元）。SPY 超出部分依次转给 DIA、QQQ，按它们对 SPY 的 60 日 beta 折算。保证金 0.5 × 多头 + 0.6 × 空头（包括人工判断的仓位）≤ 权益的 90%；超出就把策略仓位整体按比例缩小。持仓数 ≤ 100。
 6. **执行规则**（事先固定，见 `R10_REALISTIC.json`）：
@@ -104,16 +119,16 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
 2026-11-17 收盘时（10 万美元，数据来自 `R10_DEPLOY.json`）的持仓：UUP 28.9%、SPY 22.1%、IWM 7.7%、QQQ 5.9%、USO 3.2%，另有 77 只空头合计 6.1%。保证金占用 37.6%，持仓 82 个。大部分风险在 ETF 趋势子策略上，空头组合很小（每只约 80 美元）。这是正常的：现在最小方差给 D77 的权重是 11%。
 
 ### 实盘怎样拿到目标持仓
-在 `research/` 下用项目的虚拟环境运行 `python r10_deploy.py live --equity <E> --hold 代码=金额 ...`，大约 10–15 分钟，依次做这些事：
+在 `research/` 下用项目的虚拟环境运行 `python r10_deploy.py live --variant <版本> --equity <E> --hold 代码=金额 ...`，大约 10–15 分钟，依次做这些事：
 - 刷新 Alpaca 行情（复权和不复权两套，只取已经收盘的交易日；某只股票的复权基准变了，就重新下载它的全部历史）；
 - 从 SEC 刷新 8-K 财报日期；
 - 在 `data/cache_live` 重建精简缓存；
 - 把 P* 的完整回测重算到最近一个已收盘的交易日；
-- 写出 `reports/live/r10_targets_<交易日>.json`，内容包括目标持仓（权重、金额、所属子策略）、`diagnostics`、`checksum_sha256`、数据来源，以及和研究结果的一致性检查。
+- 写出 `reports/live/r10_targets_<交易日>.json`（`pstar`）或 `reports/live/r14_targets_<交易日>.json`（`pstar15`）。文件里包括 `strategy_id`、目标持仓（权重、金额、所属子策略）、`diagnostics`、`checksum_sha256`、数据来源，以及和研究结果的一致性检查。
 
 如果命令失败，或者最新的 JSON 不是最近一个已收盘交易日的 → HOLD：策略不下新单，但风控规则照常运行。
 
-已经有一份验证过的输出：`reports/live/r10_targets_2026-11-18.json`，拿它当测试样例。里面有 82 个目标：77 只空头和研究端的组合完全一致，另有 5 只 ETF 多头。按整股算，77 只空头里 65 只可以成交，另外 12 只四舍五入后是 0 股，直接跳过。第一次运行用了约 15 分钟，大部分时间花在刷新 SEC 数据上；8-K 文件不到一天时，可以加 `--skip-events` 跳过这一步。
+两个版本都已经有验证过的输出：`reports/live/r10_targets_2026-11-18.json` 和 `reports/live/r14_targets_2026-11-18.json`，拿它们当测试样例。每份都有 82 个目标：77 只空头和研究端的组合完全一致，另有 5 只 ETF 多头。按整股算，77 只空头里能成交的有 65 只（`pstar`）或 70 只（`pstar15`），其余四舍五入后是 0 股，直接跳过。第一次运行用了约 15 分钟，大部分时间花在刷新 SEC 数据上；8-K 文件不到一天时，可以加 `--skip-events` 跳过这一步。
 
 ### 需要改的
 - **`live/`：** 加一个 P* 的入口（比如 `live/pstar.py`，或者在 `daily_scores.py` 里加 `--strategy pstar`）。它要做到：
@@ -135,24 +150,27 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
   - 回撤 −8% 停机；
   - 方案 A 的规则只在 strategy = legacy-a 时生效。
 - **风控监控：** 开盘成交后、每批订单之前运行，检查 39% 减仓、保证金超过 95% 和回撤。
-- **回放测试：** 把 `reports/lab/R10_reference_targets.csv`（30 个交易日；`weight` 是限额前的权重，`weight_capped_100k` 是按 10 万美元权益施加限额后的权重）送进你的转换和规则门，检查：
+- **回放测试：** 每个版本分别把 `reports/lab/R10_reference_targets.csv`（`pstar`）或 `reports/lab/R14_reference_targets.csv`（`pstar15`）送进你的转换和规则门。每个文件覆盖 30 个交易日；`weight` 是限额前的权重，`weight_capped_100k` 是按 10 万美元权益施加限额后的权重。检查：
   - 你算出的限额后权重和 `weight_capped_100k` 的差异在 1e-9 以内（直接调用 `apply_caps` 也可以）；
   - 任何一只标的 ≤ 初始资金 38%；
   - 保证金 ≤ 90%；
   - 持仓数 ≤ 100；
   - 没有个股多头；
   - 空头 ≤ 77 只。
-- **配置：** 新增 `live/config.pstar.json`，放入冻结的常数（从 `R10_DEPLOY.json` 复制），再加上 `strategy: pstar`、`mode: test`、`execution_enabled: false` 和 `discretionary_symbols: []`。
-- **文档：** 更新 `docs/PRD.md`、`AGENTS.md`（加一条带时间戳的记录）、`agents/*.md` 和 `README.md`，描述 P*，数字如实写：
+- **配置：** 新增 `live/config.pstar.json`，放入两个版本冻结的常数（从 `R10_DEPLOY.json` 和 `R14_DEPLOY.json` 复制），再加上 `strategy: pstar`、`variant`（和 `research/r10_deploy.py` 里的 `DEPLOYED` 一致）、`mode: test`、`execution_enabled: false` 和 `discretionary_symbols: []`。目标文件的 `strategy_id` 和配置的版本不一致时，规则门必须拒绝。
+- **文档：** 更新 `docs/PRD.md`、`AGENTS.md`（加一条带时间戳的记录）、`agents/*.md` 和 `README.md`，描述 P* 和它的两个版本，数字如实写：
 
   | 5 年夏普 | 完整 | 选择期 | 留出期 |
   |---|---|---|---|
-  | 理想回测 | 1.04 | 0.98 | 1.29 |
-  | 10 万美元真实执行 | 1.05 | 0.93 | 1.55 |
+  | `pstar` 理想回测 | 1.04 | 0.98 | 1.29 |
+  | `pstar` 10 万美元真实执行 | 1.05 | 0.93 | 1.55 |
+  | `pstar15` 理想回测 | 1.18 | 1.12 | 1.40 |
+  | `pstar15` 10 万美元真实执行 | 1.17 | 1.05 | 1.68 |
 
-  - 最大回撤：理想 −5.6%，真实 −6.8%。每个自然年都是正收益。
-  - Deflated Sharpe：在第十轮 32 个组合里是 0.78，在所有试验里是 0.65。
-  - 预期年化约 6%，所以比赛剩下的 6 个交易日里，结果主要是随机波动。P* 的意义在于一套稳健、风险可控的流程。
+  - 两个版本的最大回撤都是理想约 −5.6%、真实约 −6.8%。每个自然年都是正收益。
+  - 组合层面试验的 Deflated Sharpe：`pstar` 0.78（32 个组合），`pstar15` 0.79（37 个）。
+  - `pstar15` 是一次预先登记的单次试验，因子方向按文献，不做任何估计。第 12–13 轮说明，用数据去搜因子在样本外没有帮助：滚动前推的搜索在 4 个样本外年份里全部输给 P*。
+  - 预期年化约 6–7%，所以比赛剩下的 6 个交易日里，结果主要是随机波动。P* 的意义在于一套稳健、风险可控的流程。
   - 方案 A 停用，因为它的留出期夏普是 −0.30。
 
 默认保持 MODE=test（账户 5322438）。本任务不要下单、不要建定时任务、不要改云端配置。做完给我看改动摘要和测试结果。

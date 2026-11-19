@@ -1,5 +1,19 @@
 {
-  "strategy": "R10 pick S1_MV: T9 ETF trend + D77 short book, Ledoit-Wolf minimum variance",
+  "strategy": "pstar: T9 ETF trend + D77 short book (11-factor literature composite), Ledoit-Wolf minimum variance",
+  "variant": "pstar",
+  "factors": [
+    "bm",
+    "ep",
+    "sp",
+    "mom12_1",
+    "ivol60",
+    "roe",
+    "gpa",
+    "ag",
+    "accr",
+    "nsi",
+    "ear"
+  ],
   "k_scale": 1.4633955775862155,
   "n_short": 77,
   "etfs": [

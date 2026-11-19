@@ -1,0 +1,99 @@
+{
+  "strategy": "pstar15: T9 ETF trend + D77 short book (15-factor literature composite), Ledoit-Wolf minimum variance",
+  "variant": "pstar15",
+  "factors": [
+    "bm",
+    "ep",
+    "sp",
+    "mom12_1",
+    "ivol60",
+    "roe",
+    "gpa",
+    "ag",
+    "accr",
+    "nsi",
+    "ear",
+    "cfp",
+    "op",
+    "cop",
+    "sg"
+  ],
+  "k_scale": 1.488567942168242,
+  "n_short": 77,
+  "etfs": [
+    "SPY",
+    "QQQ",
+    "IWM",
+    "TLT",
+    "IEF",
+    "GLD",
+    "SLV",
+    "USO",
+    "UUP"
+  ],
+  "route": [
+    "DIA",
+    "QQQ"
+  ],
+  "ticker_cap_of_initial": 0.38,
+  "margin_cap": 0.9,
+  "rebalance_anchor": "2021-11-18",
+  "rebalance_every": 5,
+  "reproduction_check_max_abs_diff": {
+    "weights": 0.0,
+    "portfolio": 0.0
+  },
+  "metrics": {
+    "selection": {
+      "sharpe": 1.1244110105649987,
+      "ann": 0.06624570808184949,
+      "mdd": -0.05891577069998877,
+      "vol": 0.05857859684976891
+    },
+    "holdout": {
+      "sharpe": 1.4041634235039302,
+      "ann": 0.08594733973398472,
+      "mdd": -0.0367296326391513,
+      "vol": 0.060008136905567465
+    },
+    "full": {
+      "sharpe": 1.1820671516627492,
+      "ann": 0.0701728425194843,
+      "mdd": -0.05891577069998877,
+      "vol": 0.058846097481650365
+    }
+  },
+  "last_complete_session": "2026-11-17",
+  "last_session": {
+    "sleeve_weights": {
+      "T9": 1.312456202258637,
+      "D77": 0.17611173990960505
+    },
+    "diag": {
+      "equity": 100000.0,
+      "ticker_cap_weight": 0.38,
+      "scale": 1.0,
+      "routed": {},
+      "clipped": [],
+      "spy_weight_uncapped": 0.2309878085039107,
+      "long_gross": 0.6918642713928795,
+      "short_gross": 0.06400370498216666,
+      "hold_long": 0.0,
+      "hold_short": 0.0,
+      "margin": 0.3843343586857398,
+      "positions": 82,
+      "n_short": 77,
+      "ok": true
+    },
+    "etfs": {
+      "IWM": 0.0781,
+      "QQQ": 0.059,
+      "SPY": 0.231,
+      "USO": 0.032,
+      "UUP": 0.2918
+    },
+    "n_shorts": 77,
+    "short_gross": 0.06400370498216666
+  },
+  "max_spy_weight_uncapped_30d": 0.30779793741238926
+}

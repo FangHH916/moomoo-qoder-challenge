@@ -4,6 +4,10 @@ Ledoit-Wolf minimum-variance sleeve weights, frozen scale K_SCALE.
 Single source of truth for the deployed strategy. Live code runs this file (or imports its functions)
 instead of re-implementing anything, so live and backtest cannot drift apart.
 
+Variants (VARIANTS; the deployed one is DEPLOYED, every command takes --variant):
+  pstar    round 10: D77 composite of the 11 literature factors, K = 1.4634   files R10_*, r10_targets_*
+  pstar15  round 14: the same + cfp op cop sg (15 factors),     K = 1.4886   files R14_*, r14_targets_*
+
 usage (from research/, project venv):
   python r10_deploy.py reference
       re-run P* on the research cache while recording every ticker weight; assert that it reproduces
@@ -42,8 +46,13 @@ ETF9 = ["SPY", "QQQ", "IWM", "TLT", "IEF", "GLD", "SLV", "USO", "UUP"]
 ROUTE = ["DIA", "QQQ"]                  # SPY exposure above the per-ticker cap moves here, in this order
 ETFS = set(ETF9) | set(ROUTE)
 PRIOR_SET = ["bm", "ep", "sp", "mom12_1", "ivol60", "roe", "gpa", "ag", "accr", "nsi", "ear"]
+NEW15 = ["cfp", "op", "cop", "sg"]      # round 14: cash-flow yield, operating / cash profitability, -sales growth
 N_SHORT = 77
 K_SCALE = 1.4633955775862155            # round 10: uniform scale so that the 5-year peak margin is 90%
+# variant -> (D77 composite factors, frozen scale, file tag). The deployed variant is chosen by the user.
+VARIANTS = {"pstar": (PRIOR_SET, K_SCALE, "R10"),
+            "pstar15": (PRIOR_SET + NEW15, 1.488567942168242, "R14")}
+DEPLOYED = "pstar"
 INITIAL_EQUITY = 100_000.0
 TICKER_CAP = 0.38                       # of initial assets (competition limit: 40%)
 MARGIN_CAP, MARGIN_LONG, MARGIN_SHORT = 0.90, 0.5, 0.6
@@ -55,13 +64,19 @@ REBAL_ANCHOR, REBAL_EVERY = pd.Timestamp("2021-11-18"), 5
 
 # ------------------------------------------------------------------ research modules
 def research(cache_dir: Path | None = None):
-    """Import the research modules; cache_dir (e.g. data/cache_live) must be set before the first import."""
+    """Import the research modules; cache_dir (e.g. data/cache_live) must be set before the first import.
+    Research mode (no cache_dir) reads ETF bars from the round-10 snapshot so results stay reproducible after
+    the live job has refreshed data/bars_daily.parquet."""
     if cache_dir is not None:
         os.environ["QR_CACHE_DIR"] = str(cache_dir)
     import lab_fix as F
     import lab_portfolio as P
     import lab_run as L
     assert F.PRIOR_SET == PRIOR_SET
+    if cache_dir is None and (SNAPSHOT / "bars_daily.parquet").exists():
+        if not (SNAPSHOT / "bars_extra_etfs.parquet").exists():
+            shutil.copy2(DATA / "bars_extra_etfs.parquet", SNAPSHOT / "bars_extra_etfs.parquet")
+        P.DATA = SNAPSHOT
     return L, F, P
 
 
@@ -148,16 +163,17 @@ def mv_raw(P, R: pd.DataFrame) -> pd.DataFrame:
     return W.ffill()
 
 
-def run_pstar(L, F, P, scores: pd.DataFrame | None = None) -> dict:
+def run_pstar(L, F, P, scores: pd.DataFrame | None = None, variant: str = "pstar") -> dict:
+    names, k_scale, _ = VARIANTS[variant]
     if scores is None:
-        scores = F.prior_scores()
+        scores = F.prior_scores(names)
     d77, book, guard = d77_record(L, F, scores)
     t9, t9w = t9_record(P)
     idx = t9.index.intersection(d77.index)
     R = pd.DataFrame({"T9": t9.loc[idx, "net"], "D77": d77.loc[idx, "net"]})
     LU = pd.DataFrame({"T9": t9.loc[idx, "long"],
                        "D77": d77.loc[idx, "long_gross"] + d77.loc[idx, "hedge"].clip(lower=0)})
-    W = mv_raw(P, R) * K_SCALE
+    W = mv_raw(P, R) * k_scale
     port = (W * R).sum(axis=1) - ((W * LU).sum(axis=1) - 1.0).clip(lower=0) * FIN_APR / 252
     return {"W": W, "R": R, "port": port, "t9w": t9w, "book": book, "guard": guard, "d77": d77,
             "scores": scores, "dates": L.DATES}
@@ -324,18 +340,24 @@ def windows(r: pd.Series, L) -> dict:
 
 
 # ------------------------------------------------------------------ commands: reference / realistic
-def cmd_reference() -> None:
+def cmd_reference(variant: str = DEPLOYED) -> None:
     L, F, P = research()
-    scores = F.prior_scores()
-    saved = pd.read_parquet(LAB / "scores_R7.parquet")
-    chk = {"scores_vs_saved": float(np.nanmax(np.abs(scores.to_numpy(float) - saved.to_numpy(float))))}
-    res = run_pstar(L, F, P, scores)
-    pick = pd.read_csv(LAB / "daily_R10_pick.csv", index_col=0, parse_dates=True)
-    d77 = pd.read_csv(LAB / "daily_R10_D77.csv", index_col=0, parse_dates=True)
-    chk["d77_net"] = float((res["d77"]["net"] - d77["net"]).abs().max())
+    names, k_scale, tag = VARIANTS[variant]
+    scores = F.prior_scores(names)
+    res = run_pstar(L, F, P, scores, variant)
+    chk = {}
+    if variant == "pstar":
+        saved = pd.read_parquet(LAB / "scores_R7.parquet")
+        chk["scores_vs_saved"] = float(np.nanmax(np.abs(scores.to_numpy(float) - saved.to_numpy(float))))
+        d77 = pd.read_csv(LAB / "daily_R10_D77.csv", index_col=0, parse_dates=True)
+        chk["d77_net"] = float((res["d77"]["net"] - d77["net"]).abs().max())
+    pick_file = LAB / f"daily_{tag}_pick.csv"
+    if not pick_file.exists():                  # first run of a new variant: this run becomes its research record
+        pd.DataFrame({"P": res["port"], "w_T9": res["W"]["T9"], "w_D77": res["W"]["D77"]}).to_csv(pick_file)
+    pick = pd.read_csv(pick_file, index_col=0, parse_dates=True)
     chk["weights"] = float(max((res["W"]["T9"] - pick["w_T9"]).abs().max(), (res["W"]["D77"] - pick["w_D77"]).abs().max()))
     chk["portfolio"] = float((res["port"] - pick["P"]).abs().max())
-    print("reproduction check (max abs diff):", chk, flush=True)
+    print(f"[{variant}] reproduction check (max abs diff):", chk, flush=True)
     assert max(chk.values()) < 1e-6, chk
     # weights only change on the shared rebalance sessions
     changed = res["W"].index[res["W"].diff().abs().sum(axis=1) > 1e-12]
@@ -353,11 +375,12 @@ def cmd_reference() -> None:
             recs.append({"date": t, "symbol": k, "sleeve": sleeve.get(k, "route"), "weight": float(agg.get(k, 0.0)),
                          "weight_capped_100k": float(cw.get(k, 0.0))})
     ref = pd.DataFrame(recs)
-    ref.to_csv(LAB / "R10_reference_targets.csv", index=False)
+    ref.to_csv(LAB / f"{tag}_reference_targets.csv", index=False)
     t = sessions[-1]
     last = ref[ref.date == t]
-    out = {"strategy": "R10 pick S1_MV: T9 ETF trend + D77 short book, Ledoit-Wolf minimum variance",
-           "k_scale": K_SCALE, "n_short": N_SHORT, "etfs": ETF9, "route": ROUTE, "ticker_cap_of_initial": TICKER_CAP,
+    out = {"strategy": f"{variant}: T9 ETF trend + D77 short book ({len(names)}-factor literature composite), "
+                       "Ledoit-Wolf minimum variance", "variant": variant, "factors": names,
+           "k_scale": k_scale, "n_short": N_SHORT, "etfs": ETF9, "route": ROUTE, "ticker_cap_of_initial": TICKER_CAP,
            "margin_cap": MARGIN_CAP, "rebalance_anchor": str(REBAL_ANCHOR.date()), "rebalance_every": REBAL_EVERY,
            "reproduction_check_max_abs_diff": chk, "metrics": windows(res["port"], L),
            "last_complete_session": str(t.date()),
@@ -366,8 +389,9 @@ def cmd_reference() -> None:
                             "n_shorts": int((last.weight_capped_100k < 0).sum()),
                             "short_gross": float(-last.weight_capped_100k[last.weight_capped_100k < 0].sum())},
            "max_spy_weight_uncapped_30d": float(max(d["spy_weight_uncapped"] for d in diags.values()))}
-    (LAB / "R10_DEPLOY.json").write_text(json.dumps(out, indent=2, default=float))
-    print(json.dumps(out["last_session"], indent=2, default=float), flush=True)
+    (LAB / f"{tag}_DEPLOY.json").write_text(json.dumps(out, indent=2, default=float))
+    print(json.dumps({"metrics": {w: round(v["sharpe"], 4) for w, v in out["metrics"].items()},
+                      **out["last_session"]}, indent=2, default=float), flush=True)
 
 
 def _sim_report(sim: pd.DataFrame, extra: dict, L) -> dict:
@@ -386,20 +410,22 @@ def _sim_report(sim: pd.DataFrame, extra: dict, L) -> dict:
             "yearly_return": {int(k): float(v) for k, v in yr["net"].apply(lambda x: (1 + x).prod() - 1).items()}}
 
 
-def cmd_realistic() -> None:
+def cmd_realistic(variant: str = DEPLOYED) -> None:
     """Execution rules are fixed in advance (TRADE_BAND, TRIM_AT, MARGIN_ALERT), not tuned; the naive variant
     (re-size everything at every rebalance, no daily checks) is reported for comparison."""
     L, F, P = research()
-    res = run_pstar(L, F, P, F.prior_scores())
+    tag = VARIANTS[variant][2]
+    res = run_pstar(L, F, P, variant=variant)
     sim, extra = simulate(res, L)
-    sim.to_csv(LAB / "daily_R10_realistic.csv")
+    sim.to_csv(LAB / f"daily_{tag}_realistic.csv")
     naive, extra0 = simulate(res, L, band=0.0, daily_checks=False)
     out = {"ideal": windows(res["port"], L),
            "execution_rules": {"trade_band_of_equity": TRADE_BAND, "trim_ticker_above_of_initial": TRIM_AT,
                                "trim_to": TICKER_CAP, "delever_margin_above": MARGIN_ALERT, "delever_to": MARGIN_CAP},
            "realistic_100k": _sim_report(sim, extra, L), "naive_100k": _sim_report(naive, extra0, L)}
-    (LAB / "R10_REALISTIC.json").write_text(json.dumps(out, indent=2, default=float))
-    print(json.dumps(out, indent=2, default=float), flush=True)
+    (LAB / f"{tag}_REALISTIC.json").write_text(json.dumps(out, indent=2, default=float))
+    print(json.dumps({k: {w: round(v["sharpe"], 4) for w, v in (out[k] if k == "ideal" else out[k]["metrics"]).items()}
+                      for k in ("ideal", "realistic_100k", "naive_100k")}, indent=2), flush=True)
 
 
 # ------------------------------------------------------------------ live: data refresh
@@ -515,10 +541,11 @@ def build_live_cache() -> None:
     os.environ["QR_CACHE_DIR"] = str(LIVE_CACHE)
     import lab_factors2 as F2                                   # reads the live meta written above
     raw = F2.build()
+    raw.update(F2.family2(mcap.astype(float)))                  # round-14 factors (used by variant pstar15)
     ind2 = pd.Series(meta["industry"], index=U.columns).replace("NA", np.nan)
     for k, df in v1.preprocess(raw, U, ind2, mcap).items():
         np.save(LIVE_CACHE / f"f_{k}.npy", df.to_numpy(np.float32))
-    (LIVE_CACHE / "factors.json").write_text(json.dumps(PRIOR_SET))
+    (LIVE_CACHE / "factors.json").write_text(json.dumps(PRIOR_SET + NEW15))
     print(f"live cache built: {len(meta['dates'])} sessions, last {meta['dates'][-1]}", flush=True)
 
 
@@ -538,9 +565,12 @@ def cmd_live(args) -> None:
             import fundamentals
             fundamentals.events()
             refresh["events"] = "refreshed"
-    build_live_cache()
+    if not args.skip_cache:
+        build_live_cache()
     L, F, P = research(LIVE_CACHE)
-    res = run_pstar(L, F, P)
+    variant = args.variant
+    names, k_scale, tag = VARIANTS[variant]
+    res = run_pstar(L, F, P, variant=variant)
     t = res["W"].index[-1]
     hold = dict(h.split("=", 1) for h in args.hold)
     hold = {k.upper(): float(v) for k, v in hold.items()}
@@ -558,19 +588,20 @@ def cmd_live(args) -> None:
     targets.sort(key=lambda d: (d["side"], d["symbol"]))
     body = json.dumps(targets, sort_keys=True, separators=(",", ":")).encode()
     # consistency with the research run on sessions both runs know completely
-    pick = pd.read_csv(LAB / "daily_R10_pick.csv", index_col=0, parse_dates=True)
+    pick = pd.read_csv(LAB / f"daily_{tag}_pick.csv", index_col=0, parse_dates=True)
     common = res["W"].index.intersection(pick.index[:-2])
     cons = {"sessions_compared": int(len(common)),
             "sleeve_weight_max_abs_diff": float((res["W"].loc[common] - pick.loc[common, ["w_T9", "w_D77"]]
                                                  .set_axis(["T9", "D77"], axis=1)).abs().max().max()),
             "return_max_abs_diff": float((res["port"].loc[common] - pick.loc[common, "P"]).abs().max())}
-    out = {"strategy_id": "r10-pstar", "schema": 1, "session": str(t.date()),
+    out = {"strategy_id": f"{tag.lower()}-{variant}", "variant": variant, "factors": names, "schema": 1,
+           "session": str(t.date()),
            "generated_at_utc": pd.Timestamp.now(tz="UTC").isoformat(),
            "rebalance_session": bool(t == last_reb), "last_rebalance_session": str(last_reb.date()),
            "sessions_until_next_rebalance": int((REBAL_EVERY - pos % REBAL_EVERY) % REBAL_EVERY or REBAL_EVERY),
            "trade_at": "next regular-session open after `session`",
            "equity_input": args.equity, "initial_equity": INITIAL_EQUITY, "hold": hold,
-           "k_scale": K_SCALE, "sleeve_weights": {k: float(v) for k, v in res["W"].loc[t].items()},
+           "k_scale": k_scale, "sleeve_weights": {k: float(v) for k, v in res["W"].loc[t].items()},
            "signal_guard_held_previous_book": bool(res["guard"].get(last_reb, False)),
            "targets": targets, "diagnostics": diag, "checksum_sha256": hashlib.sha256(body).hexdigest(),
            "data": {"refresh": refresh, "last_bar_session": str(L.DATES[-1].date()),
@@ -579,7 +610,7 @@ def cmd_live(args) -> None:
                                                                 "shares_q.parquet", "assets.parquet")}},
            "consistency_with_research": cons}
     LIVE_OUT.mkdir(parents=True, exist_ok=True)
-    f = LIVE_OUT / f"r10_targets_{t.date()}.json"
+    f = LIVE_OUT / f"{tag.lower()}_targets_{t.date()}.json"
     f.write_text(json.dumps(out, indent=2, default=float))
     print(json.dumps({k: out[k] for k in ("session", "rebalance_session", "sleeve_weights", "diagnostics",
                                          "consistency_with_research")}, indent=2, default=float), flush=True)
@@ -593,8 +624,12 @@ def main(argv=None) -> None:
     ap.add_argument("--hold", nargs="*", default=[], help="discretionary positions, e.g. ANTH=40000 (short: negative)")
     ap.add_argument("--skip-refresh", action="store_true")
     ap.add_argument("--skip-events", action="store_true")
+    ap.add_argument("--skip-cache", action="store_true", help="reuse data/cache_live (only after a same-day build)")
+    ap.add_argument("--variant", choices=sorted(VARIANTS), default=DEPLOYED,
+                    help=f"strategy variant (deployed: {DEPLOYED})")
     args = ap.parse_args(argv)
-    {"reference": lambda: cmd_reference(), "realistic": lambda: cmd_realistic(), "live": lambda: cmd_live(args)}[args.cmd]()
+    {"reference": lambda: cmd_reference(args.variant), "realistic": lambda: cmd_realistic(args.variant),
+     "live": lambda: cmd_live(args)}[args.cmd]()
 
 
 if __name__ == "__main__":

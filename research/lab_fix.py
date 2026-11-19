@@ -187,16 +187,17 @@ def round6() -> None:
 PRIOR_SET = ["bm", "ep", "sp", "mom12_1", "ivol60", "roe", "gpa", "ag", "accr", "nsi", "ear"]
 
 
-def prior_scores() -> pd.DataFrame:
-    """Round-7 composite: equal-weight mean of the 11 cleaned literature-prior factors (missing -> 0),
-    on the tradable universe, from BT_START on. Shared by round 7/8, round 10 and live (r10_deploy.py)."""
+def prior_scores(names: list[str] | None = None) -> pd.DataFrame:
+    """Round-7 composite: equal-weight mean of cleaned literature-signed factors (missing -> 0; default the 11 of
+    PRIOR_SET), on the tradable universe, from BT_START on. Shared by rounds 7/8/10/14 and live (r10_deploy.py)."""
+    names = PRIOR_SET if names is None else names
     m = tradable()
     acc = None
-    for k in PRIOR_SET:
+    for k in names:
         f = np.asarray(L.factor(k), dtype=np.float32)
         v = np.where(np.isfinite(f), f, 0.0)
         acc = v if acc is None else acc + v
-    s = np.where(m, acc / len(PRIOR_SET), np.nan).astype(np.float32)
+    s = np.where(m, acc / len(names), np.nan).astype(np.float32)
     bt0 = int(np.searchsorted(L.DATES, L.BT_START))
     s[:bt0] = np.nan
     return pd.DataFrame(s, index=L.DATES, columns=L.SYMS)
