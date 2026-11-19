@@ -52,7 +52,7 @@ K_SCALE = 1.4633955775862155            # round 10: uniform scale so that the 5-
 # variant -> (D77 composite factors, frozen scale, file tag). The deployed variant is chosen by the user.
 VARIANTS = {"pstar": (PRIOR_SET, K_SCALE, "R10"),
             "pstar15": (PRIOR_SET + NEW15, 1.488567942168242, "R14")}
-DEPLOYED = "pstar"
+DEPLOYED = "pstar15"                     # user confirmed 2026-11-19 (round 14)
 INITIAL_EQUITY = 100_000.0
 TICKER_CAP = 0.38                       # of initial assets (competition limit: 40%)
 MARGIN_CAP, MARGIN_LONG, MARGIN_SHORT = 0.90, 0.5, 0.6

@@ -126,6 +126,13 @@ at 4.8% on long exposure above 100% charged.
   the attainable out-of-sample Sharpe has levelled off at about 1.2 (P*15). The next step would need new data
   (FINRA short volume, SEC Form 4 insider trades), which needs the user's approval to download.
 
+## Decision (2026-11-19)
+- **Deployed: P*15** (variant `pstar15` in `research/r10_deploy.py`): T9 ETF trend + D77 short book on the
+  15-factor literature composite, Ledoit-Wolf minimum variance, K = 1.4886. Sharpe 1.18 ideal / 1.17 realistic
+  $100k execution (selection 1.05, holdout 1.68), max drawdown −6.9%, every calendar year positive.
+- The Sharpe research is closed at the user's request. Untested directions that would need new data:
+  FINRA daily short volume and SEC Form 4 insider trades.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).

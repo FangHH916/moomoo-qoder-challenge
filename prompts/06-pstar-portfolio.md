@@ -1,4 +1,4 @@
-# Prompt 06 — 部署方案换成第十轮组合 P*（用户 11-19 确认"按推荐的来"）
+# Prompt 06 — 部署方案换成组合 P*，部署版本 P*15（用户 11-19 确认：先"按推荐的来"选 P*，再选第十四轮的 P*15）
 
 用法：等 Qoder 把 prompt 05 做完（不要中途打断），然后在 Qoder Desktop 打开 D:\Python\moomoo-qoder-challenge，
 新开对话，只粘贴 EN 部分。它改完后告诉 Claude，Claude 检查代码、跑测试。
@@ -15,7 +15,7 @@ Read first: `reports/lab/RESEARCH_SUMMARY.md` (rounds 10 and 14), `reports/lab/R
 - `pstar` — round 10, the 11-factor short-book composite;
 - `pstar15` — round 14, the same composite plus 4 literature-signed factors.
 
-Everything else is identical. Set `variant` to the value of `DEPLOYED` in `research/r10_deploy.py`; the user decides which one is deployed. Changing the variant must be a one-line config change, with no code change.
+Everything else is identical. **The user chose `pstar15` for deployment** (`DEPLOYED = "pstar15"` in `research/r10_deploy.py`), so set `variant: pstar15`. Keep `pstar` working as the fallback. Changing the variant must be a one-line config change, with no code change.
 
 ### Frozen strategy P* (change no number)
 1. **Sleeve T9, ETF trend:** SPY QQQ IWM TLT IEF GLD SLV USO UUP. Long when the 252-day return is positive, flat otherwise. Weight = (0.10 / 60-day annualised vol) / 9, capped at 38%.
@@ -30,7 +30,7 @@ Everything else is identical. Set `variant` to the value of `DEPLOYED` in `resea
    - Total drawdown of −8% from the peak → flatten everything and halt (unchanged). Keep the existing final-exit schedule for 11-27.
 7. **Discretionary positions** (for example the Anthropic IPO trade from prompts 03/04) are listed in config (`discretionary_symbols`). The strategy never trades them, but they count toward margin, the per-ticker cap and the position count. Safety default: a position the strategy did not open (no matching strategy order in the journal) is never sold by the strategy either. Treat it as discretionary and flag it in Slack as unclassified.
 
-The composition at the 2026-11-17 close ($100k, from `R10_DEPLOY.json`) was UUP 28.9%, SPY 22.1%, IWM 7.7%, QQQ 5.9%, USO 3.2%, plus 77 shorts totalling 6.1%. That is a margin of 37.6% and 82 positions. Most of the risk sits in the ETF trend sleeve, and the short book is small (about $80 per name). This is expected: the minimum-variance weight on D77 is 11% today.
+The `pstar15` composition at the 2026-11-17 close ($100k, from `R14_DEPLOY.json`) was UUP 29.2%, SPY 23.1%, IWM 7.8%, QQQ 5.9%, USO 3.2%, plus 77 shorts totalling 6.4%. That is a margin of 38.4% and 82 positions. Most of the risk sits in the ETF trend sleeve, and the short book is small (about $80 per name). This is expected: the minimum-variance weight on D77 is 12% today.
 
 ### How live gets its targets
 Run `python r10_deploy.py live --variant <variant> --equity <E> --hold SYMBOL=DOLLARS ...` from `research/` with the project venv. It takes about 10–15 minutes and does the following:
@@ -101,7 +101,7 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
 - `pstar`：第十轮，空头组合用 11 个因子合成；
 - `pstar15`：第十四轮，在同一个合成里再加 4 个按文献定方向的因子。
 
-其他部分完全一样。`variant` 的取值要和 `research/r10_deploy.py` 里的 `DEPLOYED` 一致；部署哪一个由用户决定。切换版本只能是改一行配置，不允许改代码。
+其他部分完全一样。**用户已选定部署 `pstar15`**（`research/r10_deploy.py` 里 `DEPLOYED = "pstar15"`），所以配置写 `variant: pstar15`。`pstar` 要保持可用，作为备选。切换版本只能是改一行配置，不允许改代码。
 
 ### 冻结的策略 P*（任何数字都不要改）
 1. **T9 子策略，ETF 趋势：** SPY QQQ IWM TLT IEF GLD SLV USO UUP。过去 252 天收益为正就做多，否则空仓。权重 = (0.10 / 60 日年化波动率) / 9，单只上限 38%。
@@ -116,7 +116,7 @@ Keep MODE=test (account 5322438) as the default. Do not place orders, do not cre
    - 从高点回撤 −8% → 全部平仓并停机（不变）。11-27 现有的收尾平仓安排保持不变。
 7. **人工判断的仓位**（比如 prompt 03/04 的 Anthropic 新股交易）列在配置的 `discretionary_symbols` 里。策略永远不交易它们，但它们要计入保证金、单只上限和持仓数。安全默认：不是策略开的仓（日志里找不到对应的策略订单），策略也绝不卖出，按人工判断仓位处理，并在 Slack 里标记为"未分类"。
 
-2026-11-17 收盘时（10 万美元，数据来自 `R10_DEPLOY.json`）的持仓：UUP 28.9%、SPY 22.1%、IWM 7.7%、QQQ 5.9%、USO 3.2%，另有 77 只空头合计 6.1%。保证金占用 37.6%，持仓 82 个。大部分风险在 ETF 趋势子策略上，空头组合很小（每只约 80 美元）。这是正常的：现在最小方差给 D77 的权重是 11%。
+`pstar15` 在 2026-11-17 收盘时（10 万美元，数据来自 `R14_DEPLOY.json`）的持仓：UUP 29.2%、SPY 23.1%、IWM 7.8%、QQQ 5.9%、USO 3.2%，另有 77 只空头合计 6.4%。保证金占用 38.4%，持仓 82 个。大部分风险在 ETF 趋势子策略上，空头组合很小（每只约 80 美元）。这是正常的：现在最小方差给 D77 的权重是 12%。
 
 ### 实盘怎样拿到目标持仓
 在 `research/` 下用项目的虚拟环境运行 `python r10_deploy.py live --variant <版本> --equity <E> --hold 代码=金额 ...`，大约 10–15 分钟，依次做这些事：
