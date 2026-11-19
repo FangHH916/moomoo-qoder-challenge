@@ -110,6 +110,14 @@ at 4.8% on long exposure above 100% charged.
 - P*18: selection 1.20 (P*15 1.12), **holdout 0.95 (P*15 1.40)**, full 1.15 (1.18); the D77 sleeve's holdout fell
   from 1.06 to 0.50. Not proposed; P*15 remains the research best. Not every theory-signed family helps.
 
+## Round 16 — classic price-based anomalies on top of P*15 (pre-registered, single trial)
+- Added short-term reversal, 52-week high, MAX, betting-against-beta and industry momentum (cached, literature
+  signs). P*20: selection 1.21, **holdout 0.92**, full 1.14 vs P*15 1.12 / 1.40 / 1.18. Not proposed.
+- Pattern across rounds 14–16: only the profitability / cash-flow / growth family improved both windows; the
+  investment and price-anomaly families raised the selection Sharpe and cut the holdout Sharpe, like the
+  data-driven searches of rounds 12–13. Every factor family available without new data has now been tested;
+  P*15 is the best result that holds out of sample.
+
 ## Conclusion
 Across 53 single-strategy trials, estimated models (LASSO, ENet, Ridge, ICIR) do not hold up out of sample; the most
 robust single design is the no-estimation, broadly diversified short-alpha book (five-year Sharpe ~0.35, regime-dependent).
