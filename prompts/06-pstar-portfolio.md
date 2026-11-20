@@ -3,6 +3,11 @@
 用法：等 Qoder 把 prompt 05 做完（不要中途打断），然后在 Qoder Desktop 打开 D:\Python\moomoo-qoder-challenge，
 新开对话，只粘贴 EN 部分。它改完后告诉 Claude，Claude 检查代码、跑测试。
 
+> **数字更正（用户 2026-11-20 决定）：本文件里有三处写于变体定稿之前的旧数字，按下面这些已提交产物里的数字执行，其余内容仍然有效。**
+> 1. "one ENTRY batch of about 87 orders / 约 87 笔建仓单"：`reports/live/r14_targets_2026-11-19.json` 里 P\*15 的目标是 **82 个标的（5 只 ETF 多头 + 77 只空头）**，但按 11-19 的实际收盘价取整，77 只空头里只有 **70 只**能凑满 1 股，所以建仓批次实测是 **75 笔**（`pstar` 是 70 笔，见本文件 0.3.1 修订记录与 PRD §10），权重取整为 0 的名字跳过、不重新分配。$100k 夹具用等价价格时会得到 81 笔（HYMC 权重 −8.3e−05 ≈ $8.33 归零），那只是夹具数字。
+> 2. "Max drawdown is about −5.6% ideal and −6.8% realistic for both variants / 两个版本的最大回撤都是…"：−5.6%/−6.8% 只是 `pstar` 的。分版本是 **`pstar15` 理想 −5.89% / 真实 −6.89%**（`reports/lab/R14_REALISTIC.json`），**`pstar` 理想 −5.59% / 真实 −6.82%**（`reports/lab/R10_REALISTIC.json`）；两者每个自然年都是正收益。PRD §3 已按版本标注。
+> 3. 同一句里"正常交易日最多 100 笔、200 笔上限留 100 笔应急"没有变，仍是 `live/config.pstar.json` 的 `competition_order_cap: 200` 与 `emergency_flatten_reserve: 100`。
+
 ---
 
 ## EN（粘贴这段）

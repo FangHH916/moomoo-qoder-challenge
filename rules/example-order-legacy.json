@@ -1,0 +1,199 @@
+{
+  "context": {
+    "account_id": "5322438",
+    "approved_plan_orders": [
+      {
+        "account_id": "5322438",
+        "client_order_id": "test-order-1",
+        "intent": "REBALANCE",
+        "limit_price": 100,
+        "order_type": "LIMIT",
+        "quantity": 35,
+        "session": "RTH",
+        "side": "SELL",
+        "symbol": "AAA",
+        "time_in_force": "DAY",
+        "workflow": "paper-trading-gate"
+      }
+    ],
+    "auditor_approval": {
+      "account_id": "5322438",
+      "approval_id": "audit1",
+      "config_checksum": "f4753e9d620f2e144b2fe3641af6823301fca12799842b65a22b58f11c05900f",
+      "decision": "APPROVE",
+      "expires_at": "2026-11-20T14:39:00Z",
+      "issued_at": "2026-11-20T14:35:00Z",
+      "mode": "test",
+      "plan_checksum": "1b30879488353e9a20bf3b6a1b4f78715ebd8d1b7574561ffff5d3077b072e9d",
+      "session_id": "independent-auditor",
+      "snapshot_checksum": "f80c062bea68b831a83ebffcdee8fc0c64842d30ab884677ee64589d98ec650a",
+      "target_checksum": "99cc552b88e588e14376dd1f1d269e0ddbaee35c0903ac49c21e2bf649e03aa0",
+      "verified_by_relay": true
+    },
+    "daily_entry_halt": false,
+    "eligibility": {
+      "AAA": {
+        "as_of": "2026-11-20T14:35:00Z",
+        "earnings_clear_2_sessions": true,
+        "easy_to_borrow": true,
+        "halted": false,
+        "market": "US",
+        "market_cap": 1000000000.0,
+        "median_dollar_volume_20d": 10000000.0,
+        "security_type": "COMMON_STOCK",
+        "shortable": true,
+        "verified_by_relay": true
+      }
+    },
+    "executed_order_ids": [],
+    "expected_target_checksum": "99cc552b88e588e14376dd1f1d269e0ddbaee35c0903ac49c21e2bf649e03aa0",
+    "guard_session_id": "guard-fixture",
+    "human_approvals": [
+      {
+        "account_id": "5322438",
+        "consumed": false,
+        "decision": "APPROVE",
+        "expires_at": "2026-11-20T14:39:00Z",
+        "issued_at": "2026-11-20T14:35:00Z",
+        "mode": "test",
+        "order_fingerprint": "f265ffa1fbed6ecbef6b03e4f11266354b06d63c46684f849354ebfc5ebb4989",
+        "verified_by_relay": true
+      }
+    ],
+    "kill_switch": {
+      "halted": false,
+      "verified_by_relay": true
+    },
+    "lease_verified": true,
+    "mode": "test",
+    "now": "2026-11-20T14:35:00Z",
+    "open_orders": [],
+    "permission_policy_verified": true,
+    "plan_checksum": "1b30879488353e9a20bf3b6a1b4f78715ebd8d1b7574561ffff5d3077b072e9d",
+    "quotes": {
+      "AAA": {
+        "as_of": "2026-11-20T14:35:00Z",
+        "beta": 1,
+        "price": 100,
+        "verified_by_relay": true
+      }
+    },
+    "reconciled": true,
+    "release_verified": true,
+    "run_id": "fixture-only",
+    "scout": {
+      "AAA": "PASS"
+    },
+    "seen_client_order_ids": [],
+    "snapshot": {
+      "account_id": "5322438",
+      "account_type": "SIMULATE",
+      "as_of": "2026-11-20T14:35:00Z",
+      "equity": 100000,
+      "initial_equity": 100000,
+      "mode": "test",
+      "peak_equity": 100000,
+      "positions": [],
+      "previous_close_equity": 100000
+    },
+    "snapshot_verified_by_relay": true,
+    "targets": {
+      "config_checksum": "f4753e9d620f2e144b2fe3641af6823301fca12799842b65a22b58f11c05900f",
+      "data_timestamp": "2026-11-19T21:00:00Z",
+      "generated_at": "2026-11-19T22:30:00Z",
+      "mode": "test",
+      "model_carried_forward": false,
+      "model_coefficients": {
+        "abn_turn": 0.01,
+        "amihud": 0.01,
+        "bab": 0.01,
+        "clv21": 0.01,
+        "dc1_approx": 0.01,
+        "dc2_approx": 0.01,
+        "dc3_approx": 0.01,
+        "dc4_approx": 0.01,
+        "downvol63": 0.01,
+        "dvol_log": 0.01,
+        "frog_id": 0.01,
+        "high52": 0.01,
+        "ind_mom6": 0.01,
+        "intraday_rev21": 0.01,
+        "ivol21": 0.01,
+        "ivol60": 0.01,
+        "log_price": 0.01,
+        "low52_gap": 0.01,
+        "ma200_gap": 0.01,
+        "ma50_gap": 0.01,
+        "max21": 0.01,
+        "max5": 0.01,
+        "md1_gap": 0.01,
+        "min21": 0.01,
+        "mom1": 0.01,
+        "mom12_1": 0.01,
+        "mom12_7": 0.01,
+        "mom6_1": 0.01,
+        "mom6_ind_adj": 0.01,
+        "overnight_mom21": 0.01,
+        "overnight_mom63": 0.01,
+        "park_vol21": 0.01,
+        "pv1": 0.01,
+        "pv10": 0.01,
+        "pv11": 0.01,
+        "pv12": 0.01,
+        "pv3": 0.01,
+        "pv4": 0.01,
+        "pv5": 0.01,
+        "pv6": 0.01,
+        "pv7": 0.01,
+        "pv8": 0.01,
+        "pv9": 0.01,
+        "pv_corr21": 0.01,
+        "resid_mom": 0.01,
+        "resid_rev21": 0.01,
+        "rev21": 0.01,
+        "rev21_ind_adj": 0.01,
+        "rev5": 0.01,
+        "season_month": 0.01,
+        "signed_vol5": 0.01,
+        "skew63": 0.01,
+        "trade_size_chg": 0.01,
+        "turn21": 0.01,
+        "vol21": 0.01,
+        "vol_shock5": 0.01
+      },
+      "model_fit_date": "2026-11-19",
+      "model_retrained_today": true,
+      "position_snapshot_checksum": "f80c062bea68b831a83ebffcdee8fc0c64842d30ab884677ee64589d98ec650a",
+      "qqq_hedge_weight": 0.0,
+      "rebalance_due": true,
+      "schema_version": 2,
+      "signal_date": "2026-11-19",
+      "signal_guard": {
+        "distinct_values": 118,
+        "passed": true
+      },
+      "sizing_equity": 100000,
+      "spy_hedge_weight": 0.0,
+      "status": "READY",
+      "strategy_id": "frozen-short-alpha-half",
+      "vol_multiplier": 1.0,
+      "weights": {
+        "AAA": -0.035
+      },
+      "checksum": "99cc552b88e588e14376dd1f1d269e0ddbaee35c0903ac49c21e2bf649e03aa0"
+    }
+  },
+  "order": {
+    "account_id": "5322438",
+    "client_order_id": "test-order-1",
+    "intent": "REBALANCE",
+    "limit_price": 100,
+    "order_type": "LIMIT",
+    "quantity": 35,
+    "session": "RTH",
+    "side": "SELL",
+    "symbol": "AAA",
+    "time_in_force": "DAY",
+    "workflow": "paper-trading-gate"
+  }
+}

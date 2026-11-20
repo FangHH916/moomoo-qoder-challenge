@@ -1,0 +1,74 @@
+{
+  "notice": "SIMULATED DEMO — no connected account. All values, records and agent states below are fictional interface fixtures, not live performance.",
+  "snapshot": {
+    "as_of": "2026-11-18T21:00:00Z",
+    "mode": "test",
+    "account_id": "5322438",
+    "account_type": "SIMULATE",
+    "equity": 104286.40,
+    "initial_equity": 100000,
+    "previous_close_equity": 103842.20,
+    "peak_equity": 105120,
+    "positions": [
+      {"symbol": "AAPL", "quantity": 80, "price": 227.50, "beta": 1.12},
+      {"symbol": "MSFT", "quantity": 45, "price": 418.60, "beta": 0.94},
+      {"symbol": "NVDA", "quantity": 110, "price": 142.30, "beta": 1.72},
+      {"symbol": "SPY", "quantity": 25, "price": 591.80, "beta": 1.00},
+      {"symbol": "IWM", "quantity": -20, "price": 234.40, "beta": 1.18}
+    ],
+    "recent_daily_returns": [0.0061, -0.0032, 0.0045, -0.0081, 0.00427764],
+    "equity_history": [
+      {"timestamp": "2026-10-19T21:00:00Z", "equity": 100000},
+      {"timestamp": "2026-10-20T21:00:00Z", "equity": 100310},
+      {"timestamp": "2026-10-21T21:00:00Z", "equity": 100185},
+      {"timestamp": "2026-10-22T21:00:00Z", "equity": 100680},
+      {"timestamp": "2026-10-23T21:00:00Z", "equity": 100495},
+      {"timestamp": "2026-10-26T21:00:00Z", "equity": 101140},
+      {"timestamp": "2026-10-27T21:00:00Z", "equity": 101465},
+      {"timestamp": "2026-10-28T21:00:00Z", "equity": 101225},
+      {"timestamp": "2026-10-29T21:00:00Z", "equity": 101750},
+      {"timestamp": "2026-10-30T21:00:00Z", "equity": 102080},
+      {"timestamp": "2026-11-02T21:00:00Z", "equity": 101695},
+      {"timestamp": "2026-11-03T21:00:00Z", "equity": 102210},
+      {"timestamp": "2026-11-04T21:00:00Z", "equity": 102580},
+      {"timestamp": "2026-11-05T21:00:00Z", "equity": 102350},
+      {"timestamp": "2026-11-06T21:00:00Z", "equity": 103120},
+      {"timestamp": "2026-11-09T21:00:00Z", "equity": 103670},
+      {"timestamp": "2026-11-10T21:00:00Z", "equity": 103455},
+      {"timestamp": "2026-11-11T21:00:00Z", "equity": 104085},
+      {"timestamp": "2026-11-12T21:00:00Z", "equity": 104820},
+      {"timestamp": "2026-11-13T21:00:00Z", "equity": 105120},
+      {"timestamp": "2026-11-16T21:00:00Z", "equity": 104689},
+      {"timestamp": "2026-11-17T21:00:00Z", "equity": 103842.20},
+      {"timestamp": "2026-11-18T21:00:00Z", "equity": 104286.40}
+    ],
+    "orders": [
+      {"order_id": "DEMO-ORD-001", "timestamp": "2026-11-18T14:35:00Z", "symbol": "AAPL", "side": "BUY", "quantity": 10, "filled_quantity": 10, "price": 226.80, "type": "LIMIT", "status": "FILLED"},
+      {"order_id": "DEMO-ORD-002", "timestamp": "2026-11-18T15:10:00Z", "symbol": "NVDA", "side": "BUY", "quantity": 15, "filled_quantity": 15, "price": 141.90, "type": "LIMIT", "status": "FILLED"},
+      {"order_id": "DEMO-ORD-003", "timestamp": "2026-11-18T16:20:00Z", "symbol": "MSFT", "side": "BUY", "quantity": 5, "filled_quantity": 0, "price": 415.00, "type": "LIMIT", "status": "CANCELLED"},
+      {"order_id": "DEMO-ORD-004", "timestamp": "2026-11-18T19:42:00Z", "symbol": "IWM", "side": "SELL", "quantity": 10, "filled_quantity": 0, "price": 234.40, "type": "LIMIT", "status": "REJECTED"}
+    ],
+    "agents": [
+      {"name": "Coordinator", "status": "Demo · idle", "session_id": "DEMO-COORD-018"},
+      {"name": "Scout", "status": "Demo · reviewed", "session_id": "DEMO-SCOUT-018"},
+      {"name": "Guard", "status": "Demo · checked", "session_id": "DEMO-GUARD-018"},
+      {"name": "Auditor", "status": "Demo · recorded", "session_id": "DEMO-AUDIT-018"},
+      {"name": "Advisor", "status": "Demo · idle", "session_id": "DEMO-ADVISE-018"}
+    ],
+    "usage": {"credits": null, "as_of": null}
+  },
+  "decisions": [
+    {"event_id": "DEMO-EVT-001", "timestamp": "2026-11-18T14:32:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-GUARD-018", "agent": "Guard", "kind": "risk_review", "symbol": "AAPL", "action": "APPROVE", "reason": "Fictional review: proposed weight is within the demo concentration limit.", "rule_checks": {"concentration": "pass", "account_type": "SIMULATE", "execution": "disabled"}, "target_checksum": "demo-target-a1", "order_fingerprint": "demo-order-a1", "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-002", "timestamp": "2026-11-18T15:08:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-GUARD-018", "agent": "Guard", "kind": "risk_review", "symbol": "NVDA", "action": "APPROVE", "reason": "Fictional review: sample position sizing passes the supplied demo rule checks.", "rule_checks": {"position_size": "pass", "execution": "disabled"}, "target_checksum": "demo-target-n1", "order_fingerprint": "demo-order-n1", "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-003", "timestamp": "2026-11-18T16:15:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-SCOUT-018", "agent": "Scout", "kind": "signal_review", "symbol": "SPY", "action": "HOLD", "reason": "Demo signal has not crossed its rebalance threshold; retain the sample allocation.", "rule_checks": {"rebalance_threshold": "not reached"}, "target_checksum": "demo-target-s1", "order_fingerprint": null, "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-004", "timestamp": "2026-11-18T17:30:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-GUARD-018", "agent": "Guard", "kind": "risk_review", "symbol": "NVDA", "action": "BLOCK", "reason": "Demo concentration guard: an additional allocation would exceed the sample limit.", "rule_checks": {"concentration": "fail", "execution": "disabled"}, "target_checksum": "demo-target-n2", "order_fingerprint": "demo-order-n2", "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-005", "timestamp": "2026-11-18T18:05:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-ADVISE-018", "agent": "Advisor", "kind": "research_note", "symbol": "MSFT", "action": "HOLD", "reason": "Synthetic research note: evidence is incomplete. No change to the sample position.", "rule_checks": {"evidence": "insufficient"}, "target_checksum": "demo-target-m1", "order_fingerprint": null, "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-006", "timestamp": "2026-11-18T19:42:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-GUARD-018", "agent": "Guard", "kind": "risk_review", "symbol": "IWM", "action": "BLOCK", "reason": "Demo short-exposure limit reached. This record is illustrative, not an instruction.", "rule_checks": {"short_exposure": "fail", "execution": "disabled"}, "target_checksum": "demo-target-i1", "order_fingerprint": "demo-order-i1", "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-007", "timestamp": "2026-11-18T20:15:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-AUDIT-018", "agent": "Auditor", "kind": "integrity_review", "symbol": "AAPL", "action": "BLOCK", "reason": "Fictional duplicate fingerprint detected; duplicate sample record rejected.", "rule_checks": {"idempotency": "fail", "execution": "disabled"}, "target_checksum": "demo-target-a1", "order_fingerprint": "demo-order-a1", "config_checksum": "demo-config-v1"},
+    {"event_id": "DEMO-EVT-008", "timestamp": "2026-11-18T20:58:00Z", "mode": "test", "account_id": "5322438", "run_id": "DEMO-RUN-018", "session_id": "DEMO-COORD-018", "agent": "Coordinator", "kind": "cycle_summary", "symbol": null, "action": "HOLD", "reason": "Demo review complete. Retain sample allocations; no execution is available here.", "rule_checks": {"journal": "complete", "execution": "disabled"}, "target_checksum": "demo-target-portfolio", "order_fingerprint": null, "config_checksum": "demo-config-v1"}
+  ],
+  "fills": [
+    {"order_id": "DEMO-ORD-001", "fill_id": "DEMO-FILL-001", "timestamp": "2026-11-18T14:35:01Z", "symbol": "AAPL", "side": "BUY", "quantity": 10, "price": 226.80, "commission": 0.99, "platform_fee": 1.00, "regulatory_fee": 0.00, "slippage_bps": 2.2056, "arrival_price": 226.75},
+    {"order_id": "DEMO-ORD-002", "fill_id": "DEMO-FILL-002", "timestamp": "2026-11-18T15:10:01Z", "symbol": "NVDA", "side": "BUY", "quantity": 15, "price": 141.90, "commission": 0.99, "platform_fee": 1.00, "regulatory_fee": 0.00, "slippage_bps": 3.5249, "arrival_price": 141.85}
+  ]
+}

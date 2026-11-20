@@ -1,0 +1,68 @@
+{
+  "cloud_write": false,
+  "failures": [],
+  "mode": "build",
+  "skills": [
+    {
+      "archive": "agents/dist/paper-trading-gate.zip",
+      "archive_sha256": "fe3f3933ea107fc0f2b2c92816c793a0455d11fdd131ff5f7dc5081fbf83d0fc",
+      "content_sha256": "7a2edcf9c63d4d12f92c75e4f3c1e432d180af073cff63681a73d6358899a5e1",
+      "members": [
+        "SKILL.md"
+      ],
+      "name": "paper-trading-gate",
+      "sources": {
+        "SKILL.md": "46c22309c40f48d37b5f7092c068e5dd03176535d0636eae9d2a45af00b9dfb5"
+      }
+    },
+    {
+      "archive": "agents/dist/reconcile-paper-fills.zip",
+      "archive_sha256": "aed207d502bc1c916d1ef052888d24210f47fe0f11000077b8bcded4c724aa9c",
+      "content_sha256": "7c7ab0e8b7af1ad453709e9ad72826d7d7ad61a6e5115a9e0f2473e3bb43e14a",
+      "members": [
+        "SKILL.md"
+      ],
+      "name": "reconcile-paper-fills",
+      "sources": {
+        "SKILL.md": "c41dbe77cb9985c25fa545e3e4443710c872f6c4cc997eb4af7730e56cb857f5"
+      }
+    },
+    {
+      "archive": "agents/dist/report-trading-day.zip",
+      "archive_sha256": "f62753fe64db1772257d857be6e96bca569cdc307364940b4f63585b6f02c0a5",
+      "content_sha256": "655a17c8f2f44bd6a4bc1296c4de4d503e3d73df62baca28131cf54ea442906a",
+      "members": [
+        "SKILL.md"
+      ],
+      "name": "report-trading-day",
+      "sources": {
+        "SKILL.md": "a90227de1279b45d2fc18e13e30b8d370461db7f9d275aee9f34be50352540f5"
+      }
+    },
+    {
+      "archive": "agents/dist/research-factor-evidence.zip",
+      "archive_sha256": "5155b80b02e8c76ffec4037cd3ca7ccb418fc594170f86c9c9054fd48526d568",
+      "content_sha256": "d6ad6cf66af79b9e18767ed6127e81ac1ac50e4421b9699547d7085d7f79a221",
+      "members": [
+        "SKILL.md"
+      ],
+      "name": "research-factor-evidence",
+      "sources": {
+        "SKILL.md": "c2da8e3594b6265e21f11f1399098cdc6d15edcd015bc1d59f0d388f36193e03"
+      }
+    },
+    {
+      "archive": "agents/dist/validate-trading-targets.zip",
+      "archive_sha256": "f236b535bc2ef7053ff55f28459a681650bf15f26bd90c057ac53ec7cff5e4f6",
+      "content_sha256": "5523ee3b13b8c5d8062048097c159bd1884e2498cf55f706d97026bd2516d362",
+      "members": [
+        "SKILL.md"
+      ],
+      "name": "validate-trading-targets",
+      "sources": {
+        "SKILL.md": "5ada991d903cdb427ac3d8f018e66e956b277e1f9cc148fb468800f67b9de1c2"
+      }
+    }
+  ],
+  "uploaded": false
+}

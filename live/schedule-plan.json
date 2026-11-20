@@ -1,0 +1,23 @@
+{
+  "kind": "inactive-local-schedule-specification",
+  "registered": false,
+  "timezone": "America/New_York",
+  "start_at": "2026-11-20T09:00:00-05:00",
+  "stop_at": "2026-11-27T16:30:00-05:00",
+  "identity_id": null,
+  "coordinator_template_id": null,
+  "environment_id": null,
+  "execution": {"session_mode": "new_session", "max_concurrent_runs": 1, "max_attempts": 1, "timeout_ms": 300000},
+  "cross_schedule_account_lease_required": true,
+  "jobs": [
+    {"name": "readiness", "cron": "0 9 * * 1-5", "action": "Scout and independent Auditor; no order"},
+    {"name": "rebalance-or-drift", "cron": "35 9 * * 1-5", "action": "Approved five-session cadence or staged bootstrap; otherwise risk check"},
+    {"name": "intraday-risk", "cron": "0,30 10-15 * * 1-5", "action": "Check exchange hours before any market action"},
+    {"name": "eod", "cron": "10 16 * * 1-5", "action": "Full-session report only; skip on November 27"},
+    {"name": "final-exits", "once": "2026-11-27T12:15:00-05:00", "action": "Approved reduce-only limit liquidation; target flat by 12:45 ET"},
+    {"name": "early-close-report", "once": "2026-11-27T13:10:00-05:00", "action": "Reconcile final positions, orders, costs and mark"}
+  ],
+  "calendar_exceptions": {"2026-11-26": "NO_TRADING", "2026-11-27": "NO_REBALANCE_EXIT_ONLY_CLOSE_13:00_ET"},
+  "local_job": {"timezone": "Asia/Singapore", "time": "06:30", "weekdays": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "registered": false},
+  "deployment_blockers": ["Verify accepted start_at/stop_at schema before converting this spec to API payloads", "Bind actual identity/template/skill/vault/channel resources", "Complete permission relay and test-account release evidence"]
+}

@@ -1,0 +1,19 @@
+---
+name: paper-trading-gate
+description: Apply the sole Guard paper-order workflow after MCP validation, with audited positions-diff plans, exact-payload approval and deterministic raw permission-event checks for every order mutation.
+---
+
+# Paper trading gate
+
+Treat this skill as instructions, not permissions. Use only from isolated Guard after the release lock, platform boundaries and MCP contract are validated; otherwise return BLOCKED. Read `agents/AGENTS.md`, `agents/templates.json` and `agents/release-lock.json`. Do not use a live trading skill. The official moomoo-sim-trading skill requires the moomoo executable plus OAuth; it is not automatically interoperable with MCP Vault and is not an execution fallback.
+
+1. Acquire the relay's durable per-mode/account lease and fencing token. Reconcile paper account identity, funds, positions, pending orders and fills. Use test 5322438 or competition 5832812 only after explicit mode validation; never select the first account.
+2. Verify immutable target/config provenance and fresh state. Construct a positions-diff plan before any order call, including the T9 ETF sleeve legs and the D77 shorts, pending/partial residuals, exposure limits and reserved exits within the 100-position, 77-short and 100-executed-order-per-day caps, with the other 100 of the competition's 200 orders untouched as the flatten reserve. Never place a single-stock long from a P\* target (R19).
+3. Obtain independent Risk Auditor acceptance for this exact plan hash, target checksum, account snapshot checksum, config checksum, mode/account, run/session, fencing token and expiry. Target changes invalidate approval. Replan/re-audit material changes; never act directly on Scout research.
+4. Obtain explicit exact-payload approval for every test order, including exits, cancels and replacements, valid <=300 seconds. No autonomous competition approval is granted here. Never let Slack approval waive hard rules.
+5. Require all paper-order mutation tools to be always_ask. Require the trusted deterministic relay, not an LLM, to inspect the actual raw payload in the permission event. Verify effective tool identity/schema hash, reject unknown tools/fields, compare exact payload fingerprint and approval bindings, and run the full R0–R21 table plus provenance, release, approval, session lock, kill, durability and idempotency checks. Deny if any result is unknown or inspection is unavailable.
+6. Recheck quote/account freshness <=60 seconds, limit band <=25 bps, order TTL <=120 seconds, affirmative current borrow for new shorts and the actual regular session; an un-borrowable short or an ETF failing the eligibility screen is skipped, never replaced. Permit emergency reduce-only limit exits outside 09:35–15:45 only while that session is open, including November 27. Closed/stale state means HALT and alert, not a blind order. P\* has no daily-loss entry halt: deny any exposure increase outside an audited rebalance plan, and at drawdown -8% use approved reductions with a latched HALT until manual recovery.
+7. Atomically consume one-use permission, reserve capacity and durably journal intent before dispatch. Let Guard alone call the validated paper tool. Never bypass a denied prompt with Bash, network, curl, another MCP, a trading CLI or a new Session.
+8. Reconcile using reconcile-paper-fills. Treat timeout as unknown, submission as not filled, and TTL expiry as a reconciliation/cancellation event, not an automatic retry. Replacements need fresh exact approval and re-audit when the plan changes. Keep kill/lease state durable across restart.
+
+Return rule results and BLOCKED, AWAITING_APPROVAL, SUBMITTED, PARTIAL, RECONCILED, UNKNOWN or HALT with provenance and null-valued unverified fields. Submit events to the relay; never edit the durable journal. This skill is not the deterministic gate implementation or evidence of verified order permissions.

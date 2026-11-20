@@ -1,0 +1,649 @@
+{
+  "schema_version": "local-desired-spec/1",
+  "artifact_type": "inactive_desired_specification_not_api_payload",
+  "retrieved_at": "2026-11-19T04:01:57Z",
+  "retrieval_scope": "original local review; correction uses public MCP metadata only, no account operations or cloud resource retrieval; the 0.3.x revisions retarget the specification at the frozen P* book and keep every quoted performance figure on the committed research artifacts",
+  "local_revision": "0.3.3",
+  "reviewed_at": "2026-11-19T18:49:44Z",
+  "activation": "BLOCKED",
+  "mode": "Forward",
+  "execution_enabled": false,
+  "schedules_created": false,
+  "skills_are_permissions": false,
+  "source_config": "live/config.pstar.json",
+  "release_lock": "agents/release-lock.json",
+  "release_policy": {
+    "dispatch": "restricted_local_orchestration_relay",
+    "role_sessions": "isolated",
+    "native_child_threads_share_vault_and_filesystem": true,
+    "historical_child_version_pin_supported": false,
+    "sessions_update_version_behavior": "latest_resolved_historical_version_ignored",
+    "template_policy": "release_specific_frozen_templates",
+    "reject_missing_or_mismatched_effective_version_or_hash": true,
+    "skill_policy": "exact_cloud_version_and_content_sha256",
+    "allow_latest_skill_version": false,
+    "native_collaboration": "only_with_proven_isolation",
+    "changes_require": [
+      "offline_unit_tests",
+      "four_fixed_prompt_regressions",
+      "reviewed_diff",
+      "new_cloud_session",
+      "activation_review"
+    ],
+    "cloud_evaluation_status": "UNVERIFIED"
+  },
+  "permission_policy": {
+    "enforcement_status": "UNVERIFIED",
+    "default": "deny",
+    "unknown_tools": "deny",
+    "unknown_payload_fields": "deny",
+    "paper_order_mutations": "always_ask",
+    "permission_answerer": "trusted_deterministic_relay",
+    "verify_actual_raw_payload": true,
+    "allow_llm_permission_answers": false,
+    "allow_shell_or_network_workarounds": false,
+    "allow_trading_cli": false,
+    "allow_live_trading": false,
+    "denied_tool_prefixes": [
+      "trading_",
+      "account_",
+      "crypto_account_"
+    ],
+    "order_workflow_skill": "paper-trading-gate",
+    "official_sim_skill_transport": "moomoo_executable_plus_OAuth",
+    "official_sim_skill_mcp_vault_interoperability": "not_automatic_unverified"
+  },
+  "mcp_contract": {
+    "status": "UNVERIFIED",
+    "expected_vault_credential_url": "https://mcp.moomoo.com/mcp",
+    "configured_mcp_url_must_match_exactly": true,
+    "tool_names_are_discovery_candidates_not_verified_grants": true,
+    "account_type_and_mode_semantics": null,
+    "limit_order_type_mapping": 1,
+    "metadata_review": "public input schema facts supplied by main review; names checked with mcp_list only; no account operations",
+    "paper_input_order": {
+      "required_fields": {
+        "acc_id": "string",
+        "market": "integer",
+        "symbol": "string",
+        "order_type": "integer",
+        "order_side": "integer",
+        "qty": "string"
+      },
+      "optional_fields": {
+        "price": "string",
+        "order_trade_time_type": "integer",
+        "text": "string"
+      },
+      "order_type_enum": {
+        "limit": 1,
+        "market": 3
+      },
+      "order_side_enum": {
+        "buy": 1,
+        "sell": 2
+      },
+      "order_trade_time_type_enum": {
+        "unset": 0,
+        "intraday": 1,
+        "extended": 2
+      },
+      "text_max_bytes": 100,
+      "text_is_idempotency_key": false,
+      "submission_is_idempotent": false,
+      "tif_field": null,
+      "day_tif_status": "UNVERIFIED_RELEASE_BLOCKER",
+      "intraday_is_day_tif": false,
+      "limit_price_required_by_gate": true
+    },
+    "paper_cancel_order_fields": [
+      "acc_id",
+      "order_id",
+      "market"
+    ],
+    "paper_history_order_fields": [
+      "acc_id",
+      "market",
+      "page_size",
+      "next_key",
+      "time_begin",
+      "time_end"
+    ],
+    "paper_history_time_unit": "microseconds",
+    "paper_max_buy_sell_fields": [
+      "acc_id",
+      "market",
+      "symbol",
+      "order_type",
+      "price",
+      "order_id"
+    ],
+    "paper_max_buy_sell_order_id": "optional_modification_context_only",
+    "us_margin_market_candidate": 100,
+    "market_requires_per_account_verification": true,
+    "current_order_read": {
+      "discovery_candidate": "sim_trade_order_list",
+      "discovered_tool": null,
+      "status": "NOT_EXPOSED_BY_METADATA_RELEASE_BLOCKER"
+    },
+    "cumulative_quantity_is_stable_fill_id": false,
+    "missing_paper_fill_or_fee_capability": "BLOCK_NO_LIVE_FALLBACK",
+    "reduce_only_semantics": null,
+    "borrow_availability_field": null,
+    "stable_fill_id_field": null,
+    "fill_pagination_and_completeness": null,
+    "per_fill_fee_allocation": null,
+    "raw_permission_payload_interception": null,
+    "schema_hashes": {
+      "quote_stock_quote": null,
+      "quote_market_snapshot": null,
+      "quote_market_state": null,
+      "quote_trading_days": null,
+      "news_search": null,
+      "sim_trade_account_list": null,
+      "sim_trade_cash_info": null,
+      "sim_trade_position_list": null,
+      "sim_trade_history_order_list": null,
+      "sim_trade_max_buy_sell": null,
+      "sim_trade_input_order": null,
+      "sim_trade_cancel_order": null
+    }
+  },
+  "roles": {
+    "coordinator": {
+      "spec": "agents/coordinator.md",
+      "session": "isolated_forward",
+      "vault_profile": "none",
+      "desired_read_tools": [],
+      "desired_order_tools": [],
+      "effective_tools": [],
+      "relay_operations": [
+        "request_role_review",
+        "request_plan_audit",
+        "request_guard_workflow",
+        "read_sanitized_artifacts",
+        "submit_report"
+      ],
+      "skills": [
+        "report-trading-day"
+      ],
+      "strategy_creation": false,
+      "can_execute": false,
+      "output_path": "agents/runtime/coordinator/{run_id}/{event_id}.json"
+    },
+    "scout": {
+      "spec": "agents/scout.md",
+      "session": "isolated_forward",
+      "vault_profile": "market_read_only_unverified",
+      "desired_read_tools": [
+        "quote_stock_quote",
+        "quote_market_snapshot",
+        "quote_market_state",
+        "quote_trading_days",
+        "news_search"
+      ],
+      "desired_order_tools": [],
+      "effective_tools": [],
+      "relay_operations": [
+        "read_immutable_target_reference",
+        "submit_evidence"
+      ],
+      "skills": [
+        "validate-trading-targets",
+        "research-factor-evidence"
+      ],
+      "strategy_creation": false,
+      "can_execute": false,
+      "allowed_statuses": [
+        "EVIDENCE_ONLY",
+        "HOLD"
+      ],
+      "allowed_actions": [
+        "HOLD",
+        null
+      ],
+      "output_path": "agents/runtime/scout/{run_id}/{event_id}.json"
+    },
+    "guard": {
+      "spec": "agents/guard.md",
+      "session": "isolated_forward",
+      "vault_profile": "paper_execution_only_unverified",
+      "desired_read_tools": [
+        "quote_stock_quote",
+        "quote_market_snapshot",
+        "quote_market_state",
+        "quote_trading_days",
+        "sim_trade_account_list",
+        "sim_trade_cash_info",
+        "sim_trade_position_list",
+        "sim_trade_history_order_list",
+        "sim_trade_max_buy_sell"
+      ],
+      "desired_order_tools": [
+        "sim_trade_input_order",
+        "sim_trade_cancel_order"
+      ],
+      "desired_order_permissions": {
+        "sim_trade_input_order": "always_ask",
+        "sim_trade_cancel_order": "always_ask"
+      },
+      "effective_tools": [],
+      "relay_operations": [
+        "read_immutable_target_reference",
+        "submit_plan",
+        "request_actual_order_gate",
+        "submit_reconciliation"
+      ],
+      "skills": [
+        "validate-trading-targets",
+        "paper-trading-gate",
+        "reconcile-paper-fills"
+      ],
+      "strategy_creation": false,
+      "can_execute": false,
+      "desired_sole_paper_executor_after_activation": true,
+      "output_path": "agents/runtime/guard/{run_id}/{event_id}.json"
+    },
+    "risk-auditor": {
+      "spec": "agents/risk-auditor.md",
+      "session": "separate_isolated_forward",
+      "vault_profile": "paper_account_read_only_unverified",
+      "desired_read_tools": [
+        "sim_trade_account_list",
+        "sim_trade_cash_info",
+        "sim_trade_position_list",
+        "sim_trade_history_order_list",
+        "sim_trade_max_buy_sell"
+      ],
+      "desired_order_tools": [],
+      "effective_tools": [],
+      "relay_operations": [
+        "read_immutable_plan",
+        "submit_plan_acceptance_or_veto",
+        "submit_risk_report"
+      ],
+      "skills": [
+        "validate-trading-targets",
+        "report-trading-day"
+      ],
+      "strategy_creation": false,
+      "can_execute": false,
+      "allowed_statuses": [
+        "VETO",
+        "ACCEPT_PLAN"
+      ],
+      "acceptance_is_order_permission": false,
+      "output_path": "agents/runtime/risk-auditor/{run_id}/{event_id}.json"
+    },
+    "advisor": {
+      "spec": "agents/advisor.md",
+      "session": "isolated_forward_or_native_only_with_proven_isolation",
+      "vault_profile": "none",
+      "desired_read_tools": [],
+      "desired_order_tools": [],
+      "effective_tools": [],
+      "relay_operations": [],
+      "skills": [],
+      "strategy_creation": false,
+      "can_execute": false,
+      "can_approve": false,
+      "direct_filesystem_access": false,
+      "output_writer": "relay",
+      "output_path": "agents/runtime/advisor/{run_id}/{event_id}.json"
+    }
+  },
+  "workflow": {
+    "sequence": [
+      "release_and_lease_check",
+      "reconcile_account",
+      "validate_immutable_targets",
+      "pretrade_instrument_eligibility_screen",
+      "scout_evidence_or_hold",
+      "guard_positions_diff_plan",
+      "independent_auditor_plan_acceptance",
+      "explicit_exact_payload_approval",
+      "actual_raw_payload_deterministic_gate",
+      "durable_intent_and_atomic_reservation",
+      "guard_paper_order",
+      "reconcile_fills_and_fees",
+      "report"
+    ],
+    "research_without_auditor_may_execute": false,
+    "plan_before_audit": true,
+    "relay_status_mapping": {
+      "scout_evidence_only": "PASS_ONLY_IF_ALL_CHECKS_FULLY_VERIFIED",
+      "scout_hold": "FREEZE_HELD_SIZE_NOT_LIQUIDATION",
+      "hold_does_not_override_mandatory_risk_exit": true,
+      "auditor_accept_plan": "TRUSTED_APPROVAL_ONLY_IF_INDEPENDENT_ACTUAL_SESSION_AND_ALL_BINDINGS_VERIFIED",
+      "auditor_acceptance_is_order_permission": false
+    },
+    "audit_every_proposed_plan": true,
+    "target_change_invalidates_approval": true,
+    "material_account_or_plan_change_requires_reaudit": true,
+    "auditor_acceptance_bindings": [
+      "plan_hash",
+      "target_checksum",
+      "account_snapshot_checksum",
+      "config_checksum",
+      "mode",
+      "account_id",
+      "run_id",
+      "session_id",
+      "fencing_token",
+      "expires_at"
+    ],
+    "order_approval_bindings": [
+      "tool_identity",
+      "schema_sha256",
+      "raw_payload_sha256",
+      "order_fingerprint",
+      "plan_hash",
+      "target_checksum",
+      "account_snapshot_checksum",
+      "config_checksum",
+      "mode",
+      "account_id",
+      "run_id",
+      "session_id",
+      "fencing_token",
+      "expires_at",
+      "one_use_nonce"
+    ],
+    "approval_ttl_seconds": 300,
+    "test_every_order_explicit_approval": true,
+    "exits_cancels_replacements_require_approval": true,
+    "competition_autonomous_approval_granted": false,
+    "hard_rules_waivable_by_slack": false,
+    "unknown_submission": "reconcile_before_any_retry",
+    "expired_order": "reconcile_cancel_then_new_exact_approval",
+    "lock": "durable_per_mode_account_lease_with_fencing",
+    "permission_consumption": "atomic_one_use",
+    "journal_failure": "deny",
+    "research_run_provenance": "live/pstar.py verifies the r10_deploy.py run file; a HOLD is never repaired"
+  },
+  "target_contract": {
+    "owner": "main_implementation",
+    "validator_reference": "live/contracts.py:validate_pstar_targets",
+    "schema_version": 3,
+    "strategy": "pstar",
+    "variant": "pstar15",
+    "strategy_id": "r14-pstar15",
+    "factors": [
+      "bm",
+      "ep",
+      "sp",
+      "mom12_1",
+      "ivol60",
+      "roe",
+      "gpa",
+      "ag",
+      "accr",
+      "nsi",
+      "ear",
+      "cfp",
+      "op",
+      "cop",
+      "sg"
+    ],
+    "k_scale": 1.488567942168242,
+    "research_reference": "reports/lab/R14_DEPLOY.json",
+    "single_source_of_truth": "research/r10_deploy.py",
+    "checksum": "canonical_json_sha256_excluding_checksum_field",
+    "immutable": true,
+    "run_file": "reports/live/r14_targets_<session>.json",
+    "provenance_required": [
+      "variant",
+      "strategy_id",
+      "factors",
+      "k_scale",
+      "diagnostics.ok",
+      "consistency_with_research",
+      "source.checksum_sha256"
+    ],
+    "longs_restricted_to": "etf_universe_or_discretionary_whitelist",
+    "session_must_be_latest_completed": true,
+    "max_age_completed_sessions": 0,
+    "unknown_corrupt_future_stale": "HOLD"
+  },
+  "rules": {
+    "owner": "main_deterministic_gate",
+    "required_ids": [
+      "R0",
+      "R1",
+      "R2",
+      "R3",
+      "R4",
+      "R5",
+      "R6",
+      "R7",
+      "R8",
+      "R9",
+      "R10",
+      "R11",
+      "R12",
+      "R13",
+      "R14",
+      "R15",
+      "R16",
+      "R17",
+      "R18",
+      "R19",
+      "R20",
+      "R21"
+    ],
+    "additional_required_checks": [
+      "approval",
+      "provenance",
+      "session_lock",
+      "kill_latch",
+      "freshness",
+      "journal_durability",
+      "idempotency",
+      "release_attestation",
+      "unknown_tool_deny"
+    ],
+    "missing_or_unknown_check": "deny",
+    "account_ids": {
+      "test": 5322438,
+      "competition": 5832812
+    },
+    "paper_only": true,
+    "single_stock_longs_allowed": false,
+    "margin_cap_of_equity": 0.9,
+    "margin_formula": "0.5_long_gross_plus_0.6_short_gross",
+    "held_exposure_drift_capped": true,
+    "max_positions": 100,
+    "max_executed_orders_per_day": 100,
+    "reserve_pending_and_liquidation_orders": true,
+    "initial_staging_guidance": "the 2026-11-20 open is one ENTRY batch of 82 orders on the 2026-11-18 book (87 positions is the five-year maximum); it stays inside the 100 executed-order budget and leaves the 100-order emergency flatten reserve untouched",
+    "drawdown_flatten_and_latch": -0.08,
+    "halt_recovery": "manual_after_reconciliation_and_revalidation",
+    "fresh_borrow_required_for_short_entry": true,
+    "unknown_borrow": "HOLD",
+    "quote_max_age_seconds": 60,
+    "account_max_age_seconds": 60,
+    "limit_band_bps": 25,
+    "order_ttl_seconds": 120,
+    "limit_only": true,
+    "emergency_exit": "approved_reduce_only_limit_in_actual_regular_session",
+    "closed_or_stale_emergency": "HALT_AND_ALERT",
+    "options_enabled": false,
+    "new_per_name_take_profit_or_streak_overlay": false,
+    "checklist_partial": [
+      "B4",
+      "B7"
+    ],
+    "gate_reference": "rules/gate_pstar.py, dispatched by config[strategy]; rules/gate.py serves the retired legacy-a path",
+    "strategy": "pstar",
+    "variant": "pstar15",
+    "variants_available": [
+      "pstar",
+      "pstar15"
+    ],
+    "variant_switch": "one_config_line_no_code_change",
+    "single_source_of_truth": "research/r10_deploy.py",
+    "ticker_cap_of_initial_equity": 0.38,
+    "name_caps_include_etf_sleeve": true,
+    "trim_ticker_above_of_initial_equity": 0.39,
+    "trim_destination_of_initial_equity": 0.38,
+    "etf_sleeve": [
+      "SPY",
+      "QQQ",
+      "IWM",
+      "TLT",
+      "IEF",
+      "GLD",
+      "SLV",
+      "USO",
+      "UUP"
+    ],
+    "etf_universe": [
+      "SPY",
+      "QQQ",
+      "IWM",
+      "TLT",
+      "IEF",
+      "GLD",
+      "SLV",
+      "USO",
+      "UUP",
+      "DIA"
+    ],
+    "spy_overflow_order": [
+      "DIA",
+      "QQQ"
+    ],
+    "spy_overflow_beta_clip": [
+      0.5,
+      1.5
+    ],
+    "delever_margin_above": 0.95,
+    "delever_to": 0.9,
+    "n_short": 77,
+    "competition_order_cap": 200,
+    "emergency_flatten_reserve_orders": 100,
+    "initial_equity": 100000.0,
+    "rebalance_anchor": "2021-11-18",
+    "rebalance_every_sessions": 5,
+    "trade_band_of_equity": 0.0025,
+    "between_rebalance_may_add_exposure": false,
+    "whole_shares_at_next_open": true,
+    "zero_share_rounding": "skip_without_redistribution",
+    "daily_loss_entry_halt": false,
+    "residual_beta_limit": false,
+    "discretionary_positions": "counted_for_margin_and_position_budget_never_traded",
+    "etf_min_price_usd": 1.0,
+    "etf_min_fund_size_usd": 500000000,
+    "etf_eligibility_on_fail": "skip_without_redistribution_and_report_in_slack",
+    "short_min_market_cap_usd": 1000000000,
+    "short_require_shortable_and_easy_to_borrow": true,
+    "short_eligibility_on_fail": "skip_never_replace"
+  },
+  "schedule_intent": {
+    "active": false,
+    "timezone": "America/New_York",
+    "start_date": "2026-11-20",
+    "stop_date": "2026-11-27",
+    "max_concurrent_account_runs": 1,
+    "exchange_calendar_required": true,
+    "ordinary": {
+      "09:00": "scout_and_account_risk_audit",
+      "09:35": "rebalance_only_on_the_frozen_pstar_five_session_cadence_otherwise_risk_review",
+      "10:00_through_15:30_every_30_minutes": "risk_review",
+      "16:10": "daily_report"
+    },
+    "closed_dates": [
+      "2026-11-26"
+    ],
+    "early_close": {
+      "date": "2026-11-27",
+      "rebalance": false,
+      "liquidation_start": "12:15",
+      "flat_deadline": "12:45",
+      "flat_deadline_sgt": "2026-11-28T01:45:00+08:00",
+      "regular_close": "13:00",
+      "truncate_intraday_checks_at_close": true,
+      "report": "13:10",
+      "ordinary_report_replaced": true
+    },
+    "research_run": {
+      "active": false,
+      "proposed_local_time": "05:20 SGT after the 16:00 ET close",
+      "command": "python -m live.pstar --snapshot live/snapshot.json",
+      "notes": "no schedule is created in this release"
+    }
+  },
+  "journal_contract": {
+    "writer": "trusted_relay_only",
+    "durability": "append_only_deduplicated_flush_fsync_before_ack",
+    "decision_path": "journal/decisions.jsonl",
+    "fill_path": "journal/fills.jsonl",
+    "decision_required": [
+      "event_id",
+      "timestamp",
+      "mode",
+      "account_id",
+      "run_id",
+      "session_id",
+      "agent",
+      "kind",
+      "symbol",
+      "strategy_id",
+      "intent",
+      "action",
+      "reason",
+      "rule_checks",
+      "target_checksum",
+      "order_fingerprint",
+      "config_checksum"
+    ],
+    "fill_required": [
+      "event_id",
+      "timestamp",
+      "mode",
+      "account_id",
+      "run_id",
+      "session_id",
+      "order_id",
+      "fill_id",
+      "symbol",
+      "side",
+      "quantity",
+      "price",
+      "commission",
+      "platform_fee",
+      "regulatory_fee",
+      "slippage_bps",
+      "arrival_price"
+    ],
+    "unverified_value": null,
+    "list_unverified_fields": true,
+    "zero_is_not_unknown": true,
+    "fill_deduplication_key": [
+      "account_id",
+      "order_id",
+      "fill_id"
+    ],
+    "missing_stable_fill_id": "incomplete_reconciliation_release_blocker",
+    "strategy_id_attributes_a_position_to_one_variant": true
+  },
+  "release_evidence": {
+    "sequence": [
+      "offline_unit_tests_and_four_eval_diffs",
+      "full_US_session_shadow_no_orders",
+      "separately_approved_small_entry_and_reduce_only_exit_roundtrips_5322438_with_fills_fees_PnL_kill_recovery",
+      "separately_approved_activation_5832812"
+    ],
+    "all_runtime_evidence_status": "UNVERIFIED",
+    "frozen_book_live_trading_proven": false,
+    "research_limitations": [
+      "survivorship_77_name_universe",
+      "static_borrow_and_fund_size_assumptions",
+      "SEC_8K_date_proxy",
+      "whole_share_next_open_fills",
+      "point_in_time_eligibility_not_yet_replayed",
+      "six_competition_sessions_are_noise_for_a_6_to_7_percent_expected_return"
+    ],
+    "retired_plan_a_holdout_sharpe": -0.298
+  }
+}

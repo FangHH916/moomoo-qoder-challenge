@@ -1,5 +1,7 @@
 # Prompt 03 — 通过 Qoder Desktop 下 Anthropic IPO 单（人工判断仓位）
 
+> **已取消（用户 2026-11-20 决定）：不买 Anthropic，只按 P\*15 策略交易。不要粘贴本文件。**
+
 用法：等 moomoo 上 Anthropic 已经开始交易（美东上午晚些时候到中午，新加坡时间半夜到凌晨）再用。
 Qoder Desktop 新开对话，确认 moomoo connector 已开启，粘贴 EN 部分。它给出订单后，你核对无误再回 `CONFIRM`。
 用户已定：单只上限 $40,000（比赛 40% 规则）；3% 移动止损（相对最高价，初始相对成交均价）；
