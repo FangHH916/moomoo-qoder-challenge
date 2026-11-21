@@ -163,7 +163,7 @@ def validate_metadata() -> None:
     for name in ("AGENTS",) + ROLES:
         text = local_path(f"agents/{name}.md").read_text(encoding="utf-8")
         for field in ("Retrieved at:", "Agent ID: null", "Cloud version: null",
-                      "Local revision: 0.3.3", "Change summary:"):
+                      "Local revision: 0.3.4", "Change summary:"):
             require(field in text, f"{name}: missing {field}")
         require("no cloud retrieval" in text, f"{name}: retrieval scope unclear")
         require("BLOCKED" in text, f"{name}: missing activation status")
@@ -176,7 +176,7 @@ def validate_metadata() -> None:
 
 def validate_source_lock(lock: dict) -> None:
     require(lock["activation"] == "BLOCKED", "Release must remain blocked")
-    require(lock["local_revision"] == "0.3.3", "Unexpected local revision")
+    require(lock["local_revision"] == "0.3.4", "Unexpected local revision")
     require(set(lock["source_sha256"]) == set(SOURCE_PATHS), "Source manifest coverage mismatch")
     for path, expected in lock["source_sha256"].items():
         require(bool(re.fullmatch(r"[0-9a-f]{64}", expected)), f"Invalid source hash: {path}")
@@ -239,6 +239,15 @@ def validate_templates(t: dict, config: dict) -> None:
     require(t["workflow"]["auditor_acceptance_bindings"] == ["plan_hash", "target_checksum", "account_snapshot_checksum", "config_checksum", "mode", "account_id", "run_id", "session_id", "fencing_token", "expires_at"], "Audit binding drift")
     require(t["workflow"]["test_every_order_explicit_approval"] is True, "Test approval missing")
     require(t["workflow"]["competition_autonomous_approval_granted"] is False, "Autonomy not granted")
+    automatic = t["workflow"]["local_automatic_execution"]
+    require(automatic["decided"] == "2026-11-21" and automatic["decided_by"] == "user",
+            "Automatic execution decision missing")
+    require("durable pause and resume commands" in automatic["human_controls"],
+            "Automatic execution without the pause switch")
+    require(t["workflow"]["expired_order"]["competition"] == "reconcile_cancel_then_rerun_evidence_and_plan",
+            "Expired approval still routed to a human in automatic mode")
+    require(t["workflow"]["exits_cancels_replacements_require_approval"]["competition"]
+            == "gate_checked_no_human_approval_since_2026-11-21", "Exit approval drift")
     require(t["rules"]["required_ids"] == [f"R{i}" for i in range(0, 22)], "Missing R0-R21")
     variant = config["variant"]
     frozen = config["variants"][variant]
@@ -271,7 +280,9 @@ def validate_templates(t: dict, config: dict) -> None:
     require(t["rules"]["spy_overflow_order"] == config["spy_route"], "SPY overflow route drift")
     require(t["rules"]["etf_min_fund_size_usd"] == config["min_etf_market_value"], "ETF fund-size screen drift")
     require(t["rules"]["short_min_market_cap_usd"] == config["min_short_market_cap"], "Short size screen drift")
-    require(config["strategy"] == PSTAR_STRATEGY and config["execution_enabled"] is False, "Baseline/activation drift")
+    require(config["strategy"] == PSTAR_STRATEGY, "Baseline drift")
+    require(not config["execution_enabled"] or automatic["decided"] == "2026-11-21",
+            "Local execution enabled without the 2026-11-21 user decision")
     require(t["rules"]["strategy"] == config["strategy"] and t["rules"]["variant"] == variant, "Strategy drift")
     require(t["rules"]["daily_loss_entry_halt"] is False and config["daily_loss_limit"] is None,
             "P* has no daily-loss entry halt")
@@ -345,7 +356,7 @@ def build_report() -> dict:
     fixtures = fixture_results(evaluations)
     return {
         "scope": "offline_specification_invariants_only",
-        "local_revision": "0.3.3", "activation": "BLOCKED",
+        "local_revision": "0.3.4", "activation": "BLOCKED",
         "cloud_prompt_evaluation": "UNVERIFIED", "runtime_gate_tested": False,
         "status": "FAIL" if errors or any(f["failures"] for f in fixtures) else "PASS",
         "spec_errors": errors, "fixtures": fixtures,

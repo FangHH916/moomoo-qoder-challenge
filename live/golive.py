@@ -12,12 +12,13 @@ the account attribution from `live/pstar.py::classify` and the risk actions from
 The one thing this module adds is a marketable limit price, because the planner prices a limit exactly AT
 the relay-verified quote (the mid) and a limit at the mid is not marketable.
 
-Nothing here places an order: `plan` writes tickets for a human to submit through the chat session, and
-`record` only writes down what the broker answered.
+Nothing here places an order: `plan` writes tickets for the chat agent to submit, and `record` only writes
+down what the broker answered. Since the user decided automatic execution on 2026-11-21 there is no human
+approval step in the flow; the human control is the `pause`/`resume` switch in this file.
 
 usage (project venv, from the repository root; docs/GOLIVE.md gives the run order and the evidence files):
-  python -m live.golive arm       --account 5322438 --reply "ARM 5322438"
-  python -m live.golive halt      --account 5322438 --reason "why the halt is latched"
+  python -m live.golive pause     --account 5832812 --source "slack PAUSE 1732..." [--orders orders.json]
+  python -m live.golive resume    --account 5832812 --source "user in chat"
   python -m live.golive snapshot  --account 5322438 --cash cash.json --positions positions.json \
                                   --orders orders.json --accounts accounts.json
   python -m live.golive evidence  --account 5322438 --snapshot <file> --orders orders.json \
@@ -65,12 +66,27 @@ SMOKE_ETF = "IWM"                    # one ETF buy
 SMOKE_SHORT_MAX_PRICE = 50.0         # one executable short priced below $50
 SMOKE_SIZE = 1                       # one share each way
 
-# The paper API returns `status` as an integer and its schema names no code table. Two codes are evidenced
-# by the 2026-11-20 order history of 5322438: 4 appeared only with cum_qty == qty, and 5 only with
-# cum_qty == 0 and no later update. Any other code stays UNKNOWN until an operator proves what it means
-# with --working; golive never calls an order finished or still-live on a guess.
-STATUS_CLOSED_NO_FILL = {5}
+# The paper order list's `status` field, enumerated 1-7 as the moomoo simulated-trading order-status codes:
+#   1 pending new   2 submitted   3 partially filled   4 filled
+#   5 cancelled     6 rejected    7 partially filled then cancelled
+# Provenance, stated honestly: the 1-7 list is documentation-derived knowledge carried in the operator's
+# 2026-11-21 instruction. It was NOT verified in this delivery -- the MCP metadata for
+# sim_trade_history_order_list publishes only request fields (acc_id, market, next_key, page_size, time_begin,
+# time_end) and no status enum, so nothing here proves the mapping for the codes the tests and docs call
+# unobserved. What local evidence does reach: 4 with cum_qty == qty and 5 with cum_qty == 0 both appear in the
+# 2026-11-20 history of 5322438; 1, 2, 3, 6 and 7 have never been seen on a real book.
+# Code 0 appears there on two option rows with create_time == update_time and is in no published table, so
+# it stays UNKNOWN until the operator proves what it means with --working; golive never calls an order
+# finished or still-live on a guess. If a future read shows a code behaving otherwise, fix this table from
+# that observation and treat the documentation as the weaker source.
+STATUS_LIVE = {1, 2, 3}              # the exchange still works these, so they hold the batch
+STATUS_FILLED = {4}
+STATUS_CLOSED_NO_FILL = {5, 6}       # cancelled or rejected with nothing filled
+STATUS_CANCELLED_PARTIAL = {7}       # filled, then cut short: resolved, and no longer live
+STATUS_CANCELLED = 5                 # the operator's own `sim_trade_cancel_order` lands here
+STATUS_REJECTED = 6                  # anything else is the broker refusing a ticket we sent
 
+STRATEGY_ORDER_PREFIX = "pstar-"     # client order id prefix every ticket of this strategy carries
 SYMBOL_KEYS = ("symbol", "code", "stock_code")
 QTY_KEYS = ("qty", "quantity", "normal_qty", "position_qty")
 COST_KEYS = ("cost_price", "avg_price", "average_cost", "cost_basis", "cost")
@@ -101,9 +117,9 @@ class GoliveError(ValueError):
 def kill_switch_state(journal_dir, account: str) -> dict:
     """The durable local halt latch as R16 sees it, read straight from the control store (never written).
 
-    Only `golive.py arm`, and only on the user's own typed reply, can put a row with halted=0 here, so an
-    un-armed account is reported as the reason nothing can pass rather than hidden in a per-ticket
-    rejection list (PRD R9/R16).
+    Only `golive.py resume` or `golive.py pause` writes a control row, and each records the `--source` that
+    asked for it, so a paused account is reported as the reason nothing can pass rather than hidden in a
+    per-ticket rejection list (PRD R9/R16).
     """
     if not journal_dir:
         return {"halted": None, "verified_by_relay": False, "note": "no journal folder given"}
@@ -117,8 +133,9 @@ def kill_switch_state(journal_dir, account: str) -> dict:
         return {"halted": None, "verified_by_relay": False, "note": f"control store unreadable: {exc}"}
     return {"halted": bool(control.get("halted")), "reason": control.get("reason"),
             "verified_by_relay": control.get("verified_by_relay") is True,
-            "note": ("halted/unarmed: R16 rejects every strategy order until an owner rearms the account"
-                     if control.get("halted") else "armed: R16 allows strategy orders while no halt is latched")}
+            "note": ("halted/paused: R9 and R16 reject every strategy order except a FINAL_EXIT or "
+                     "EMERGENCY_EXIT reduction until `resume`"
+                     if control.get("halted") else "running: R16 allows strategy orders while no halt is latched")}
 
 
 # ------------------------------------------------------------------ reading raw MCP files
@@ -358,14 +375,21 @@ def order_state(quantity, filled, code, working=()) -> str:
         return "UNREADABLE"
     if quantity > 0 and filled >= quantity:
         return "FILLED"
+    if code in STATUS_FILLED:
+        # A filled status with less than the ordered quantity is contradictory evidence: not live, not
+        # finished, and never a reason to reissue the balance.
+        return "UNKNOWN"
+    if code in STATUS_CANCELLED_PARTIAL:
+        # Documented as "partially filled then cancelled": the broker will fill nothing more, so this is
+        # a resolved order, not an unknown one, and it must not hold the batch.
+        return "CANCELLED_PARTIAL" if filled else "CLOSED_NO_FILL"
     if filled > 0:
         return "PARTIAL"
-    if code in working:
+    if code in working or code in STATUS_LIVE:
         return "WORKING"
     if code in STATUS_CLOSED_NO_FILL:
         return "CLOSED_NO_FILL"
-    # Status 4 with less than the ordered quantity is contradictory evidence, and any other code is
-    # unmapped: neither is ever called a live order without the operator proving it with --working.
+    # Any other code is unmapped: the operator proves what it means with --working.
     return "UNKNOWN"
 
 
@@ -495,7 +519,7 @@ def pending_from_history(history: list[dict], now: datetime, working) -> tuple[l
     day = now.astimezone(ET).date().isoformat()
     for row in history:
         submitted = row.get("submitted_at") or ""
-        if submitted[:10] != day or row.get("state") == "FILLED":
+        if submitted[:10] != day or row.get("state") in RESOLVED_STATES:
             continue
         ours = str(row.get("client_order_id") or "").startswith("pstar-")
         if not row.get("limit_price"):
@@ -660,12 +684,17 @@ RELEASE_SCOPE = ("live", "rules", "journal")
 APPROVAL_WINDOW_SECONDS = 240        # inside the frozen 300 s approval TTL, so R14 is the authority
 LEASE_BASIS = ("local mode, decided by the user 2026-11-20: this Qoder Desktop chat is the only order "
                "sender; no cloud agent exists or has order tools")
-PERMISSION_BASIS = "every submit batch needs the user's `CONFIRM` in this chat"
-INDEPENDENT_CHECK_BASIS = ("local mode decided by the user 2026-11-20: the independent check is the "
-                           "deterministic golive/gate run, not a separate agent; the human control is the "
-                           "user's CONFIRM before any submission")
+PERMISSION_BASIS = ("automatic execution decided by the user on 2026-11-21: every order passes the "
+                    "deterministic gate; the user can pause at any time with Slack `PAUSE`")
+INDEPENDENT_CHECK_BASIS = ("automatic mode decided by the user 2026-11-21: the independent check is the "
+                           "deterministic golive/gate run; the human controls are the pause switch and the "
+                           "Slack alerts")
 BORROW_PROXY = "sim_trade_max_buy_sell.max_sell_short_qty"
 UNRESOLVED_STATES = ("WORKING", "PARTIAL", "UNKNOWN", "UNREADABLE")
+# The other side of that list: a resolved row is closed at the broker, so it is neither a live order for
+# R12 nor an open order in reconcile. CANCELLED_PARTIAL is here because a fill that was then cancelled is
+# a finished fact, not something the next round has to wait for.
+RESOLVED_STATES = ("FILLED", "CLOSED_NO_FILL", "CANCELLED_PARTIAL")
 
 
 def run_git(run, argv: list[str]) -> str | None:
@@ -769,50 +798,108 @@ def reconcile_attestation(history: list, now: datetime) -> dict:
                               for row in rows))}
 
 
-def command_arm(args) -> int:
-    """Arm the account of the current config mode on the user's exact typed reply, nothing else."""
+def command_resume(args) -> int:
+    """Put the current mode's account back in run, with the source recorded and no typed reply.
+
+    Automatic execution (the user decided this on 2026-11-21) removed the `arm` step and the reply it
+    demanded. What stays is that only the account of the config's own mode can be switched, and that this
+    command writes to the control store and nothing else: no order, no schedule, no cloud change.
+    """
     now = args.as_of or datetime.now(timezone.utc)
     account, mode = args.account, mode_for(args.account)
     config = load_config(args.config)
+    if not str(args.source or "").strip():
+        raise GoliveError("the pause switch needs its provenance: --source is what tells an auditor "
+                          "that a Slack message, not a stray keystroke, stopped the book")
     if config.get("mode") != mode:
         raise GoliveError(f"the config mode is {config.get('mode')!r} but {account} is the {mode} account; "
                           f"R1 rejects every account except that mode's own")
-    expected = f"ARM {account}"
-    if args.reply != expected:
-        raise GoliveError(f"--reply must be exactly the text the user typed: expected {expected!r}, "
-                          f"received {args.reply!r}. Nothing is armed on the agent's own initiative")
-    reason = f"armed by the user in chat at {iso(now)}"
+    reason = f"resumed at {iso(now)}: {args.source}"
     journal = Journal(Path(args.journal))
     try:
         journal.set_resume(account, reason)
     finally:
         journal.close()
-    journal_append(args.journal, "GOLIVE_ARM", account, mode, now, f"{args.reply} - {reason}", "ARM",
-                   config=config)
+    journal_append(args.journal, "GOLIVE_RESUME", account, mode, now, reason, "RESUME", config=config)
     state = kill_switch_state(args.journal, account)
-    print(f"ARM {account} ({mode}): halted={state['halted']} - {reason}")
-    print("  Only the user's typed reply armed this account; no order was placed and no schedule created.")
+    print(f"RESUME {account} ({mode}): halted={state['halted']} - {reason}")
+    print("  Nothing was sent: every ticket still passes the whole rule set, and pause remains available.")
     return 0
 
 
-def command_halt(args) -> int:
-    """Latch the halt again through the store's own method: this writes nothing to the broker."""
+def working_strategy_orders(history: list[dict], account: str) -> list[dict]:
+    """The live orders this strategy placed, as complete `sim_trade_cancel_order` payloads."""
+    return [{"order_id": row["order_id"], "symbol": row["symbol"], "side": row["side"],
+             "quantity": row["quantity"], "filled": row["filled"], "remaining": row["remaining"],
+             "state": row["state"], "status_code": row["status_code"],
+             "client_order_id": row["client_order_id"],
+             "tool": "sim_trade_cancel_order",
+             "payload": {"acc_id": account, "market": MARKET_ID, "order_id": row["order_id"]}}
+            for row in history
+            if str(row.get("client_order_id") or "").startswith(STRATEGY_ORDER_PREFIX)
+            and row.get("state") in ("WORKING", "PARTIAL")]
+
+
+def command_pause(args) -> int:
+    """Halt the current mode's account and list the working strategy orders the agent must cancel.
+
+    `halt` keeps its meaning as an alias of this command. The latch is the R9/R16 kill switch, so a paused
+    account rejects every entry ticket and still allows a FINAL_EXIT or EMERGENCY_EXIT reduction - which is
+    how the scheduled final exit can close a book the user has paused. This writes nothing to the broker.
+    """
     now = args.as_of or datetime.now(timezone.utc)
     account, mode = args.account, mode_for(args.account)
     config = load_config(args.config)
+    if not str(args.source or "").strip():
+        raise GoliveError("the pause switch needs its provenance: --source is what tells an auditor "
+                          "that a Slack message, not a stray keystroke, stopped the book")
     if config.get("mode") != mode:
         raise GoliveError(f"the config mode is {config.get('mode')!r} but {account} is the {mode} account; "
                           f"R1 rejects every account except that mode's own")
-    reason = args.reason
+    reason = f"paused at {iso(now)}: {args.source}"
+    cancel: list[dict] = []
+    out = None
+    if args.orders:
+        # Read the cancel list before latching: a history file that does not belong to this account must
+        # leave the control exactly as it was, rather than pause the book with no way to finish the job.
+        raw_orders = read_json(args.orders)
+        named: set = set()
+        account_ids(raw_orders, named)
+        wrong = sorted(named - {account})
+        if wrong:
+            raise GoliveError(f"{args.orders}: the order history names account {', '.join(wrong)}, not "
+                              f"{account}: pausing the wrong account would cancel the wrong book")
+        history = parse_orders(data_of(raw_orders, "sim_trade_history_order_list", args.orders),
+                               set(args.working or ()))
+        cancel = working_strategy_orders(history, account)
+        out = Path(args.out) if args.out else artifact_dir(now, account) / f"cancel-{now:%H%M%S}.json"
     journal = Journal(Path(args.journal))
     try:
         journal.set_halt(account, reason)
     finally:
         journal.close()
-    journal_append(args.journal, "GOLIVE_HALT", account, mode, now, reason, "HALT", config=config)
+    if out is not None:
+        write_json(out, {"paused_at": iso(now), "mode": mode, "account_id": account, "source": args.source,
+                         "cancel": cancel,
+                         "note": ("send every payload here with sim_trade_cancel_order now, then reconcile; "
+                                  "the halt already rejects any new entry ticket"),
+                         "orders_source": provenance(args.orders)})
+    journal_append(args.journal, "GOLIVE_PAUSE", account, mode, now, reason, "PAUSE", config=config)
     state = kill_switch_state(args.journal, account)
-    print(f"HALT {account} ({mode}): halted={state['halted']} - {reason}")
-    print("  Nothing was cancelled or sent: cancel and flatten are separate, confirmed submissions.")
+    print(f"PAUSE {account} ({mode}): halted={state['halted']} - {reason}")
+    if args.orders:
+        print(f"  {relative(out)}: {len(cancel)} working strategy order(s) to cancel, send them now")
+        for row in cancel:
+            print(f"    sim_trade_cancel_order acc_id={account} market={MARKET_ID} "
+                  f"order_id={row['order_id']} ({row['symbol']} {row['side']}, {row['remaining']} of "
+                  f"{row['quantity']} left, {row['client_order_id']})")
+        if not cancel:
+            print("    none: no pstar- order is live in that history file")
+    else:
+        print("  no --orders file given, so no cancel list was written: fetch today's order history and "
+              "run pause again with it - the halt is already latched")
+    print("  R9 and R16 now reject every entry ticket for this account; only a FINAL_EXIT or "
+          "EMERGENCY_EXIT reduction passes, so the scheduled final exit still closes the book.")
     return 0
 
 
@@ -858,7 +945,7 @@ def command_evidence(args) -> int:
             "approval": INDEPENDENT_CHECK_BASIS},
         "approval": {"approval_id": approval_id, "issued_at": iso(now), "expires_at": iso(expires),
                      "verified_by_relay": True, "auditor_session_id": "golive-deterministic-checks",
-                     "guard_session_id": "qoder-desktop-chat", "confirmed_by": "user",
+                     "guard_session_id": "qoder-desktop-chat", "confirmed_by": "user-started run",
                      "trigger": args.trigger, "basis": INDEPENDENT_CHECK_BASIS,
                      "window_seconds": APPROVAL_WINDOW_SECONDS},
         "borrow": {"easy_to_borrow_proxy": BORROW_PROXY,
@@ -884,9 +971,10 @@ def command_evidence(args) -> int:
     print(f"  reconciled {flags['reconciled']} ({reconciled['reason']})")
     print(f"  snapshot_verified_by_relay {flags['snapshot_verified_by_relay']} "
           f"({'; '.join(snapshot_ok['reasons']) or 'as recorded'})")
-    print(f"  lease_verified true, permission_policy_verified true: local mode, decided by the user")
+    print(f"  lease_verified true, permission_policy_verified true: {PERMISSION_BASIS}")
     print(f"  approval {approval_id} valid {iso(now)} to {iso(expires)} "
-          f"({APPROVAL_WINDOW_SECONDS}s; R14 fails past {iso(expires)}, so re-plan rather than submit)")
+          f"({APPROVAL_WINDOW_SECONDS}s; R14 fails past {iso(expires)}, and so does an expired quote: "
+          f"rerun `evidence` and `plan`, neither of which sends anything)")
     print(f"  borrow proxy {BORROW_PROXY}")
     return 0 if all(flags.values()) else 2
 
@@ -1489,7 +1577,8 @@ def command_reprice(args) -> int:
                            f"not elapsed - not repriced")
             continue
         rounds = int(ticket.get("reprice_round") or 0)
-        ticket["cancel"] = {"tool": "sim_trade_cancel_order",
+        live = row["state"] in ("WORKING", "PARTIAL")
+        ticket["cancel"] = {"needed": live, "tool": "sim_trade_cancel_order",
                             "payload": {"acc_id": str(plan["account_id"]), "market": MARKET_ID,
                                         "order_id": ticket["order_id"]}}
         if row["state"] == "UNKNOWN":
@@ -1500,8 +1589,11 @@ def command_reprice(args) -> int:
             continue
         if rounds >= MAX_REPRICE_ROUNDS:
             ticket["status"] = "skipped_unfilled"
-            ticket["note"] = f"cancel only: {rounds} reprice rounds done, {remaining} share(s) left"
-            changes.append(f"ticket {ticket['n']}: cancel {ticket['order_id']}, marked skipped_unfilled")
+            ticket["note"] = (f"cancel only: {rounds} reprice rounds done, {remaining} share(s) left"
+                              if live else f"{rounds} reprice rounds done, {remaining} share(s) left, "
+                                           f"already {row['state'].lower()} at the broker")
+            changes.append(f"ticket {ticket['n']}: {'cancel ' + ticket['order_id'] + ', ' if live else ''}"
+                           f"marked skipped_unfilled")
             continue
         quote = quotes.get(ticket["symbol"]) or {}
         price, reason = marketable_limit(quote, ticket["side"])
@@ -1537,8 +1629,9 @@ def command_reprice(args) -> int:
         plan["tickets"].append(new_ticket)
         ticket["status"] = "REPRICING"
         ticket["child"] = next_index
-        changes.append(f"ticket {ticket['n']}: cancel {ticket['order_id']}, reissue {remaining} share(s) "
-                       f"of {ticket['symbol']} at {price} as ticket {next_index} (round {rounds + 1})")
+        changes.append(f"ticket {ticket['n']}: {'cancel ' + ticket['order_id'] + ', ' if live else ''}"
+                       f"reissue {remaining} share(s) of {ticket['symbol']} at {price} as ticket "
+                       f"{next_index} (round {rounds + 1})")
     plan["repriced_at"] = iso(now)
     plan["blockers"] = blockers
     write_json(plan_path, plan)
@@ -1708,8 +1801,11 @@ def command_reconcile(args) -> int:
                                            | set(snapshot.get("unverified_fields") or ())),
               "complete_reconciliation": not missing and not unresolved and not open_orders}
     out_dir = plan_path.parent
+    alerts = reconciliation_alerts(result, config, plan, fills, now)
+    alert_path, added = append_alerts(out_dir / "alerts.json", alerts)
+    result["alerts"] = {"file": relative(alert_path), "seen": len(alerts), "written_now": added}
     write_json(out_dir / "reconcile.json", result)
-    write_json(out_dir / "summary.md", summary_text(result, fills, plan))
+    write_json(out_dir / "summary.md", summary_text(result, fills, plan, alerts))
     written = append_fills(args.journal, result, fills, plan, now)
     journal_append(args.journal, "GOLIVE_RECONCILE", account, mode, now,
                    f"{result['filled_complete']} of {result['orders_at_broker']} orders fully filled, "
@@ -1733,10 +1829,12 @@ def command_reconcile(args) -> int:
           f"band; {len(executed)} of {budget} executed orders used today "
           f"({config['emergency_flatten_reserve']} reserved for an emergency flatten of "
           f"{config['competition_order_cap']})")
+    print(f"  {len(alerts)} anomaly alert(s) for the Slack feed, {added} new row(s) in "
+          f"{relative(alert_path)}")
     return 0 if result["complete_reconciliation"] else 2
 
 
-def summary_text(result: dict, fills: list, plan: dict) -> str:
+def summary_text(result: dict, fills: list, plan: dict, alerts: list = ()) -> str:
     lines = [f"# Go-live reconciliation {result['reconciled_at']} - account {result['account_id']}", "",
              f"- equity {result['equity']:,.2f}; margin "
              f"{'unknown' if result['margin'] is None else format(result['margin'], '.4%')} of a "
@@ -1784,7 +1882,13 @@ def summary_text(result: dict, fills: list, plan: dict) -> str:
     lines += ["", f"Unverified fields, kept null rather than zero: "
                   f"{', '.join(result['unverified_fields']) or 'none'}.",
               f"Complete reconciliation: {result['complete_reconciliation']}, because fill identity is "
-              f"{result['fill_identity']} and every mapped status code is evidenced.", ""]
+              f"{result['fill_identity']} and every mapped status code is evidenced."]
+    if alerts:
+        lines += ["", f"## anomalies ({len(alerts)}) - also written to alerts.json for the Slack feed"]
+        for row in alerts:
+            lines.append(f"- {row['kind']} {row['symbol'] or result['account_id']}"
+                         f"{' order ' + str(row['order_id']) if row['order_id'] else ''}: {row['detail']}")
+    lines.append("")
     return "\n".join(lines)
 
 
@@ -1815,6 +1919,113 @@ def append_fills(journal_dir: Path, result: dict, fills: list, plan: dict, now: 
     return written
 
 
+# ------------------------------------------------------------------ anomalies for the Slack feed
+ALERT_KINDS = ("broker_rejection", "gate_rejection", "unfilled", "partial_fill", "slippage",
+               "unexpected_position", "order_budget", "tool_error")
+
+
+def alert_row(kind: str, account: str, mode: str, now: datetime, detail: str, symbol=None, order_id=None,
+              source=None) -> dict:
+    if kind not in ALERT_KINDS:
+        raise GoliveError(f"unknown alert kind {kind!r}: use one of {', '.join(ALERT_KINDS)}")
+    return {"at": iso(now), "kind": kind, "account_id": account, "mode": mode, "symbol": symbol,
+            "order_id": order_id, "detail": detail, "source": source}
+
+
+def append_alerts(path: Path, rows: list[dict]) -> tuple[Path, int]:
+    """Append to the day's alert file without repeating what is already there; the monitor posts this."""
+    data = read_json(path) if path.exists() else None
+    alerts = data.get("alerts") if isinstance(data, dict) else None
+    if not isinstance(alerts, list):
+        alerts = []
+        data = {"created_by": "live/golive.py", "account_id": rows[0]["account_id"] if rows else None,
+                "alerts": alerts,
+                "note": ("one row per anomaly the automatic run must not swallow: the run summary carries "
+                         "the same lines and the cloud monitor posts this file to Slack")}
+    known = {(row.get("kind"), row.get("symbol"), row.get("order_id")) for row in alerts}
+    added = 0
+    for row in rows:
+        if (row["kind"], row["symbol"], row["order_id"]) in known:
+            continue
+        alerts.append(row)
+        known.add((row["kind"], row["symbol"], row["order_id"]))
+        added += 1
+    write_json(path, data)
+    return path, added
+
+
+def reconciliation_alerts(result: dict, config: dict, plan: dict, fills: list, now: datetime) -> list[dict]:
+    """The anomalies reconcile can see on its own: broker refusals, bad fills, stray positions, budget.
+
+    A ticket the gate refused is only an anomaly when it is not the halt speaking: R9/R16 rejection is the
+    pause switch working, and `pause` already alerted, so repeating it per ticket would bury the real news.
+    """
+    account, mode = result["account_id"], result["mode"]
+    tickets = {row["n"]: row for row in plan.get("tickets") or ()}
+    band = config["limit_band_bps"]
+    rows = []
+    for fill in fills:
+        if fill["status_code"] == STATUS_REJECTED:
+            rows.append(alert_row("broker_rejection", account, mode, now,
+                                  f"the broker refused this ticket (status {STATUS_REJECTED}) and filled "
+                                  f"{fill['filled_quantity']} of {fill['ordered_quantity']} share(s)",
+                                  fill["symbol"], fill["order_id"]))
+        if fill["slippage_bps"] is not None and fill["slippage_bps"] > band:
+            rows.append(alert_row("slippage", account, mode, now,
+                                  f"filled {fill['filled_quantity']}/{fill['ordered_quantity']} at "
+                                  f"{fill['avg_fill_price']} against an arrival quote of "
+                                  f"{fill['arrival_price']}: {fill['slippage_bps']} bps beyond the "
+                                  f"{band} bps limit band", fill["symbol"], fill["order_id"]))
+        if (fill["filled_quantity"] or 0) >= fill["ordered_quantity"]:
+            continue
+        left = (fill["remaining_quantity"] if fill["remaining_quantity"] is not None
+                else fill["ordered_quantity"] - (fill["filled_quantity"] or 0))
+        if (tickets.get(fill["n"]) or {}).get("status") == "skipped_unfilled":
+            rows.append(alert_row("unfilled", account, mode, now,
+                                  f"{left} of {fill['ordered_quantity']} share(s) unfilled after the last "
+                                  f"reprice round", fill["symbol"], fill["order_id"]))
+        elif fill["state"] not in UNRESOLVED_STATES:
+            rows.append(alert_row("partial_fill", account, mode, now,
+                                  f"{fill['filled_quantity']} of {fill['ordered_quantity']} share(s) "
+                                  f"filled and the order is {fill['state'].lower()} at the broker",
+                                  fill["symbol"], fill["order_id"]))
+    for ticket in plan.get("tickets") or ():
+        gate = ticket.get("gate") or {}
+        if ticket.get("submit") or set(gate.get("failed_rules") or ()) <= {"R9", "R16"}:
+            continue
+        reasons = [str(row.get("threshold")) for row in gate.get("checks") or () if not row.get("passed")]
+        rows.append(alert_row("gate_rejection", account, mode, now,
+                              f"never sent: {', '.join(gate.get('failed_rules') or ())} held this ticket "
+                              f"down - {'; '.join(reasons)}",
+                              ticket["symbol"], ticket.get("order_id")))
+    for row in result["deviations"]:
+        if not row["target_shares"]:
+            rows.append(alert_row("unexpected_position", account, mode, now,
+                                  f"{row['held_shares']} share(s) held with no place in the target book "
+                                  f"({show(row['dollars'])} USD): {row['note']}", row["symbol"]))
+    for label, cap in (("strategy orders/day", config["max_orders_per_day"]),
+                       ("competition orders", config["competition_order_cap"])):
+        used = result["executed_orders_today"]
+        if used > 0.8 * cap:
+            rows.append(alert_row("order_budget", account, mode, now,
+                                  f"{used} of {cap} {label} used, above the 80% alert line"))
+    return rows
+
+
+def command_alert(args) -> int:
+    """Record one anomaly the run saw at the broker or in the tool, for the summary and the Slack feed."""
+    now = args.as_of or datetime.now(timezone.utc)
+    account, mode = args.account, mode_for(args.account)
+    row = alert_row(args.kind, account, mode, now, args.detail, symbol=args.symbol,
+                    order_id=args.order_id, source=provenance(args.file) if args.file else None)
+    path, added = append_alerts(artifact_dir(now, account) / "alerts.json", [row])
+    journal_append(args.journal, "GOLIVE_ALERT", account, mode, now, f"{args.kind}: {args.detail}",
+                   "ALERT", symbol=args.symbol)
+    print(f"ALERT {relative(path)}: {args.kind} {args.symbol or ''} "
+          f"({'written' if added else 'already recorded'})")
+    return 0
+
+
 # ------------------------------------------------------------------ cli
 def parser() -> argparse.ArgumentParser:
     root = argparse.ArgumentParser(prog="python -m live.golive",
@@ -1825,15 +2036,41 @@ def parser() -> argparse.ArgumentParser:
     root.add_argument("--as-of", type=timestamp, help="the clock for this run; defaults to now (UTC)")
     sub = root.add_subparsers(dest="command", required=True)
 
-    arm = sub.add_parser("arm", help="arm the current mode's account on the user's exact typed reply")
-    arm.add_argument("--account", required=True)
-    arm.add_argument("--reply", required=True, help="exactly the text ARM <account> the user typed")
-    arm.set_defaults(handler=command_arm)
+    resume = sub.add_parser("resume", help="put the current mode's account back in run (no typed reply)")
+    resume.add_argument("--account", required=True)
+    resume.add_argument("--source", required=True,
+                        help="where the instruction came from, e.g. `slack RESUME 1763...` or `user in chat`")
+    resume.set_defaults(handler=command_resume)
 
-    halt = sub.add_parser("halt", help="latch the halt again; it cancels and sends nothing")
+    pause = sub.add_parser("pause", help="halt the current mode's account and list what to cancel")
+    pause.add_argument("--account", required=True)
+    pause.add_argument("--source", required=True,
+                       help="where the instruction came from, e.g. `slack PAUSE 1763...` or `user in chat`")
+    pause.add_argument("--orders", type=Path,
+                       help="raw today's-order-history response: its live pstar- orders become the "
+                            "cancel list")
+    pause.add_argument("--working", type=int, action="append",
+                       help="a broker status code you have proved means a live order (repeatable)")
+    pause.add_argument("--out", type=Path, help="where to write the cancel list")
+    pause.set_defaults(handler=command_pause)
+
+    halt = sub.add_parser("halt", help="alias of pause, kept for the runbook's older wording")
     halt.add_argument("--account", required=True)
-    halt.add_argument("--reason", required=True)
-    halt.set_defaults(handler=command_halt)
+    halt.add_argument("--source", required=True,
+                      help="where the instruction came from, e.g. `slack PAUSE 1763...` or `user in chat`")
+    halt.add_argument("--orders", type=Path, help="raw today's-order-history response")
+    halt.add_argument("--working", type=int, action="append")
+    halt.add_argument("--out", type=Path, help="where to write the cancel list")
+    halt.set_defaults(handler=command_pause)
+
+    alert = sub.add_parser("alert", help="record one anomaly for the summary and the Slack feed")
+    alert.add_argument("--account", required=True)
+    alert.add_argument("--kind", required=True, choices=ALERT_KINDS)
+    alert.add_argument("--detail", required=True)
+    alert.add_argument("--symbol")
+    alert.add_argument("--order-id", help="the broker order id the anomaly is about")
+    alert.add_argument("--file", type=Path, help="raw response that proves it, hashed into the alert")
+    alert.set_defaults(handler=command_alert)
 
     snapshot = sub.add_parser("snapshot", help="normalise the raw cash, position and order responses")
     snapshot.add_argument("--account", required=True)

@@ -1,9 +1,9 @@
 <!--
-Retrieved at: 2026-11-20T17:59:35Z (local source review; no cloud retrieval)
+Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.3
-Change summary: Limit Scout to sourced market evidence and HOLD vetoes over the frozen P* target book, with the round-14 limitations and the eligibility screen it may report but never repair.
+Local revision: 0.3.4
+Change summary: Limit Scout to sourced market evidence and HOLD vetoes over the frozen P* target book, with the round-14 limitations and the eligibility screen it may report but never repair; the ETF fund-size screen follows the user's 2026-11-21 decision at $300M.
 -->
 
 # Scout
@@ -25,7 +25,7 @@ Read market/news evidence about the immutable frozen target book: the **D77** sh
 ## P\* target review
 
 1. Check the target's `variant` and `strategy_id` against the locked `live/config.pstar.json` before reading any evidence: a `r10-pstar` book under the deployed `r14-pstar15` configuration is a provenance failure, and reporting on it as though it were the deployed book is a false claim.
-2. Report a sleeve ETF that fails the pre-trade screen (price < $1 or fund size < $500M) as **evidence for HOLD**. The system skips the name and leaves its weight uninvested rather than replacing it; do not propose a substitute symbol and do not describe a skip as a rebalance.
+2. Report a sleeve ETF that fails the pre-trade screen (price < $1 or fund size < $300M; the screen was $500M until the user's 2026-11-21 decision, taken because UUP's ~$483M fund size blocked a 28.9% target on the deployed book) as **evidence for HOLD**. The system skips the name and leaves its weight uninvested rather than replacing it; do not propose a substitute symbol and do not describe a skip as a rebalance.
 3. Report confirmed borrow loss or a delisting for a D77 short as evidence for HOLD; the exit is Guard's reduce-only order after audit, never your instruction. A name that rounds below one whole share is skipped without redistribution, so a small-cap short may never appear on the book.
 4. Never cite the retired plan A's residual-beta or 56-factor LassoCV rules as P\* constraints, and never present the ideal-execution Sharpe as achievable: the deployment figure is the realistic 100k simulation, with a positive but noise-sized expectation over the six remaining sessions.
 

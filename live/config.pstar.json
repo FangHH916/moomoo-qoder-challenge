@@ -4,8 +4,8 @@
   "variant": "pstar15",
   "strategy_source": "research/r10_deploy.py (VARIANTS, DEPLOYED) with frozen constants from reports/lab/R10_DEPLOY.json and reports/lab/R14_DEPLOY.json",
   "single_source_of_truth": "research/r10_deploy.py",
-  "mode": "test",
-  "execution_enabled": false,
+  "mode": "competition",
+  "execution_enabled": true,
   "options_enabled": false,
   "discretionary_symbols": [],
   "variants": {
@@ -50,9 +50,18 @@
   "drawdown_limit": -0.08,
   "daily_loss_limit": null,
   "min_price": 1.0,
-  "min_etf_market_value": 500000000,
+  "min_etf_market_value": 300000000,
   "min_short_market_cap": 1000000000,
   "max_target_age_sessions": 0,
+  "target_age_exceptions": [
+    {
+      "day": "2026-11-23",
+      "signal_date": "2026-11-19",
+      "max_age_sessions": 1,
+      "decided_by": "user 2026-11-21",
+      "reason": "the 2026-11-20 session was the armed-but-not-run first day, so the 11-19 ENTRY batch is run as a one-day catch-up on 11-23 instead of being thrown away; every other day keeps max_target_age_sessions 0"
+    }
+  ],
   "consistency_tolerance_sleeve_weights": 0.001,
   "consistency_tolerance_returns": 0.0001,
   "live_run_timeout_seconds": 2400,
@@ -63,8 +72,8 @@
   "etf_slippage_bps": 2.0,
   "short_borrow_apr": 0.06,
   "financing_apr": 0.048,
-  "quote_max_age_seconds": 60,
-  "account_max_age_seconds": 60,
+  "quote_max_age_seconds": 300,
+  "account_max_age_seconds": 300,
   "limit_band_bps": 25,
   "order_ttl_seconds": 120,
   "approval_ttl_seconds": 300,

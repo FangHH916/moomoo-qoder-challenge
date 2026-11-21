@@ -9,17 +9,44 @@ from __future__ import annotations
 
 import json
 import unittest
-from datetime import timedelta
+from datetime import datetime, timedelta
 from pathlib import Path
 
 from live.contracts import digest, load_config, load_strategy_config, timestamp, validate_targets
 from rules.gate import evaluate_order
+from rules.gate_pstar import allowed_target_age
 from rules.pstar_harness import ACCOUNTS, EQUITY, Harness, config_for, owned
-from rules.trading_calendar import target_age
+from rules.trading_calendar import is_session, target_age
 
 EXAMPLE = Path(__file__).with_name("example-order-pstar.json")
 LEGACY_EXAMPLE = Path(__file__).with_name("example-order-legacy.json")
 FAIL = "failed_rules"
+
+
+def shift_clock(harness: Harness, day: str) -> Harness:
+    """Run the fixture at 09:35 ET on that session day, moving everything that ages with the clock.
+
+    R10 is the only rule a dated exception touches, so a test of one needs a session and an attestation
+    timestamp; the book itself stays the committed one, which is the point of an age exception.
+    """
+    now = f"{day}T14:35:00+00:00"
+    harness.context["now"] = now
+    harness.snapshot["as_of"] = now
+    for row in harness.context["quotes"].values():
+        row["as_of"] = now
+    for row in harness.context["eligibility"].values():
+        row["as_of"] = now
+    return harness
+
+
+def next_session(day: str) -> str:
+    """The first exchange session after that date, so a test can stand one session past a dated rule."""
+    date_ = datetime.strptime(day, "%Y-%m-%d").date()
+    for _ in range(10):
+        date_ += timedelta(days=1)
+        if is_session(date_.isoformat()):
+            return date_.isoformat()
+    raise AssertionError(f"no session within ten days of {day}")
 
 
 def shares_above(value: float, price: float) -> int:
@@ -56,11 +83,20 @@ class EligiblePath(unittest.TestCase):
         self.harness = Harness()
         self.config = self.harness.config
 
-    def test_a_plan_line_is_eligible_but_execution_is_inactive(self):
+    def test_a_plan_line_is_eligible_and_execution_follows_the_config_switch(self):
         result = self.harness.result(0)
         self.assertTrue(result["eligible"], result[FAIL])
-        self.assertFalse(result["execution_allowed"])
+        self.assertEqual(result["execution_allowed"], self.config["execution_enabled"])
+        # The same batch on a configuration that keeps the switch off: eligibility is unchanged and only
+        # the permission the gate reports is not, because the gate reads it from the config alone.
+        quiet = Harness(config={**self.config, "execution_enabled": False})
+        self.assertTrue(quiet.result(0)["eligible"], quiet.result(0)[FAIL])
+        self.assertFalse(quiet.result(0)["execution_allowed"])
         self.assertEqual(result["action"], "ALLOW")
+        self.assertEqual(result["strategy"], "pstar")
+        self.assertEqual(result["variant"], "pstar15")
+        self.assertEqual(len(result["checks"]), 21)
+        self.assertTrue(all(row["passed"] for row in result["checks"]), result)
         self.assertEqual(result["strategy"], "pstar")
         self.assertEqual(result["variant"], "pstar15")
         self.assertEqual(len(result["checks"]), 21)
@@ -85,10 +121,18 @@ class EligiblePath(unittest.TestCase):
                              self.config["competition_order_cap"])
 
     def test_the_shipped_example_fixture_reproduces_an_eligible_evaluation(self):
+        """`rules/example-order-pstar.json` is the harness dumped, not a hand-written order:
+
+        `python -c "import json; from rules.pstar_harness import Harness; h = Harness(); o = h.rebind();
+        print(json.dumps({'context': h.context, 'order': o}, indent=1, sort_keys=True))"`
+
+        so a configuration change is the same one command, and this test keeps the two in step.
+        """
         data = json.loads(EXAMPLE.read_text(encoding="utf-8"))
-        result = evaluate_order(data["order"], data["context"], load_strategy_config())
+        config = load_strategy_config()
+        result = evaluate_order(data["order"], data["context"], config)
         self.assertTrue(result["eligible"], result[FAIL])
-        self.assertFalse(result["execution_allowed"])
+        self.assertEqual(result["execution_allowed"], config["execution_enabled"])
 
     def test_the_deployed_strategy_is_the_default_of_the_gate(self):
         result = evaluate_order(self.harness.rebind(), self.harness.context)
@@ -119,7 +163,10 @@ class AccountAndInstrument(unittest.TestCase):
         self.harness = Harness()
 
     def test_r1_account_identity(self):
-        for account in ("5832812", "1", "", None):
+        # The account of the *other* mode, whichever mode is deployed: R1 rejects a foreign account id,
+        # and hard-coding one of the two would only ever be a rejection while the switch points elsewhere.
+        foreign = next(id for id in ACCOUNTS.values() if id != self.harness.context["account_id"])
+        for account in (foreign, "1", "", None):
             with self.subTest(account=account):
                 order = dict(self.harness.order(0), account_id=str(account))
                 self.assertIn("R1", self.harness.check_order(order)[FAIL])
@@ -129,7 +176,9 @@ class AccountAndInstrument(unittest.TestCase):
 
     def test_r2_etf_fund_size_below_the_competition_limit(self):
         harness = Harness()
-        harness.eligibility["SPY"]["market_value"] = 4e8
+        # One dollar under the deployed fund-size floor, so the test follows the config rather than a
+        # number that was true of one particular decision.
+        harness.eligibility["SPY"]["market_value"] = harness.config["min_etf_market_value"] - 1.0
         harness.rebuild_plan()
         self.assertNotIn("SPY", harness.plan_symbols())
         self.assertIn("SPY", harness.eligibility_result["blocked"])
@@ -400,11 +449,61 @@ class TargetFreshnessAndApprovals(unittest.TestCase):
     def test_r10_a_run_from_the_other_variant_is_rejected(self):
         for variant in ("pstar", "pstar15"):
             with self.subTest(variant=variant):
-                harness = Harness(variant=variant)
-                self.assertTrue(harness.result(0)["eligible"])
+                # `test` mode because the round-10 run file is a session older than the competition
+                # window, and R13 would then block the fixture for a reason that has nothing to do with
+                # which variant it belongs to.
+                harness = Harness(variant=variant, mode="test")
+                self.assertTrue(harness.result(0)["eligible"], harness.result(0)[FAIL])
                 foreign = config_for("pstar" if variant == "pstar15" else "pstar15")
                 result = harness.result(0, config=foreign)
                 self.assertIn("R10", result[FAIL])
+
+    def test_r10_a_dated_exception_admits_the_book_only_on_the_day_it_names(self):
+        # The one decided exception (2026-11-23 running the 2026-11-19 book) has to do exactly what it
+        # says: widen R10 for that session and no other, so the catch-up entry is not a standing change
+        # to `max_target_age_sessions`. The fixture book is that signal date, so the only thing a test
+        # needs is the clock; every attestation that ages with it is moved together.
+        harness = Harness()
+        self.assertEqual(harness.targets["signal_date"],
+                         next(row["signal_date"] for row in harness.config["target_age_exceptions"]))
+        day = harness.config["target_age_exceptions"][0]["day"]
+        shift_clock(harness, day)
+        result = harness.result(0)
+        self.assertTrue(result["eligible"], result[FAIL])
+        row = next(check for check in result["checks"] if check["id"] == "R10")
+        self.assertIn("dated exception", row["threshold"])
+        self.assertIn(harness.config["target_age_exceptions"][0]["decided_by"], row["threshold"])
+        self.assertIn("R10", harness.result(0, config={**harness.config,
+                                                       "target_age_exceptions": []})[FAIL])
+
+    def test_r10_the_exception_does_not_widen_the_next_session(self):
+        harness = Harness()
+        day = next(row["day"] for row in harness.config["target_age_exceptions"])
+        shift_clock(harness, day)
+        shift_clock(harness, next_session(day))
+        self.assertGreater(target_age(harness.targets["signal_date"],
+                                      timestamp(harness.context["now"])),
+                           harness.config["max_target_age_sessions"])
+        self.assertIn("R10", harness.result(0)[FAIL])
+
+    def test_r10_a_row_that_matches_every_field_is_the_only_one_read(self):
+        signal, day = "2026-11-19", "2026-11-23"
+        row = {"day": day, "signal_date": signal, "max_age_sessions": 1, "decided_by": "user 2026-11-21"}
+        config = {**config_for(), "max_target_age_sessions": 0, "target_age_exceptions": []}
+        self.assertEqual(allowed_target_age(config, signal, day), (0, None))
+        self.assertEqual(allowed_target_age({**config, "target_age_exceptions": [row]}, signal, day),
+                         (1, "user 2026-11-21"))
+        # A typo must not widen the gate, and two rows covering the same pair are a conflict, not a coin
+        # flip on file order.
+        for broken in ({"max_age_sessions": "1"}, {"max_age_sessions": -1}, {"decided_by": ""}):
+            with self.subTest(broken=broken):
+                self.assertEqual(allowed_target_age({**config, "target_age_exceptions": [{**row,
+                                                                                           **broken}]},
+                                                    signal, day), (0, None))
+        self.assertEqual(allowed_target_age({**config, "target_age_exceptions": [{**row, "day": "x"}]},
+                                            signal, day), (0, None))
+        with self.assertRaises(ValueError):
+            allowed_target_age({**config, "target_age_exceptions": [row, dict(row)]}, signal, day)
 
     def test_r11_the_quote_and_the_account_must_be_fresh_and_verified(self):
         self.harness.context["snapshot_verified_by_relay"] = False
@@ -455,16 +554,24 @@ class TargetFreshnessAndApprovals(unittest.TestCase):
                 self.assertIn("R14", evaluate_order(order, harness.context, harness.config)[FAIL])
 
     def test_r15_the_human_approval_is_exact_and_one_use(self):
-        harness = Harness()
-        order = harness.order(0)
-        harness.rebind(order)
-        harness.context["human_approvals"][0]["consumed"] = True
-        self.assertIn("R15", evaluate_order(order, harness.context, harness.config)[FAIL])
-        harness = Harness()
-        order = harness.order(0)
-        harness.rebind(order)
-        harness.context["human_approvals"][0]["order_fingerprint"] = "0" * 64
-        self.assertIn("R15", evaluate_order(order, harness.context, harness.config)[FAIL])
+        # R15 is the rule for the account that still uses a human: `test` mode. The deployed mode is
+        # `competition`, where automatic execution decided on 2026-11-21 removed the approval step, so
+        # this test names the mode it is about instead of inheriting whichever switch is deployed.
+        for field, value in (("consumed", True), ("order_fingerprint", "0" * 64)):
+            with self.subTest(field=field):
+                harness = Harness(mode="test")
+                order = harness.order(0)
+                harness.rebind(order)
+                harness.context["human_approvals"][0][field] = value
+                self.assertIn("R15", evaluate_order(order, harness.context, harness.config)[FAIL])
+
+    def test_r15_competition_mode_has_no_approval_to_wait_for(self):
+        harness = Harness(mode="competition")
+        order = harness.rebind()
+        harness.context["human_approvals"] = []
+        result = evaluate_order(order, harness.context, harness.config)
+        self.assertTrue(result["eligible"], result[FAIL])
+        self.assertNotIn("R15", result[FAIL])
 
     def test_r16_the_manual_kill_switch_liquidates_only(self):
         for switch in ({"halted": True, "verified_by_relay": True},

@@ -1,9 +1,9 @@
 <!--
-Retrieved at: 2026-11-20T17:59:35Z (local source review; no cloud retrieval)
+Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.3
-Change summary: Define isolated Forward dispatch without trading credentials or executor authority over the frozen P* book, with variant provenance and the research-run job in the dispatch sequence.
+Local revision: 0.3.4
+Change summary: Define isolated Forward dispatch without trading credentials or executor authority over the frozen P* book, with variant provenance and the research-run job in the dispatch sequence; step 6 follows the user's 2026-11-21 automatic-execution decision, which leaves the deterministic gate as the authority in `competition` mode and keeps the exact-payload approval in `test` mode.
 -->
 
 # Coordinator
@@ -23,7 +23,7 @@ Never let the executor act on the researcher's output without the auditor's appr
 3. At a P\* rebalance session — every fifth session anchored to 2021-11-18 — ask Guard for a **positions-diff plan only**. On the sessions in between, request risk review, not a fresh strategy: between rebalances the only permitted changes are the 39%→38% trim and the margin cut above 95%, and nothing may add exposure. Emergency risk reductions still use the full plan/audit/order gate sequence.
 4. Route that exact plan hash, target checksum and account snapshot to Risk Auditor. Any modification invalidates acceptance. A morning audit is not approval of a later plan.
 5. Optionally request tool-free Advisor commentary on sanitized material. Advisor cannot override a veto, substitute for the auditor, or approve an order.
-6. Forward a valid auditor acceptance to Guard through the relay. Guard must separately obtain exact-payload order approval and satisfy the deterministic actual-order gate. Do not answer trading permission prompts yourself.
+6. Forward a valid auditor acceptance to Guard through the relay. Guard must satisfy the deterministic actual-order gate, and in `test` mode additionally obtain exact-payload order approval; in `competition` mode the user's 2026-11-21 *Automatic execution* decision makes the gate result the authority and there is no per-batch approval to collect (R15). Either way an acceptance is not order permission. Do not answer trading permission prompts yourself.
 7. Collect reconciliation and risk outcomes. Publish blocked, rejected, partial or unknown results honestly; never call an order ID a fill. Report the deviations with their cause: an ETF skipped by the eligibility screen, a short skipped because it could not be borrowed, a name that rounded below one whole share, a position the journal does not attribute to this strategy version, and the day's order count against the 100-executed-order budget and its 100-order flatten reserve. Submit journal events to the relay and concise report text to the separately authorized notification sink; no direct Slack/network tool is granted here.
 
 ## Timing and ownership

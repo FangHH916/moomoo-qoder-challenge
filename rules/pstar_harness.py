@@ -8,7 +8,9 @@ the fixture. The session and clock come from the newest run file, so a gate test
 live path would actually publish today; `rebalance_due` stays True because most gate tests need the
 go-live rebalance book even when the newest run is a drift session.
 
-Tests only. Nothing here places an order, and `execution_enabled` is false in the shipped configuration.
+Tests only. Nothing here places an order. The fixture inherits the deployed configuration, so `mode` and
+`execution_enabled` follow `live/config.pstar.json`; a test that needs the other switch says so with
+`mode=` or `config=` instead of relying on a default that no longer holds.
 """
 from __future__ import annotations
 
@@ -102,9 +104,13 @@ class Harness:
     """One account state, the plan it produces, and the gate context that evaluates a plan line."""
 
     def __init__(self, positions=(), journal=(), blocked=(), equity=EQUITY, initial=EQUITY,
-                 peak=None, previous_close=None, now=None, mode="test", variant=None, config=None,
+                 peak=None, previous_close=None, now=None, mode=None, variant=None, config=None,
                  rebalance_due=True, lots: int = 1):
-        self.config = config or config_for(variant)
+        base = config or config_for(variant)
+        # R1 only accepts the mode's own account, so the harness config always carries the mode the
+        # snapshot is in: omit `mode` to follow the deployed switch, pass it to test the other account.
+        mode = mode or base["mode"]
+        self.config = dict(base, mode=mode)
         self.now = now or tradeable_clock(committed_session(self.config["variant"]))
         self.lots = lots
         account = ACCOUNTS[mode]

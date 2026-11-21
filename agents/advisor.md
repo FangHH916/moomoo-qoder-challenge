@@ -1,8 +1,8 @@
 <!--
-Retrieved at: 2026-11-20T17:59:35Z (local source review; no cloud retrieval)
+Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.3
+Local revision: 0.3.4
 Change summary: Point the tool-free second opinion at the frozen P* book, including variant provenance and the honest six-session expectation.
 -->
 

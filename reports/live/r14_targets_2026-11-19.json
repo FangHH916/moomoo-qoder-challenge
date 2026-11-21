@@ -1,0 +1,761 @@
+{
+  "strategy_id": "r14-pstar15",
+  "variant": "pstar15",
+  "factors": [
+    "bm",
+    "ep",
+    "sp",
+    "mom12_1",
+    "ivol60",
+    "roe",
+    "gpa",
+    "ag",
+    "accr",
+    "nsi",
+    "ear",
+    "cfp",
+    "op",
+    "cop",
+    "sg"
+  ],
+  "schema": 1,
+  "session": "2026-11-19",
+  "generated_at_utc": "2026-11-19T22:15:33.211918+00:00",
+  "rebalance_session": true,
+  "last_rebalance_session": "2026-11-19",
+  "sessions_until_next_rebalance": 5,
+  "trade_at": "next regular-session open after `session`",
+  "equity_input": 100000.0,
+  "initial_equity": 100000.0,
+  "hold": {},
+  "k_scale": 1.488567942168242,
+  "sleeve_weights": {
+    "T9": 1.3187264881612644,
+    "D77": 0.1698414540069778
+  },
+  "signal_guard_held_previous_book": false,
+  "targets": [
+    {
+      "symbol": "IWM",
+      "side": "long",
+      "weight": 0.07834035,
+      "dollars": 7834.03,
+      "uncapped_weight": 0.07834035,
+      "sleeve": "T9"
+    },
+    {
+      "symbol": "QQQ",
+      "side": "long",
+      "weight": 0.05900373,
+      "dollars": 5900.37,
+      "uncapped_weight": 0.05900373,
+      "sleeve": "T9"
+    },
+    {
+      "symbol": "SPY",
+      "side": "long",
+      "weight": 0.2136222,
+      "dollars": 21362.22,
+      "uncapped_weight": 0.2136222,
+      "sleeve": "D77_hedge+T9"
+    },
+    {
+      "symbol": "USO",
+      "side": "long",
+      "weight": 0.03375485,
+      "dollars": 3375.48,
+      "uncapped_weight": 0.03375485,
+      "sleeve": "T9"
+    },
+    {
+      "symbol": "UUP",
+      "side": "long",
+      "weight": 0.28920228,
+      "dollars": 28920.23,
+      "uncapped_weight": 0.28920228,
+      "sleeve": "T9"
+    },
+    {
+      "symbol": "AAOI",
+      "side": "short",
+      "weight": -0.00099477,
+      "dollars": -99.48,
+      "uncapped_weight": -0.00099477,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "ABSI",
+      "side": "short",
+      "weight": -0.00040582,
+      "dollars": -40.58,
+      "uncapped_weight": -0.00040582,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "ACHR",
+      "side": "short",
+      "weight": -0.00022036,
+      "dollars": -22.04,
+      "uncapped_weight": -0.00022036,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "AMSC",
+      "side": "short",
+      "weight": -0.00016444,
+      "dollars": -16.44,
+      "uncapped_weight": -0.00016444,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "AMZN",
+      "side": "short",
+      "weight": -0.00486595,
+      "dollars": -486.59,
+      "uncapped_weight": -0.00486595,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "APLD",
+      "side": "short",
+      "weight": -0.00197412,
+      "dollars": -197.41,
+      "uncapped_weight": -0.00197412,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "AUR",
+      "side": "short",
+      "weight": -0.00041489,
+      "dollars": -41.49,
+      "uncapped_weight": -0.00041489,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "AVAV",
+      "side": "short",
+      "weight": -0.00012597,
+      "dollars": -12.6,
+      "uncapped_weight": -0.00012597,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "BE",
+      "side": "short",
+      "weight": -0.00035089,
+      "dollars": -35.09,
+      "uncapped_weight": -0.00035089,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "BEAM",
+      "side": "short",
+      "weight": -0.00044425,
+      "dollars": -44.43,
+      "uncapped_weight": -0.00044425,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "BMNR",
+      "side": "short",
+      "weight": -0.00050903,
+      "dollars": -50.9,
+      "uncapped_weight": -0.00050903,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CAVA",
+      "side": "short",
+      "weight": -0.00167258,
+      "dollars": -167.26,
+      "uncapped_weight": -0.00167258,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CELH",
+      "side": "short",
+      "weight": -0.00027383,
+      "dollars": -27.38,
+      "uncapped_weight": -0.00027383,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CIFR",
+      "side": "short",
+      "weight": -0.00191128,
+      "dollars": -191.13,
+      "uncapped_weight": -0.00191128,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CLSK",
+      "side": "short",
+      "weight": -0.00027134,
+      "dollars": -27.13,
+      "uncapped_weight": -0.00027134,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CMPS",
+      "side": "short",
+      "weight": -0.00083467,
+      "dollars": -83.47,
+      "uncapped_weight": -0.00083467,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "CRDO",
+      "side": "short",
+      "weight": -0.00069764,
+      "dollars": -69.76,
+      "uncapped_weight": -0.00069764,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "DYN",
+      "side": "short",
+      "weight": -0.00098151,
+      "dollars": -98.15,
+      "uncapped_weight": -0.00098151,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "FLY",
+      "side": "short",
+      "weight": -0.00019241,
+      "dollars": -19.24,
+      "uncapped_weight": -0.00019241,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "FTAI",
+      "side": "short",
+      "weight": -0.00087473,
+      "dollars": -87.47,
+      "uncapped_weight": -0.00087473,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "FUBO",
+      "side": "short",
+      "weight": -0.00059437,
+      "dollars": -59.44,
+      "uncapped_weight": -0.00059437,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "GME",
+      "side": "short",
+      "weight": -0.00088377,
+      "dollars": -88.38,
+      "uncapped_weight": -0.00088377,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "HUT",
+      "side": "short",
+      "weight": -0.00030605,
+      "dollars": -30.6,
+      "uncapped_weight": -0.00030605,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "HYMC",
+      "side": "short",
+      "weight": -8.327e-05,
+      "dollars": -8.33,
+      "uncapped_weight": -8.327e-05,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "INFQ",
+      "side": "short",
+      "weight": -0.00033526,
+      "dollars": -33.53,
+      "uncapped_weight": -0.00033526,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "INSM",
+      "side": "short",
+      "weight": -0.00304916,
+      "dollars": -304.92,
+      "uncapped_weight": -0.00304916,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "IONQ",
+      "side": "short",
+      "weight": -0.00032956,
+      "dollars": -32.96,
+      "uncapped_weight": -0.00032956,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "IONS",
+      "side": "short",
+      "weight": -0.00135304,
+      "dollars": -135.3,
+      "uncapped_weight": -0.00135304,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "IOVA",
+      "side": "short",
+      "weight": -0.00050803,
+      "dollars": -50.8,
+      "uncapped_weight": -0.00050803,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "JOBY",
+      "side": "short",
+      "weight": -0.00053834,
+      "dollars": -53.83,
+      "uncapped_weight": -0.00053834,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "KC",
+      "side": "short",
+      "weight": -0.0002787,
+      "dollars": -27.87,
+      "uncapped_weight": -0.0002787,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "KEEL",
+      "side": "short",
+      "weight": -0.00042736,
+      "dollars": -42.74,
+      "uncapped_weight": -0.00042736,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "KTOS",
+      "side": "short",
+      "weight": -0.00048376,
+      "dollars": -48.38,
+      "uncapped_weight": -0.00048376,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "LASR",
+      "side": "short",
+      "weight": -0.00135541,
+      "dollars": -135.54,
+      "uncapped_weight": -0.00135541,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "LITE",
+      "side": "short",
+      "weight": -0.0007293,
+      "dollars": -72.93,
+      "uncapped_weight": -0.0007293,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "LOAR",
+      "side": "short",
+      "weight": -0.00141025,
+      "dollars": -141.03,
+      "uncapped_weight": -0.00141025,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "LQDA",
+      "side": "short",
+      "weight": -0.00059598,
+      "dollars": -59.6,
+      "uncapped_weight": -0.00059598,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "MARA",
+      "side": "short",
+      "weight": -0.00026571,
+      "dollars": -26.57,
+      "uncapped_weight": -0.00026571,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "MP",
+      "side": "short",
+      "weight": -0.00069756,
+      "dollars": -69.76,
+      "uncapped_weight": -0.00069756,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "NEXT",
+      "side": "short",
+      "weight": -0.00140974,
+      "dollars": -140.97,
+      "uncapped_weight": -0.00140974,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "NG",
+      "side": "short",
+      "weight": -0.00021856,
+      "dollars": -21.86,
+      "uncapped_weight": -0.00021856,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "NRIX",
+      "side": "short",
+      "weight": -0.00058518,
+      "dollars": -58.52,
+      "uncapped_weight": -0.00058518,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "NTLA",
+      "side": "short",
+      "weight": -0.00021685,
+      "dollars": -21.69,
+      "uncapped_weight": -0.00021685,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "NUVB",
+      "side": "short",
+      "weight": -0.00024246,
+      "dollars": -24.25,
+      "uncapped_weight": -0.00024246,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "OCUL",
+      "side": "short",
+      "weight": -0.00067081,
+      "dollars": -67.08,
+      "uncapped_weight": -0.00067081,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "OUST",
+      "side": "short",
+      "weight": -0.00027135,
+      "dollars": -27.13,
+      "uncapped_weight": -0.00027135,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "PFSI",
+      "side": "short",
+      "weight": -0.0015103,
+      "dollars": -151.03,
+      "uncapped_weight": -0.0015103,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "PGEN",
+      "side": "short",
+      "weight": -0.00081066,
+      "dollars": -81.07,
+      "uncapped_weight": -0.00081066,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "PLUG",
+      "side": "short",
+      "weight": -0.00056604,
+      "dollars": -56.6,
+      "uncapped_weight": -0.00056604,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "PONY",
+      "side": "short",
+      "weight": -0.00021438,
+      "dollars": -21.44,
+      "uncapped_weight": -0.00021438,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "PPTA",
+      "side": "short",
+      "weight": -0.00029064,
+      "dollars": -29.06,
+      "uncapped_weight": -0.00029064,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "QBTS",
+      "side": "short",
+      "weight": -0.00034582,
+      "dollars": -34.58,
+      "uncapped_weight": -0.00034582,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "QURE",
+      "side": "short",
+      "weight": -0.00033168,
+      "dollars": -33.17,
+      "uncapped_weight": -0.00033168,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "QXO",
+      "side": "short",
+      "weight": -0.00023889,
+      "dollars": -23.89,
+      "uncapped_weight": -0.00023889,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RCUS",
+      "side": "short",
+      "weight": -0.00135735,
+      "dollars": -135.74,
+      "uncapped_weight": -0.00135735,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RDW",
+      "side": "short",
+      "weight": -0.00021843,
+      "dollars": -21.84,
+      "uncapped_weight": -0.00021843,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "REZI",
+      "side": "short",
+      "weight": -0.00082289,
+      "dollars": -82.29,
+      "uncapped_weight": -0.00082289,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RGLD",
+      "side": "short",
+      "weight": -0.00080535,
+      "dollars": -80.54,
+      "uncapped_weight": -0.00080535,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RGTI",
+      "side": "short",
+      "weight": -0.00042391,
+      "dollars": -42.39,
+      "uncapped_weight": -0.00042391,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RIOT",
+      "side": "short",
+      "weight": -0.00197875,
+      "dollars": -197.87,
+      "uncapped_weight": -0.00197875,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RKLB",
+      "side": "short",
+      "weight": -0.00382033,
+      "dollars": -382.03,
+      "uncapped_weight": -0.00382033,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RUN",
+      "side": "short",
+      "weight": -0.00012947,
+      "dollars": -12.95,
+      "uncapped_weight": -0.00012947,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "RYTM",
+      "side": "short",
+      "weight": -0.00057343,
+      "dollars": -57.34,
+      "uncapped_weight": -0.00057343,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "SBET",
+      "side": "short",
+      "weight": -0.00067686,
+      "dollars": -67.69,
+      "uncapped_weight": -0.00067686,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "SEDG",
+      "side": "short",
+      "weight": -0.00026158,
+      "dollars": -26.16,
+      "uncapped_weight": -0.00026158,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "SITM",
+      "side": "short",
+      "weight": -0.00084246,
+      "dollars": -84.25,
+      "uncapped_weight": -0.00084246,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "SOFI",
+      "side": "short",
+      "weight": -0.00052711,
+      "dollars": -52.71,
+      "uncapped_weight": -0.00052711,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "SRRK",
+      "side": "short",
+      "weight": -0.00157329,
+      "dollars": -157.33,
+      "uncapped_weight": -0.00157329,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "TNGX",
+      "side": "short",
+      "weight": -0.00022941,
+      "dollars": -22.94,
+      "uncapped_weight": -0.00022941,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "TSLA",
+      "side": "short",
+      "weight": -0.00109669,
+      "dollars": -109.67,
+      "uncapped_weight": -0.00109669,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "UEC",
+      "side": "short",
+      "weight": -0.00144473,
+      "dollars": -144.47,
+      "uncapped_weight": -0.00144473,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "ULCC",
+      "side": "short",
+      "weight": -0.00101844,
+      "dollars": -101.84,
+      "uncapped_weight": -0.00101844,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "UPST",
+      "side": "short",
+      "weight": -0.00068521,
+      "dollars": -68.52,
+      "uncapped_weight": -0.00068521,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "UUUU",
+      "side": "short",
+      "weight": -0.00112865,
+      "dollars": -112.86,
+      "uncapped_weight": -0.00112865,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "WOLF",
+      "side": "short",
+      "weight": -0.0008217,
+      "dollars": -82.17,
+      "uncapped_weight": -0.0008217,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "WULF",
+      "side": "short",
+      "weight": -0.00331446,
+      "dollars": -331.45,
+      "uncapped_weight": -0.00331446,
+      "sleeve": "D77"
+    },
+    {
+      "symbol": "ZBIO",
+      "side": "short",
+      "weight": -0.00064787,
+      "dollars": -64.79,
+      "uncapped_weight": -0.00064787,
+      "sleeve": "D77"
+    }
+  ],
+  "diagnostics": {
+    "equity": 100000.0,
+    "ticker_cap_weight": 0.38,
+    "scale": 1.0,
+    "routed": {},
+    "clipped": [],
+    "spy_weight_uncapped": 0.21362220395888668,
+    "long_gross": 0.6739234122707147,
+    "short_gross": 0.06472708941490982,
+    "hold_long": 0.0,
+    "hold_short": 0.0,
+    "margin": 0.37579795978430325,
+    "positions": 82,
+    "n_short": 77,
+    "ok": true
+  },
+  "checksum_sha256": "90b7d66f58d161b766057a9720b0a45b7846db6e1d57523580cdd7ffda83ed31",
+  "data": {
+    "refresh": {
+      "adjusted": {
+        "file": "bars_daily.parquet",
+        "last_session": "2026-11-19",
+        "rows_spliced": 76597,
+        "symbols_refetched_full": 4
+      },
+      "raw": {
+        "file": "bars_daily_raw.parquet",
+        "last_session": "2026-11-19",
+        "rows_spliced": 69652,
+        "symbols_refetched_full": 0
+      },
+      "events": "refreshed"
+    },
+    "last_bar_session": "2026-11-19",
+    "files": {
+      "bars_daily.parquet": {
+        "bytes": 243682827,
+        "mtime_utc": "2026-11-19T22:02:05.949799299+00:00"
+      },
+      "bars_daily_raw.parquet": {
+        "bytes": 267648089,
+        "mtime_utc": "2026-11-19T22:03:08.851535082+00:00"
+      },
+      "earnings_dates.parquet": {
+        "bytes": 1203212,
+        "mtime_utc": "2026-11-19T22:14:02.020121813+00:00"
+      },
+      "fund_frames.parquet": {
+        "bytes": 5982349,
+        "mtime_utc": "2026-11-19T06:13:04.919182539+00:00"
+      },
+      "shares_q.parquet": {
+        "bytes": 1466057,
+        "mtime_utc": "2026-11-18T15:09:22.943983555+00:00"
+      },
+      "assets.parquet": {
+        "bytes": 468132,
+        "mtime_utc": "2026-11-18T14:58:31.649100542+00:00"
+      }
+    }
+  },
+  "consistency_with_research": {
+    "sessions_compared": 1253,
+    "sleeve_weight_max_abs_diff": 1.89276643014491e-05,
+    "return_max_abs_diff": 1.5033837439031765e-05
+  }
+}

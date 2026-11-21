@@ -1,9 +1,9 @@
 {
   "schema_version": "local-release-lock/1",
-  "release_name": "paper-forward-local-0.3.3",
-  "retrieved_at": "2026-11-20T17:59:35Z",
-  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order, no schedule and no cloud configuration change",
-  "local_revision": "0.3.3",
+  "release_name": "paper-forward-local-0.3.4",
+  "retrieved_at": "2026-11-21T04:21:07Z",
+  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change",
+  "local_revision": "0.3.4",
   "activation": "BLOCKED",
   "cloud_verification_status": "UNVERIFIED",
   "validated_mcp_contract_sha256": null,
@@ -21,7 +21,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/coordinator.md",
-      "local_source_sha256": "b84407a7177279b44cb8804cf0e3734b939988b009655fa3ed769144fcc87b4e"
+      "local_source_sha256": "f4785dc3c4aa602d631b435f0b7177800a1a863b079d6c2c0f654ebaf73e2104"
     },
     "scout": {
       "agent_id": null,
@@ -33,7 +33,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/scout.md",
-      "local_source_sha256": "bc0c495c3a0cb19f2cbc508fc86bbfe686deb451fbc65d059da401ae6ba07d3d"
+      "local_source_sha256": "7bf6e25661cc7192e9dfa5a0127d6660a1e26230cebb4801bc3fc6f363c1e20e"
     },
     "guard": {
       "agent_id": null,
@@ -45,7 +45,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/guard.md",
-      "local_source_sha256": "1122f9fc4c8849f6a5aefd28967ff29d3e7bae369b77155a8a76296ab4fa28de"
+      "local_source_sha256": "d7417b56078386f90ccb390ae7ffb93e1fffdd0cbe80b9fc1b069ac6a8eea33d"
     },
     "risk-auditor": {
       "agent_id": null,
@@ -57,7 +57,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/risk-auditor.md",
-      "local_source_sha256": "fdfaf761627e13d4969227ec3955bba1d151dc94a3bc074be4f083a9b7ed9cd5"
+      "local_source_sha256": "e0f272a156e1368a32104f817d077017c2cb35f565d299fbb30dce1421a3783b"
     },
     "advisor": {
       "agent_id": null,
@@ -69,7 +69,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/advisor.md",
-      "local_source_sha256": "ac017c0401acb57db2dc60169ced5874bfeab8ae5d8d036a03464a817922a93f"
+      "local_source_sha256": "bd5ab7865856d79231c3998ee65a43d21a591f3823390447ce90b8ab7841d8b3"
     }
   },
   "skills": {
@@ -79,7 +79,7 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/validate-trading-targets/SKILL.md",
-      "local_source_sha256": "5ada991d903cdb427ac3d8f018e66e956b277e1f9cc148fb468800f67b9de1c2"
+      "local_source_sha256": "6835d7e07d71e66a6d40d349ecc266f44e0ce02cfd3c671c5b29e3f94c5efbc3"
     },
     "paper-trading-gate": {
       "cloud_skill_id": null,
@@ -87,7 +87,7 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/paper-trading-gate/SKILL.md",
-      "local_source_sha256": "46c22309c40f48d37b5f7092c068e5dd03176535d0636eae9d2a45af00b9dfb5"
+      "local_source_sha256": "382d9ba03530576a4ead2d1f531ae5dee3250acf0776fe9096d5d5547d958e5f"
     },
     "reconcile-paper-fills": {
       "cloud_skill_id": null,
@@ -129,33 +129,37 @@
     "Competition account 5832812 activation requires separate approval after all evidence gates",
     "P* target provenance is only as good as one `research/r10_deploy.py live` run: its data refresh (Alpaca bars and SEC 8-K dates) has never been executed against a network or broker in this release, because every test injects a runner and no account or cloud call was authorized",
     "Pre-trade ETF and short eligibility is verified against a supplied eligibility table, never against live broker quotes, borrow or fund-size data; the skipped-name deviation path has therefore not been observed on a real book",
-    "The `dashboard/` UI renders a fictional demo fixture (AAPL/MSFT/NVDA longs) that is not the P* book, so its numbers must never be read as strategy output; the four strategy-specific `skills/*/SKILL.md` playbooks are retargeted at P* in this revision and `skills/reconcile-paper-fills/SKILL.md` is strategy-neutral"
+    "The `dashboard/` UI renders a fictional demo fixture (AAPL/MSFT/NVDA longs) that is not the P* book, so its numbers must never be read as strategy output; the four strategy-specific `skills/*/SKILL.md` playbooks are retargeted at P* in revision 0.3.3 and `skills/reconcile-paper-fills/SKILL.md` is strategy-neutral",
+    "The Slack `PAUSE`/`RESUME` listener is not implemented and the cloud agent that is to run the 2026-11-27 final exit on a schedule does not exist yet, so the switch the 2026-11-21 decision made the only human control is currently a CLI command and a journal row, not something the user can send from a phone",
+    "Automatic execution removes the typed approval from the send path and replaces it with the deterministic gate plus the pause switch, so a run that submits the whole `plan` list is only as safe as `plan.json`, the 300-second quote and snapshot freshness window, and the reprice-round ceiling",
+    "The 2026-11-19 competition book is entered one session late under a single dated R10 exception (day 2026-11-23, `decided_by` user 2026-11-21) that has never been exercised at a broker; no other day is allowed to reuse it",
+    "The 1-7 moomoo order status-code enumeration is documentation-derived knowledge carried in the 2026-11-21 instruction, not machine-verified: the MCP metadata for sim_trade_history_order_list publishes request fields only, and of the seven codes only 4 and 5 have been observed, in the 2026-11-20 history of 5322438. Code 0, any further undocumented code, and whether a cancelled-with-no-fill order reprices cleanly, have not been observed on a real book"
   ],
   "source_sha256": {
-    "notes/handbook-notes.md": "4504e51a3ea8bab6f17b8cbdf59e1d8559bd077c5544f11cb3237575c196e538",
+    "agents/AGENTS.md": "09c9dd24ad22c106ced66c5c8fe8ddb34e29fd2aab89a519b44579a20a3e75d4",
+    "agents/advisor.md": "bd5ab7865856d79231c3998ee65a43d21a591f3823390447ce90b8ab7841d8b3",
+    "agents/coordinator.md": "f4785dc3c4aa602d631b435f0b7177800a1a863b079d6c2c0f654ebaf73e2104",
+    "agents/evaluate.py": "9c1c7e4676f479aca69af532c391f0a4d6098e0deb7b2896dcdae9a3db211077",
+    "agents/evaluations.json": "62542af6ec01a405065563c2cc6953221ec6cb2ff28c129cad88e25cc9249190",
+    "agents/guard.md": "d7417b56078386f90ccb390ae7ffb93e1fffdd0cbe80b9fc1b069ac6a8eea33d",
+    "agents/risk-auditor.md": "e0f272a156e1368a32104f817d077017c2cb35f565d299fbb30dce1421a3783b",
+    "agents/scout.md": "7bf6e25661cc7192e9dfa5a0127d6660a1e26230cebb4801bc3fc6f363c1e20e",
+    "agents/templates.json": "fe3a7016102392fac9d9b22a0caf0c2be711b9fd4e12abfd88d8830dfdeceab9",
     "docs/submission-checklist.md": "5c10fea07903e98b1f6c891a4e4dcb374bca155eecdf227e8ebb76135f5c529a",
-    "live/config.pstar.json": "6f102907490fa13e0f9d8eb19dc3d7fded1cb7efe730480b2d7b9a4ae4f34bd6",
+    "live/config.pstar.json": "c5d157601358c6ac3445679cfbafb17071e8b6e6c1582d63d13c9933fddae7dd",
     "live/config.v2.json": "12fcb393cedd63df77b75eef4fdf73c2da0be29778b7ed6fbd0effc43b10001a",
-    "research/r10_deploy.py": "d8f7cf9c731670f5908ed9d5b78c424a68cabd537f7c872d0f00077a18cba7a8",
+    "notes/handbook-notes.md": "4504e51a3ea8bab6f17b8cbdf59e1d8559bd077c5544f11cb3237575c196e538",
     "research/factors.py": "bb431605ada41825949e5a6c02b2122dc607cd6ff1802450a2048d8bf3a970fb",
+    "research/lab_cache.py": "617fc905b06e1e77177ae976741af8bb094c7953195b89e9541d7cb0c46e5710",
+    "research/lab_factors.py": "1d48adcb963867c19481e2b53c884b285af59b3d31f2bebca5f815cf42ddd988",
     "research/pipeline.py": "f4bfec0984e76bb288e0eed1af63cb81ce93541b72740daf0d917e97407f8fa9",
     "research/pipeline_v2.py": "7affd82184af4b76733cecde441e06bb1a8bc5e18bd59bdd7c4f976650b2b405",
     "research/pipeline_v3.py": "f8537dd03bfe1c3dcc367b7f95140c7301d3b696d0cdb5807c956b0450f02529",
-    "research/lab_factors.py": "1d48adcb963867c19481e2b53c884b285af59b3d31f2bebca5f815cf42ddd988",
-    "research/lab_cache.py": "617fc905b06e1e77177ae976741af8bb094c7953195b89e9541d7cb0c46e5710",
-    "agents/AGENTS.md": "64a531772465b56b930b908c4d148b6b20174cae2607d7d029ab660b2843202a",
-    "agents/templates.json": "cf957f818c19f09bcea7b891371522cc910ff0a93b47e4c2d544804556137388",
-    "agents/evaluations.json": "322150ef492b94cc37887e0b1600540e088aac61f0b3b018be9b00cdc6d56c37",
-    "agents/evaluate.py": "433ec58faa1c189d3b061185002f27f6b2121d84000a78c185639045ffbc73f0",
-    "agents/coordinator.md": "b84407a7177279b44cb8804cf0e3734b939988b009655fa3ed769144fcc87b4e",
-    "agents/scout.md": "bc0c495c3a0cb19f2cbc508fc86bbfe686deb451fbc65d059da401ae6ba07d3d",
-    "agents/guard.md": "1122f9fc4c8849f6a5aefd28967ff29d3e7bae369b77155a8a76296ab4fa28de",
-    "agents/risk-auditor.md": "fdfaf761627e13d4969227ec3955bba1d151dc94a3bc074be4f083a9b7ed9cd5",
-    "agents/advisor.md": "ac017c0401acb57db2dc60169ced5874bfeab8ae5d8d036a03464a817922a93f",
-    "skills/validate-trading-targets/SKILL.md": "5ada991d903cdb427ac3d8f018e66e956b277e1f9cc148fb468800f67b9de1c2",
-    "skills/paper-trading-gate/SKILL.md": "46c22309c40f48d37b5f7092c068e5dd03176535d0636eae9d2a45af00b9dfb5",
+    "research/r10_deploy.py": "d8f7cf9c731670f5908ed9d5b78c424a68cabd537f7c872d0f00077a18cba7a8",
+    "skills/paper-trading-gate/SKILL.md": "382d9ba03530576a4ead2d1f531ae5dee3250acf0776fe9096d5d5547d958e5f",
     "skills/reconcile-paper-fills/SKILL.md": "c41dbe77cb9985c25fa545e3e4443710c872f6c4cc997eb4af7730e56cb857f5",
     "skills/report-trading-day/SKILL.md": "241808ce5a8800215cdc256dd91a72ccaf12a5ebf085cf7ccadd9ff731a12a6c",
-    "skills/research-factor-evidence/SKILL.md": "1c2d3c54e38d909bbd192bd70336620487648c3c3f44fe1f74054cbe3b013daa"
+    "skills/research-factor-evidence/SKILL.md": "1c2d3c54e38d909bbd192bd70336620487648c3c3f44fe1f74054cbe3b013daa",
+    "skills/validate-trading-targets/SKILL.md": "6835d7e07d71e66a6d40d349ecc266f44e0ce02cfd3c671c5b29e3f94c5efbc3"
   }
 }

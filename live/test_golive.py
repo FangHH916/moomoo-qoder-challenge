@@ -39,7 +39,7 @@ from rules.pstar_harness import committed_session, tradeable_clock
 EQUITY = 100_000.0
 SESSION = committed_session("pstar15")
 CLOCK = tradeable_clock(SESSION)
-STATUS_WORKING = 1        # an intentionally unmapped order status code, proven to the tool by --working
+STATUS_WORKING = 0        # a code moomoo documents nowhere: live only when the operator says --working 0
 
 
 def envelope(data: dict) -> dict:
@@ -233,14 +233,20 @@ class Fixture:
         day = golive.GO_DIR / self.now.astimezone(golive.ET).date().isoformat() / self.account
         return max(sorted(day.glob("snapshot-*.json")))
 
-    def arm(self, reply=None, account=None) -> int:
-        """Arm through the real command, so every test that needs R16 proves the reply check too."""
-        account = account or self.account
-        return self.invoke("arm", "--account", account,
-                           "--reply", f"ARM {account}" if reply is None else reply)
+    def resume(self, source: str = "user in chat", account=None) -> int:
+        """Put the account in run through the real command: no typed reply is part of the flow any more."""
+        return self.invoke("resume", "--account", account or self.account, "--source", source)
 
-    def halt(self, reason: str = "fixture owner halt") -> int:
-        return self.invoke("halt", "--account", self.account, "--reason", reason)
+    def pause(self, source: str = "fixture owner pause", account=None, orders=None,
+              out=None, working=()) -> int:
+        argv = ["pause", "--account", account or self.account, "--source", source]
+        if orders is not None:
+            argv += ["--orders", str(orders)]
+        if out is not None:
+            argv += ["--out", str(out)]
+        for code in working:
+            argv += ["--working", str(code)]
+        return self.invoke(*argv)
 
     def control(self, account: str | None = None) -> dict:
         journal = Journal(self.root / "journal")
@@ -341,11 +347,11 @@ class GoliveTest(unittest.TestCase):
         golive.GO_DIR, golive.ROOT, golive.STATE_DIR = self.real
         shutil.rmtree(self.root, ignore_errors=True)
 
-    def fixture(self, arm=True, **kwargs) -> Fixture:
-        """`arm=False` leaves the account exactly as a fresh store has it: halted, and R16 says so."""
+    def fixture(self, resume=True, **kwargs) -> Fixture:
+        """`resume=False` leaves the account exactly as a fresh store has it: halted, and R16 says so."""
         fixture = Fixture(self.root, **kwargs)
-        if arm:
-            fixture.arm()
+        if resume:
+            fixture.resume()
         return fixture
 
     def sizes(self, plan: dict) -> dict[str, int]:
@@ -538,7 +544,9 @@ class TestPlan(GoliveTest):
             self.assertEqual(ticket["tool"], "sim_trade_input_order")
             self.assertEqual(ticket["gate"]["action"], "ALLOW")
             self.assertEqual(ticket["gate"]["failed_rules"], [])
-            self.assertFalse(ticket["gate"]["execution_allowed"])
+            self.assertEqual(ticket["gate"]["execution_allowed"],
+                             fixture.config["execution_enabled"] is True,
+                             "execution_allowed only mirrors the config switch; this command never sends")
             self.assertEqual(len(ticket["gate"]["order_fingerprint"]), 64)
             self.assertTrue(ticket["submit"])
             self.assertEqual(ticket["status"], "PLANNED")
@@ -699,52 +707,62 @@ class TestOperatorControlAndEvidence(GoliveTest):
         return {"verified": False, "commit": "f" * 40, "uncommitted": ["live/golive.py"],
                 "reason": "1 uncommitted .py file(s) under the runtime directories: live/golive.py"}
 
-    def test_arm_takes_only_the_exact_text_the_user_typed(self):
-        fixture = self.fixture(arm=False)
+    def test_resume_needs_no_typed_reply_and_records_where_it_came_from(self):
+        fixture = self.fixture(resume=False)
         self.assertEqual((fixture.control()["halted"], fixture.control()["reason"]),
-                         (True, "Not armed"))
-        for reply in ("", "arm 5322438", "ARM  5322438", "ARM 5322438 now", "ARM it",
-                      f"ARM {ACCOUNTS['competition']}", "CONFIRM", "GO"):
-            with self.assertRaises(golive.GoliveError):
-                fixture.arm(reply=reply)
+                         (True, "Never resumed"))
+        with self.assertRaises(SystemExit):
+            fixture.invoke("resume", "--account", fixture.account)     # no --source: argparse refuses
+        with self.assertRaises(golive.GoliveError):
+            fixture.resume(source="   ")
         self.assertTrue(fixture.control()["halted"])
-        self.assertEqual(fixture.rows("decisions"), [], "a refused arm journals nothing")
-        self.assertEqual(fixture.arm(), 0)
+        self.assertEqual(fixture.rows("decisions"), [], "a refused resume journals nothing")
+        self.assertEqual(fixture.resume(source="slack RESUME 1763700000.000100"), 0)
         control = fixture.control()
         self.assertFalse(control["halted"])
         self.assertIs(control["verified_by_relay"], True)
-        self.assertEqual(control["reason"], f"armed by the user in chat at {fixture.iso}")
+        self.assertEqual(control["reason"], f"resumed at {fixture.iso}: slack RESUME 1763700000.000100")
         decision = fixture.rows("decisions")[-1]
         self.assertEqual((decision["kind"], decision["action"], decision["account_id"], decision["mode"]),
-                         ("GOLIVE_ARM", "ARM", ACCOUNTS["test"], "test"))
-        self.assertEqual(decision["reason"], f"ARM {ACCOUNTS['test']} - {control['reason']}")
+                         ("GOLIVE_RESUME", "RESUME", ACCOUNTS["test"], "test"))
+        self.assertEqual(decision["reason"], control["reason"])
 
-    def test_arm_refuses_an_account_that_is_not_one_of_the_two_paper_accounts(self):
-        fixture = self.fixture(arm=False)
-        for account in ("5322439", "5322438 ", "0000000"):
-            with self.assertRaises(golive.GoliveError) as refused:
-                fixture.arm(account=account, reply=f"ARM {account}")
-            self.assertIn("authorised paper account", str(refused.exception))
-        self.assertTrue(fixture.control()["halted"])
-        self.assertEqual(fixture.rows("decisions"), [])
+    def test_pause_needs_no_typed_reply_and_latches_the_same_switch_as_halt(self):
+        fixture = self.fixture()
+        self.assertFalse(fixture.control()["halted"], "a fresh automatic run starts from a running account")
+        with self.assertRaises(golive.GoliveError):
+            fixture.pause(source="")
+        self.assertFalse(fixture.control()["halted"], "the refusal changes nothing")
+        self.assertEqual(fixture.pause(source="slack PAUSE 1763700000.000100"), 0)
+        control = fixture.control()
+        self.assertIs(control["halted"], True)
+        self.assertEqual(control["reason"], f"paused at {fixture.iso}: slack PAUSE 1763700000.000100")
+        decision = fixture.rows("decisions")[-1]
+        self.assertEqual((decision["kind"], decision["action"], decision["account_id"]),
+                         ("GOLIVE_PAUSE", "PAUSE", ACCOUNTS["test"]))
 
-    def test_arm_refuses_the_account_of_the_other_mode(self):
-        fixture = self.fixture(arm=False)
+    def test_pause_and_resume_refuse_an_account_of_the_other_mode(self):
+        fixture = self.fixture(resume=False)
         with self.assertRaises(golive.GoliveError) as refused:
-            fixture.arm(account=ACCOUNTS["competition"], reply=f"ARM {ACCOUNTS['competition']}")
+            fixture.resume(account=ACCOUNTS["competition"], source="user in chat")
         self.assertIn("config mode is 'test'", str(refused.exception))
         self.assertTrue(fixture.control(ACCOUNTS["competition"])["halted"])
+        for account in ("5322439", "5322438 ", "0000000"):
+            with self.assertRaises(golive.GoliveError) as refused:
+                fixture.resume(account=account, source="user in chat")
+            self.assertIn("authorised paper account", str(refused.exception))
+        self.assertEqual(fixture.rows("decisions"), [], "a refusal writes no control and no journal row")
         other = Fixture(self.root, mode="competition", account=ACCOUNTS["competition"])
         with self.assertRaises(golive.GoliveError) as refused:
-            other.arm(account=ACCOUNTS["test"], reply=f"ARM {ACCOUNTS['test']}")
+            other.pause(account=ACCOUNTS["test"], source="user in chat")
         self.assertIn("config mode is 'competition'", str(refused.exception))
-        self.assertTrue(fixture.control()["halted"], "the test account is not armed by a competition reply")
-        self.assertEqual(other.arm(), 0)
+        self.assertTrue(fixture.control()["halted"], "the test account is not paused by a competition call")
+        self.assertEqual(other.resume(source="user in chat"), 0)
         self.assertFalse(other.control()["halted"])
 
-    def test_arm_then_computed_evidence_clears_r12_r14_r16_and_r17(self):
-        fixture = self.fixture(arm=False)
-        self.assertEqual(fixture.arm(), 0)
+    def test_resume_then_computed_evidence_clears_r12_r14_r16_and_r17(self):
+        fixture = self.fixture(resume=False)
+        self.assertEqual(fixture.resume(), 0)
         snapshot = fixture.snapshot()
         with mock.patch.object(golive, "release_check", return_value=self.clean_release()):
             status, path, evidence = fixture.generate_evidence(snapshot)
@@ -763,10 +781,10 @@ class TestOperatorControlAndEvidence(GoliveTest):
             checks = {row["id"]: row for row in ticket["gate"]["checks"]}
             for rule in ("R12", "R14", "R16", "R17"):
                 self.assertTrue(checks[rule]["passed"], f"{rule}: {checks[rule]}")
-            self.assertIs(checks["R16"]["observed"], False, "R16 spent the arm, not an assumption")
+            self.assertIs(checks["R16"]["observed"], False, "R16 spent the resume, not an assumption")
 
-    def test_r16_still_rejects_every_ticket_while_the_account_is_unarmed(self):
-        fixture = self.fixture(arm=False)
+    def test_r16_still_rejects_every_ticket_while_the_account_is_paused(self):
+        fixture = self.fixture(resume=False)
         snapshot = fixture.snapshot()
         with mock.patch.object(golive, "release_check", return_value=self.clean_release()):
             status, path, evidence = fixture.generate_evidence(snapshot)
@@ -775,13 +793,13 @@ class TestOperatorControlAndEvidence(GoliveTest):
         _, plan = fixture.plan(smoke=True, evidence=path, snapshot=snapshot)
         self.assertEqual(plan["submit"], [])
         self.assertIs(plan["kill_switch"]["halted"], True)
-        self.assertEqual(plan["kill_switch"]["reason"], "Not armed")
+        self.assertEqual(plan["kill_switch"]["reason"], "Never resumed")
         for ticket in plan["tickets"]:
-            # The same latch is what R9 measures against the peak, so an unarmed account fails both rules.
+            # The same latch is what R9 measures against the peak, so a paused account fails both rules.
             self.assertEqual(ticket["gate"]["failed_rules"], ["R9", "R16"])
-        fixture.arm()
-        _, armed = fixture.plan(smoke=True, evidence=path, snapshot=snapshot, out="armed")
-        self.assertEqual(armed["submit"], [1, 2, 3, 4])
+        fixture.resume()
+        _, rearmed = fixture.plan(smoke=True, evidence=path, snapshot=snapshot, out="rearmed")
+        self.assertEqual(rearmed["submit"], [1, 2, 3, 4])
 
     def test_an_approval_older_than_the_five_minute_ttl_fails_r14(self):
         fixture = self.fixture()
@@ -823,7 +841,7 @@ class TestOperatorControlAndEvidence(GoliveTest):
         self.assertFalse(result["eligible"])
 
     def test_reconciled_is_false_while_the_history_still_has_a_live_order(self):
-        fixture = self.fixture(arm=False)
+        fixture = self.fixture(resume=False)
         fixture.set_orders([fixture.order_row(golive.SMOKE_ETF, "BUY", 1, 0, "pstar-live-1",
                                               status=STATUS_WORKING)])
         snapshot = fixture.snapshot()
@@ -837,7 +855,7 @@ class TestOperatorControlAndEvidence(GoliveTest):
         self.assertIn("still open or unreadable", evidence["bases"]["reconciled"])
         self.assertTrue(evidence["assertions"]["snapshot_verified_by_relay"],
                         "the live order is the only thing that failed here")
-        fixture.arm()
+        fixture.resume()
         _, plan = fixture.plan(smoke=True, evidence=path, snapshot=snapshot)
         self.assertEqual(plan["submit"], [])
         for ticket in plan["tickets"]:
@@ -902,33 +920,109 @@ class TestOperatorControlAndEvidence(GoliveTest):
         self.assertFalse(edited["verified"], "a raw response edited after the snapshot breaks the hash")
         self.assertTrue(any("no longer hashes" in line for line in edited["reasons"]))
 
-    def test_halt_latches_the_switch_again_and_the_plan_stops(self):
+    def test_pause_latches_the_switch_again_and_the_plan_stops(self):
         fixture = self.fixture()
         self.assertFalse(fixture.control()["halted"])
-        self.assertEqual(fixture.halt("owner stop for the night"), 0)
+        self.assertEqual(fixture.pause(source="user in chat: stop for the night"), 0)
         control = fixture.control()
         self.assertIs(control["halted"], True)
-        self.assertEqual(control["reason"], "owner stop for the night")
+        self.assertEqual(control["reason"], f"paused at {fixture.iso}: user in chat: stop for the night")
         decision = fixture.rows("decisions")[-1]
-        self.assertEqual((decision["kind"], decision["action"], decision["reason"]),
-                         ("GOLIVE_HALT", "HALT", "owner stop for the night"))
+        self.assertEqual((decision["kind"], decision["action"]), ("GOLIVE_PAUSE", "PAUSE"))
         _, plan = fixture.plan(smoke=True)
         self.assertEqual(plan["submit"], [])
         self.assertIs(plan["kill_switch"]["halted"], True)
         for ticket in plan["tickets"]:
             self.assertIn("R16", ticket["gate"]["failed_rules"])
-        self.assertEqual(fixture.arm(), 0)
+        self.assertEqual(fixture.resume(), 0)
         rearmed = fixture.plan(smoke=True, out="rearmed")
         self.assertEqual(rearmed[1]["submit"], [1, 2, 3, 4])
-        self.assertEqual(fixture.halt(), 0)
+        self.assertEqual(fixture.pause(), 0)
         self.assertTrue(fixture.control()["halted"])
 
-    def test_halt_and_arm_refuse_the_account_of_another_mode(self):
+    def test_halt_is_an_alias_of_pause(self):
         fixture = self.fixture()
+        self.assertEqual(fixture.invoke("halt", "--account", fixture.account,
+                                        "--source", "user in chat"), 0)
+        self.assertTrue(fixture.control()["halted"])
+        self.assertEqual(fixture.rows("decisions")[-1]["kind"], "GOLIVE_PAUSE")
+
+    def test_a_paused_account_still_allows_the_final_exit_reduction(self):
+        """The scheduled final exit has to be able to close a book the user paused: R9 and R16 let it."""
+        running_fixture = self.fixture()
+        _, entry_plan = running_fixture.plan()
+        buy = next(ticket for ticket in entry_plan["tickets"]
+                   if ticket["intent"] == "ENTRY" and ticket["side"] == "BUY")
+        name, held = buy["symbol"], buy["quantity"]
+        fixture = Fixture(self.root, positions=[(name, held)])
+        snapshot = json.loads(fixture.snapshot().read_text(encoding="utf-8"))
+        quotes = golive.parse_quotes(golive.read_json(fixture.paths["quotes"]))
+        book = golive.sizing_quotes(quotes)
+        records = golive.eligibility_records(fixture.config, quotes,
+                                             golive.parse_borrow(fixture.paths["borrow"]),
+                                             entry_plan["target_shares"],
+                                             fixture.evidence["borrow"]["easy_to_borrow_proxy"])
+        touch = quotes[name]["bid"]
+        reduce = {**buy["order"], "side": "SELL", "intent": "FINAL_EXIT", "quantity": held,
+                  "limit_price": touch, "arrival_price": touch, "reason": "scheduled final exit",
+                  "client_order_id": "pstar-final-exit"}
+        add = {**buy["order"], "intent": "ENTRY"}
+
+        def judge(order):
+            """The production path: what `plan` does, so the durable pause is the one being tested."""
+            context = golive.build_context(fixture.config, snapshot, fixture.targets, book, records,
+                                           [order], [], [], [], fixture.evidence, fixture.now)
+            return golive.gate_tickets([order], context, fixture.config, fixture.evidence, quotes,
+                                       fixture.root / "journal")[0]["gate"]
+
+        self.assertTrue(judge(reduce)["eligible"], "the exit is allowed while running")
+        self.assertEqual(fixture.pause(source="slack PAUSE 1763700000.000100"), 0)
+        self.assertIs(fixture.control()["halted"], True)
+        closed = judge(reduce)
+        self.assertTrue(closed["eligible"], f"a pause must not strand the book: "
+                                            f"{closed['failed_rules']}")
+        entry = judge(add)
+        self.assertFalse(entry["eligible"], "the same paused account still rejects an entry")
+        self.assertIn("R9", entry["failed_rules"])
+        self.assertIn("R16", entry["failed_rules"], entry["failed_rules"])
+        self.assertEqual(entry["action"], "FLATTEN_HALT")
+
+    def test_pause_lists_exactly_the_working_strategy_orders(self):
+        fixture = self.fixture()
+        _, plan = fixture.plan()
+        live = [ticket for ticket in plan["tickets"] if ticket["side"] == "BUY"][:2]
+        rows = [fixture.order_row(ticket["symbol"], "BUY", ticket["quantity"], 0,
+                                  ticket["client_order_id"], status=STATUS_WORKING)
+                for ticket in live]
+        # Everything else in that history is not this command's business: a filled strategy order, a
+        # cancelled one, and a working order under another client's ids.
+        rows += [fixture.order_row("IWM", "BUY", 5, 5, "pstar-other-filled", status=4),
+                 fixture.order_row("QQQ", "SELL", 5, 0, "pstar-other-cancelled", status=5),
+                 fixture.order_row("DIA", "BUY", 5, 0, "someone-elses-order", status=STATUS_WORKING)]
+        history = fixture.history("pause_orders.json", rows)
+        out = self.root / "cancel.json"
+        self.assertEqual(fixture.pause(source="slack PAUSE 1763700000.000100", orders=history,
+                                       out=out, working=(STATUS_WORKING,)), 0)
+        written = json.loads(out.read_text(encoding="utf-8"))
+        self.assertEqual(sorted(row["client_order_id"] for row in written["cancel"]),
+                         sorted(ticket["client_order_id"] for ticket in live))
+        for row in written["cancel"]:
+            self.assertEqual(row["tool"], "sim_trade_cancel_order")
+            self.assertEqual(row["payload"], {"acc_id": fixture.account, "market": golive.MARKET_ID,
+                                              "order_id": row["order_id"]})
+        self.assertEqual(written["account_id"], fixture.account)
+        self.assertEqual(written["source"], "slack PAUSE 1763700000.000100")
+        self.assertTrue(fixture.control()["halted"], "the cancel list is written next to the latch")
+
+    def test_pause_refuses_an_order_history_from_the_other_account(self):
+        fixture = self.fixture()
+        rows = [fixture.order_row("IWM", "BUY", 5, 0, "pstar-elsewhere", status=STATUS_WORKING)]
+        history = fixture.history("other_orders.json", envelope({"orders": rows, "account_id":
+                                                                ACCOUNTS["competition"]}))
         with self.assertRaises(golive.GoliveError) as refused:
-            fixture.invoke("halt", "--account", ACCOUNTS["competition"], "--reason", "wrong account")
-        self.assertIn("config mode is 'test'", str(refused.exception))
-        self.assertFalse(fixture.control()["halted"], "the refusal changes nothing")
+            fixture.pause(source="user in chat", orders=history)
+        self.assertIn(ACCOUNTS["competition"], str(refused.exception))
+        self.assertFalse(fixture.control()["halted"], "a refusal must not pause the wrong book either")
 
 
 class TestRecordRepriceReconcile(GoliveTest):
@@ -1130,19 +1224,21 @@ class TestRecordRepriceReconcile(GoliveTest):
         self.book.record(self.path, ticket)
         # cum_qty equals qty: the quantity columns settle the fill, whatever the unmapped code says.
         complete = self.book.order_row(ticket["symbol"], ticket["side"], ticket["quantity"],
-                                       ticket["quantity"], ticket["client_order_id"], status=7)
+                                       ticket["quantity"], ticket["client_order_id"],
+                                       status=STATUS_WORKING)
         _, report = self.book.reconcile(self.path, [complete])
         self.assertEqual(report["unresolved_status_codes"], [])
         self.assertEqual(report["filled_complete"], 1)
         # Nothing filled: golive will not call an unmapped code live or finished without proof.
         self.book.advance(1, refresh=("cash", "positions"))
         open_row = self.book.order_row(ticket["symbol"], ticket["side"], ticket["quantity"], 0,
-                                       ticket["client_order_id"], status=7)
+                                       ticket["client_order_id"], status=STATUS_WORKING)
         _, unresolved = self.book.reconcile(self.path, [open_row])
-        self.assertEqual([item["status_code"] for item in unresolved["unresolved_status_codes"]], [7])
+        self.assertEqual([item["status_code"] for item in unresolved["unresolved_status_codes"]],
+                         [STATUS_WORKING])
         self.assertEqual(unresolved["filled_complete"], 0)
         self.assertFalse(unresolved["complete_reconciliation"])
-        _, proven = self.book.reconcile(self.path, [open_row], working=(7,))
+        _, proven = self.book.reconcile(self.path, [open_row], working=(STATUS_WORKING,))
         self.assertEqual(proven["unresolved_status_codes"], [])
         self.assertEqual(proven["executed_orders_today"], 0)
         self.assertEqual(proven["orders_at_broker"], 1)
@@ -1152,6 +1248,62 @@ class TestRecordRepriceReconcile(GoliveTest):
         # An operator-declared live order is not a fill: the fills journal still holds only the row
         # from the order whose quantity columns proved it complete.
         self.assertEqual([row["quantity"] for row in self.book.rows("fills")], [ticket["quantity"]])
+
+    def test_every_status_code_moomoo_documents_maps_to_one_state(self):
+        """The simulated order list documents codes 1-7; each one has to land in exactly one of our states.
+
+        A code the documentation does not carry is a different matter: `order_state` leaves it UNKNOWN
+        until the operator says what it means with `--working`, which is what the test above proves.
+        """
+        documented = {1: "WORKING", 2: "WORKING", 3: "PARTIAL", 4: "FILLED", 5: "CLOSED_NO_FILL",
+                      6: "CLOSED_NO_FILL", 7: "CANCELLED_PARTIAL"}
+        filled_by_code = {3: 1, 4: 5, 7: 1}
+        for code, state in documented.items():
+            with self.subTest(code=code):
+                self.assertEqual(golive.order_state(5, filled_by_code.get(code, 0), code), state)
+        self.assertEqual({code for group in (golive.STATUS_LIVE, golive.STATUS_FILLED,
+                                             golive.STATUS_CLOSED_NO_FILL,
+                                             golive.STATUS_CANCELLED_PARTIAL) for code in group},
+                         set(documented))
+        self.assertEqual(golive.order_state(5, 5, 3), "FILLED", "the quantity columns outrank the status")
+
+    def test_a_cancelled_partial_fill_is_resolved_and_does_not_hold_the_batch(self):
+        """Status 7 (filled, then cancelled) is a finished fact: no unknown, no R12 block, no re-cancel."""
+        symbol = self.tickets[0]["symbol"]
+        # The default fixture sizes one share per name, so price this one at half: two shares, one filled.
+        prices = {**self.book.prices, symbol: round(self.book.prices[symbol] / 2, 2)}
+        book = Fixture(self.root, prices=prices)
+        path, plan = book.plan(out="plan-half")
+        ticket = next(item for item in plan["tickets"] if item["symbol"] == symbol)
+        self.assertEqual(ticket["quantity"], 2, ticket)
+        submitted = book.advance(1)
+        book.record(path, ticket, as_of=submitted)
+        at = book.advance(golive.REPRICE_AFTER_SECONDS + 100)
+        row = book.order_row(symbol, ticket["side"], 2, 1, ticket["client_order_id"], status=7, at=at)
+        code, repriced = book.reprice(path, [row])
+        self.assertEqual(code, 0, "a resolved row never blocks the next round")
+        parent = next(item for item in repriced["tickets"] if item["n"] == ticket["n"])
+        self.assertEqual(parent["broker_state"], "CANCELLED_PARTIAL")
+        self.assertFalse(parent["cancel"]["needed"], "the broker has nothing live to cancel")
+        child = repriced["tickets"][-1]
+        self.assertEqual(child["quantity"], 1)
+        self.assertTrue(child["submit"], child["gate"]["failed_rules"])
+        book.positions = [(symbol, 1 if ticket["side"] == "BUY" else -1)]
+        book.write("cash.json", book.cash())
+        book.write("positions.json", envelope({"positions": book.position_rows()}))
+        _, report = book.reconcile(path, [row])
+        self.assertEqual(report["unresolved_status_codes"], [])
+        self.assertEqual(report["open_orders"], [])
+        self.assertEqual([item["filled"] for item in report["missing_fills"]], [1],
+                         "the shortfall is a missing fill, which is a fact, not an unknown")
+        self.assertEqual([row["quantity"] for row in book.rows("fills")], [1])
+        release = {"verified": True, "commit": "f" * 40, "uncommitted": [],
+                   "reason": "fixture: every runtime .py matches the checked-out commit"}
+        with mock.patch.object(golive, "release_check", return_value=release):
+            status, _, evidence = book.generate_evidence(
+                book.snapshot(), orders="reconcile_orders", out="evidence-7")
+        self.assertEqual(status, 0, "R17 reads a cancelled partial as reconciled")
+        self.assertTrue(evidence["assertions"]["reconciled"], evidence["reconcile"])
 
     def set_book(self, tickets):
         """Put the account into the state the fills describe, then re-capture cash and positions."""

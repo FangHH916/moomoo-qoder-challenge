@@ -32,6 +32,31 @@ from rules.trading_calendar import ET, is_session, session_bounds, target_age, t
 REDUCE_ONLY_RELIEF = "reduce-only or emergency order"
 
 
+def allowed_target_age(config: dict, signal_date: str, day: str) -> tuple[int, str | None]:
+    """R10's age limit for this session: the standing one, or a dated exception the user decided.
+
+    `target_age_exceptions` rows are read exactly: a row applies only when the running session day, the
+    book's signal date, a whole non-negative `max_age_sessions` and a `decided_by` attribution all match,
+    so a typo can never widen the gate and only the named day gets the older book. Every other day keeps
+    `max_target_age_sessions`. Two rows matching one day and signal date is refused rather than resolved
+    by whichever comes first in the file.
+    """
+    limit, decided_by = int(config["max_target_age_sessions"]), None
+    matches = []
+    for row in config.get("target_age_exceptions") or ():
+        if not isinstance(row, dict) or row.get("day") != day or row.get("signal_date") != signal_date:
+            continue
+        age = row.get("max_age_sessions")
+        if type(age) is not int or age < 0 or not row.get("decided_by"):
+            continue
+        matches.append((age, str(row["decided_by"])))
+    if len(matches) > 1:
+        raise ValueError(f"{len(matches)} target age exceptions cover {signal_date} on {day}")
+    if matches and matches[0][0] >= limit:
+        limit, decided_by = matches[0]
+    return limit, decided_by
+
+
 def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
     checks = []
 
@@ -125,7 +150,8 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
                 size = flags.get("market_value", flags.get("market_cap"))
                 instrument_ok = instrument_ok and finite(size) and size >= config["min_etf_market_value"]
         check("R2", instrument_ok or reducing,
-              "US, relay-verified, right instrument type; ETF $500M fund size; $1 price; " + REDUCE_ONLY_RELIEF,
+              f"US, relay-verified, right instrument type; ETF ${config['min_etf_market_value']:,.0f} fund "
+              f"size; ${config['min_price']:g} price; " + REDUCE_ONLY_RELIEF,
               {"type": flags.get("security_type"), "market": flags.get("market")})
         cap = config["ticker_cap_of_initial"] * initial
         over_cap = sorted(s for s in set(longs) | set(shorts)
@@ -185,7 +211,8 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
               "FLATTEN_HALT")
         try:
             validate_targets(targets, config)
-            fresh = target_age(targets["signal_date"], now) <= config["max_target_age_sessions"]
+            limit, decided_by = allowed_target_age(config, targets["signal_date"], day)
+            fresh = target_age(targets["signal_date"], now) <= limit
             data_time = timestamp(targets["data_timestamp"])
             fresh = fresh and data_time <= timestamp(targets["generated_at"]) <= now
             fresh = fresh and data_time.astimezone(ET).date().isoformat() == targets["signal_date"]
@@ -193,14 +220,17 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
             fresh = fresh and targets["checksum"] == context["expected_target_checksum"]
             fresh = fresh and targets["config_checksum"] == digest(config) and targets["mode"] == mode
         except (ValueError, KeyError, TypeError):
-            fresh = False
+            fresh, limit, decided_by = False, config.get("max_target_age_sessions"), None
         check("R10", fresh or emergency,
               "verified P* target checksum, variant and config; not older than "
-              f"{config['max_target_age_sessions']} completed session(s); independent emergency path",
+              f"{limit} completed session(s)"
+              + (f" by the dated exception decided by {decided_by}" if decided_by else "")
+              + "; independent emergency path",
               targets.get("signal_date"), "HOLD")
         check("R11", quote_ok and context.get("snapshot_verified_by_relay") is True
               and _recent(snap["as_of"], now, config["account_max_age_seconds"]),
-              "quote and account snapshot <= 60s old, relay-verified, not in the future",
+              f"quote and account snapshot <= {config['quote_max_age_seconds']}s / "
+              f"{config['account_max_age_seconds']}s old, relay-verified, not in the future",
               quote.get("as_of"), "HOLD")
         stale_pending = any(o["status"] in ("UNKNOWN", "CANCEL_PENDING")
                             or not _recent(o.get("submitted_at", "2000-01-01T00:00:00+00:00"), now,

@@ -45,23 +45,25 @@ class EtfScreen(unittest.TestCase):
         self.assertEqual(result["checked_at"], NOW.isoformat())
 
     def test_a_fund_smaller_than_the_limit_is_not_tradable(self):
+        limit = config_for()["min_etf_market_value"]
         rows = {name: etf_row() for name in ETFS}
-        rows["SLV"] = etf_row(market_value=499_999_999.0)
+        rows["SLV"] = etf_row(market_value=limit - 1.0)
         result = self.check(rows)
         self.assertEqual(result["skipped"], ["SLV"])
         self.assertEqual(next(row["reasons"] for row in result["rows"] if row["symbol"] == "SLV"),
-                         [f"market value $499,999,999 below the ${config_for()['min_etf_market_value']:,.0f} limit"])
+                         [f"market value ${limit - 1:,.0f} below the ${limit:,.0f} limit"])
 
     def test_the_fund_size_field_falls_back_until_one_is_found(self):
+        limit = config_for()["min_etf_market_value"]
         for key in ("market_value", "market_cap", "fund_aum", "asset_netting_value"):
             with self.subTest(key=key):
                 self.assertEqual(eligibility.market_value({key: 6e8}), 6e8)
         self.assertIsNone(eligibility.market_value({"market_cap": None}))
         self.assertIsNone(eligibility.market_value({}))
         rows = {name: etf_row() for name in ETFS}
-        rows["IWM"] = etf_row(market_value=None, market_cap=None, fund_aum=4e8)
+        rows["IWM"] = etf_row(market_value=None, market_cap=None, fund_aum=limit - 1e8)
         self.assertEqual(next(row["reasons"] for row in self.check(rows)["rows"] if row["symbol"] == "IWM"),
-                         ["market value $400,000,000 below the $500,000,000 limit"])
+                         [f"market value ${limit - 1e8:,.0f} below the ${limit:,.0f} limit"])
 
     def test_the_competition_price_floor_applies(self):
         quotes = {name: etf_quote() for name in ETFS}

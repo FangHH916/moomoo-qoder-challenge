@@ -100,14 +100,15 @@ class Journal:
         self.db.execute("INSERT INTO controls VALUES (?,1,?) ON CONFLICT(account) DO UPDATE SET halted=1,reason=excluded.reason", (account, reason))
 
     def set_resume(self, account: str, reason: str):
-        """Arm the account: the only way a row with halted=0 is ever written, so R16 starts from evidence."""
+        """Put the account back in run: the only way a row with halted=0 is ever written, so R16 starts from evidence."""
         if account not in ACCOUNTS.values():
             raise ValueError("Invalid control account")
         self.db.execute("INSERT INTO controls VALUES (?,0,?) ON CONFLICT(account) DO UPDATE SET halted=0,reason=excluded.reason", (account, reason))
 
     def control(self, account: str) -> dict:
         row = self.db.execute("SELECT halted,reason FROM controls WHERE account=?", (account,)).fetchone()
-        return {"halted": bool(row[0]) if row else True, "reason": row[1] if row else "Not armed", "verified_by_relay": True}
+        return {"halted": bool(row[0]) if row else True, "reason": row[1] if row else "Never resumed",
+                "verified_by_relay": True}
 
     def acquire(self, account: str, owner: str) -> bool:
         if account not in ACCOUNTS.values():

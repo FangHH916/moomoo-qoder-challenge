@@ -26,7 +26,13 @@ VARIANTS = ("pstar", "pstar15")
 
 
 def config_for(variant: str = "pstar15") -> dict:
-    return {**load_strategy_config("pstar"), "variant": variant}
+    """The deployed config with one variant selected, pinned to the test account's mode.
+
+    The live switch (`mode`) says which of the two paper accounts the deployment trades; these offline
+    tests pair the config with `snapshot()` below (5322438, mode test), so following the live switch here
+    would make every book a mode mismatch whenever the deployment points at the competition account.
+    """
+    return {**load_strategy_config("pstar"), "variant": variant, "mode": "test"}
 
 
 def run_file(variant: str) -> dict:
