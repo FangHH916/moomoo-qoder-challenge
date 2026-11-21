@@ -1,8 +1,8 @@
 {
   "schema_version": "local-release-lock/1",
   "release_name": "paper-forward-local-0.3.5",
-  "retrieved_at": "2026-11-21T05:35:02Z",
-  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift",
+  "retrieved_at": "2026-11-21T05:38:01Z",
+  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift",
   "local_revision": "0.3.5",
   "activation": "BLOCKED",
   "cloud_verification_status": "UNVERIFIED",
@@ -21,7 +21,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/coordinator.md",
-      "local_source_sha256": "6d62a46bab2a9ead2a534482bb79df171b934ae3c4ffcff3713be545de5c06c2"
+      "local_source_sha256": "d00ee21e7b974214e9968a711c43f20846c55e92b49cfb43162d64190277affe"
     },
     "scout": {
       "agent_id": null,
@@ -33,7 +33,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/scout.md",
-      "local_source_sha256": "ccc47bfa89e634e5afad2319d8a9add73b40c31e149b57910ab6bdb4603b1700"
+      "local_source_sha256": "81552d21ec7dade892b6e50bff54ec71378baaf7b2b2f7953dcded524786d516"
     },
     "guard": {
       "agent_id": null,
@@ -45,7 +45,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/guard.md",
-      "local_source_sha256": "de93879ec425cfd309c2dfcd2926e26e6152b79af29e6dfacbc7efd220cef7a3"
+      "local_source_sha256": "c189fb33676dd03c734993d20cd6e8b0520b18960e7e66e603795a3cc4943e33"
     },
     "risk-auditor": {
       "agent_id": null,
@@ -57,7 +57,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/risk-auditor.md",
-      "local_source_sha256": "8ee34ced69e2df731041ec323275d0b40fea6bb28b7956431d79f257f0c50950"
+      "local_source_sha256": "e5f91160e7a32e48b97a3e8f2417e58d7c7dfe7c9e0a67d626a7e3ec2de56a9f"
     },
     "advisor": {
       "agent_id": null,
@@ -69,7 +69,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/advisor.md",
-      "local_source_sha256": "9a83de7d42d5c1dd9edc76319493108b97608575025d1b79cef247a93ce11d0a"
+      "local_source_sha256": "21a594faf5a1c6fd9f33078af4ae0db0cf71784befa0547501138833e99905fe"
     }
   },
   "skills": {
@@ -136,14 +136,14 @@
     "The 1-7 moomoo order status-code enumeration is documentation-derived knowledge carried in the 2026-11-21 instruction, not machine-verified: the MCP metadata for sim_trade_history_order_list publishes request fields only, and of the seven codes only 4 and 5 have been observed, in the 2026-11-20 history of 5322438. Code 0, any further undocumented code, and whether a cancelled-with-no-fill order reprices cleanly, have not been observed on a real book"
   ],
   "source_sha256": {
-    "agents/AGENTS.md": "458c68f93b6de6d41d1a1a506c9906ff44e219bde9ba52431541fc97d1a5bb40",
-    "agents/advisor.md": "9a83de7d42d5c1dd9edc76319493108b97608575025d1b79cef247a93ce11d0a",
-    "agents/coordinator.md": "6d62a46bab2a9ead2a534482bb79df171b934ae3c4ffcff3713be545de5c06c2",
+    "agents/AGENTS.md": "4059b52bc73be464b5b55e7270b009d267f763b40f6a0f1693f4c4e9a810c76d",
+    "agents/advisor.md": "21a594faf5a1c6fd9f33078af4ae0db0cf71784befa0547501138833e99905fe",
+    "agents/coordinator.md": "d00ee21e7b974214e9968a711c43f20846c55e92b49cfb43162d64190277affe",
     "agents/evaluate.py": "e5141b8effdd10ee69a2b79393a454bad2c4fac3cccd090f1a83af19e51dec7d",
     "agents/evaluations.json": "bca63b8cd411fe71163d8bea109f525dca560ae31ee8a90acee75c61f0c5c080",
-    "agents/guard.md": "de93879ec425cfd309c2dfcd2926e26e6152b79af29e6dfacbc7efd220cef7a3",
-    "agents/risk-auditor.md": "8ee34ced69e2df731041ec323275d0b40fea6bb28b7956431d79f257f0c50950",
-    "agents/scout.md": "ccc47bfa89e634e5afad2319d8a9add73b40c31e149b57910ab6bdb4603b1700",
+    "agents/guard.md": "c189fb33676dd03c734993d20cd6e8b0520b18960e7e66e603795a3cc4943e33",
+    "agents/risk-auditor.md": "e5f91160e7a32e48b97a3e8f2417e58d7c7dfe7c9e0a67d626a7e3ec2de56a9f",
+    "agents/scout.md": "81552d21ec7dade892b6e50bff54ec71378baaf7b2b2f7953dcded524786d516",
     "agents/templates.json": "99a055eb1bd4f5ed7642681d9cd3aaf38e21a4f0c9476448bffd4397af50f2f9",
     "docs/submission-checklist.md": "5c10fea07903e98b1f6c891a4e4dcb374bca155eecdf227e8ebb76135f5c529a",
     "live/config.pstar.json": "c5d157601358c6ac3445679cfbafb17071e8b6e6c1582d63d13c9933fddae7dd",
