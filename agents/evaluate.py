@@ -83,8 +83,18 @@ def load(relative: str):
     return parse_json(local_path(relative).read_text(encoding="utf-8"))
 
 
+def canonical_bytes(path) -> bytes:
+    """A file's bytes with CRLF folded to LF, so git's text conversion is not a content change.
+
+    `core.autocrlf=true` checks these sources out with CRLF while the repository stores LF, so hashing raw
+    bytes bound the release to one machine's checkout and made a fresh clone report drift for every file that
+    was last written with LF endings. Content identity is what the lock must bind.
+    """
+    return path.read_bytes().replace(b"\r\n", b"\n")
+
+
 def sha256(relative: str) -> str:
-    return hashlib.sha256(local_path(relative).read_bytes()).hexdigest()
+    return hashlib.sha256(canonical_bytes(local_path(relative))).hexdigest()
 
 
 def pointer(value, path: str):
@@ -163,7 +173,7 @@ def validate_metadata() -> None:
     for name in ("AGENTS",) + ROLES:
         text = local_path(f"agents/{name}.md").read_text(encoding="utf-8")
         for field in ("Retrieved at:", "Agent ID: null", "Cloud version: null",
-                      "Local revision: 0.3.4", "Change summary:"):
+                      "Local revision: 0.3.5", "Change summary:"):
             require(field in text, f"{name}: missing {field}")
         require("no cloud retrieval" in text, f"{name}: retrieval scope unclear")
         require("BLOCKED" in text, f"{name}: missing activation status")
@@ -176,7 +186,7 @@ def validate_metadata() -> None:
 
 def validate_source_lock(lock: dict) -> None:
     require(lock["activation"] == "BLOCKED", "Release must remain blocked")
-    require(lock["local_revision"] == "0.3.4", "Unexpected local revision")
+    require(lock["local_revision"] == "0.3.5", "Unexpected local revision")
     require(set(lock["source_sha256"]) == set(SOURCE_PATHS), "Source manifest coverage mismatch")
     for path, expected in lock["source_sha256"].items():
         require(bool(re.fullmatch(r"[0-9a-f]{64}", expected)), f"Invalid source hash: {path}")
@@ -356,7 +366,7 @@ def build_report() -> dict:
     fixtures = fixture_results(evaluations)
     return {
         "scope": "offline_specification_invariants_only",
-        "local_revision": "0.3.4", "activation": "BLOCKED",
+        "local_revision": "0.3.5", "activation": "BLOCKED",
         "cloud_prompt_evaluation": "UNVERIFIED", "runtime_gate_tested": False,
         "status": "FAIL" if errors or any(f["failures"] for f in fixtures) else "PASS",
         "spec_errors": errors, "fixtures": fixtures,

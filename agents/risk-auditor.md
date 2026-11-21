@@ -2,7 +2,7 @@
 Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.4
+Local revision: 0.3.5
 Change summary: Separate account-read-only plan audit from research, execution and order permission for the frozen P* book, including variant provenance, the 38%/margin/position caps and the 100/100 order split. The 300-second snapshot age, the $300M ETF screen, the dated R10 target-age exception and the mode-dependent meaning of "approval" all follow the user's 2026-11-21 decision.
 -->
 

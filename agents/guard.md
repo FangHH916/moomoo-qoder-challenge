@@ -2,7 +2,7 @@
 Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.4
+Local revision: 0.3.5
 Change summary: Follow the user's 2026-11-21 automatic-execution decision and the configuration it changed: the 300-second quote/account and snapshot ages, the $300M ETF fund-size screen, the sealed 2026-11-19 book as the go-live ENTRY batch, and the deterministic gate rather than a per-batch human approval in competition mode.
 -->
 

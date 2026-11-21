@@ -1,6 +1,6 @@
 {
   "schema_version": "fixed-spec-evaluations/1",
-  "local_revision": "0.3.4",
+  "local_revision": "0.3.5",
   "fixture_set": "paper-release-four-v1",
   "scope": "Offline assertions validate specification invariants only, not trading gate behavior or cloud prompt performance.",
   "cloud_status": "UNVERIFIED",

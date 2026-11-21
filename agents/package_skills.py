@@ -4,9 +4,10 @@ Usage:
   python -B agents/package_skills.py --check     # validate sources, write nothing
   python -B agents/package_skills.py             # write agents/dist/<name>.zip and print hashes
 
-The archives are byte-deterministic (fixed member timestamps and order), so the SHA-256 recorded
-here can be bound to `expected_uploaded_archive_sha256` in release-lock.json before an upload.
-Writing a zip is not uploading: no cloud call, credential read or Skill Center access happens.
+The archives are byte-deterministic (fixed member timestamps and order, and members stored as the LF
+canonical bytes that `agents/evaluate.py` hashes, so a `core.autocrlf=true` checkout packages identically),
+so the SHA-256 recorded here can be bound to `expected_uploaded_archive_sha256` in release-lock.json before
+an upload. Writing a zip is not uploading: no cloud call, credential read or Skill Center access happens.
 """
 from __future__ import annotations
 
@@ -27,6 +28,11 @@ FIXED_STAMP = (1980, 1, 1, 0, 0, 0)
 MAX_ARCHIVE_BYTES = 50_000_000
 MAX_DESCRIPTION = 1024
 MAX_BODY_LINES = 500
+
+
+def canonical_bytes(path: Path) -> bytes:
+    """The file's bytes with CRLF folded to LF, matching `agents/evaluate.py`'s source hashing."""
+    return path.read_bytes().replace(b"\r\n", b"\n")
 
 
 def frontmatter(text: str) -> tuple[dict, str]:
@@ -54,7 +60,7 @@ def check_skill(folder: Path) -> dict:
     source = folder / "SKILL.md"
     if not source.is_file():
         raise ValueError(f"{name}: SKILL.md is missing")
-    text = source.read_text(encoding="utf-8")
+    text = canonical_bytes(source).decode("utf-8")
     if re.search(r"\bTO" + r"DO:", text, re.I):
         raise ValueError(f"{name}: unresolved TODO placeholder")
     fields, body = frontmatter(text)
@@ -70,7 +76,7 @@ def check_skill(folder: Path) -> dict:
     members = {}
     for path in sorted(folder.rglob("*")):
         if path.is_file():
-            members[path.relative_to(folder).as_posix()] = path.read_bytes()
+            members[path.relative_to(folder).as_posix()] = canonical_bytes(path)
     digest = hashlib.sha256()
     for member in sorted(members):
         digest.update(member.encode())
@@ -87,7 +93,7 @@ def build(entry: dict, folder: Path, out_dir: Path) -> Path:
             info = zipfile.ZipInfo(f"{entry['name']}/{member}", date_time=FIXED_STAMP)
             info.compress_type = zipfile.ZIP_DEFLATED
             info.external_attr = 0o644 << 16
-            archive.writestr(info, (folder / member).read_bytes())
+            archive.writestr(info, canonical_bytes(folder / member))
     payload = buffer.getvalue()
     if len(payload) > MAX_ARCHIVE_BYTES:
         raise ValueError(f"{entry['name']}: archive exceeds 50MB")

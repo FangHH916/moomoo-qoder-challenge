@@ -2,7 +2,7 @@
 Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.4
+Local revision: 0.3.5
 Change summary: Define isolated Forward dispatch without trading credentials or executor authority over the frozen P* book, with variant provenance and the research-run job in the dispatch sequence; step 6 follows the user's 2026-11-21 automatic-execution decision, which leaves the deterministic gate as the authority in `competition` mode and keeps the exact-payload approval in `test` mode.
 -->
 

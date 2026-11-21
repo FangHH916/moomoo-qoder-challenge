@@ -3,7 +3,7 @@
   "artifact_type": "inactive_desired_specification_not_api_payload",
   "retrieved_at": "2026-11-19T04:01:57Z",
   "retrieval_scope": "original local review; correction uses public MCP metadata only, no account operations or cloud resource retrieval; the 0.3.x revisions retarget the specification at the frozen P* book and keep every quoted performance figure on the committed research artifacts",
-  "local_revision": "0.3.4",
+  "local_revision": "0.3.5",
   "reviewed_at": "2026-11-19T18:49:44Z",
   "activation": "BLOCKED",
   "mode": "Forward",
@@ -361,7 +361,10 @@
       "decided_by": "user",
       "scope": "the 5832812 competition book, entered from this Qoder Desktop chat and exited by the scheduled final run",
       "replaces": "the typed ARM and CONFIRM steps, which are removed rather than bypassed",
-      "human_controls": ["durable pause and resume commands", "Slack alerts"],
+      "human_controls": [
+        "durable pause and resume commands",
+        "Slack alerts"
+      ],
       "cloud_forward_roles": "unchanged: activation BLOCKED, no order tool granted"
     },
     "hard_rules_waivable_by_slack": false,

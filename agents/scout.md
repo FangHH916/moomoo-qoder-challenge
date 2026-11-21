@@ -2,7 +2,7 @@
 Retrieved at: 2026-11-21T04:21:07Z (local source review; no cloud retrieval)
 Agent ID: null
 Cloud version: null
-Local revision: 0.3.4
+Local revision: 0.3.5
 Change summary: Limit Scout to sourced market evidence and HOLD vetoes over the frozen P* target book, with the round-14 limitations and the eligibility screen it may report but never repair; the ETF fund-size screen follows the user's 2026-11-21 decision at $300M.
 -->
 
