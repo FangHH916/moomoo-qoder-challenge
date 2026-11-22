@@ -21,3 +21,6 @@ journal/incoming/
 journal/.*.tmp
 !journal/decisions.jsonl
 !journal/fills.jsonl
+
+# Qoder Sites publish record (site and deployment IDs, base64 copy of the page)
+*.qoder.site
