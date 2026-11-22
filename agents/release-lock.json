@@ -256,7 +256,16 @@
       "display_name": "moomoo-mcp",
       "created_at": "2026-11-18T12:17:29Z",
       "identity_id": null,
-      "created_by_us": false
+      "created_by_us": false,
+      "discovered_at": "2026-11-22T18:07:35Z",
+      "reconfirmed_at": "2026-11-22T18:41:26Z",
+      "oauth_user_reported": {
+        "reported_by": "user",
+        "reported_on": "2026-11-23",
+        "url": "https://mcp.moomoo.com/mcp",
+        "status": "Active",
+        "note": "one MCP OAuth authorization, created by the user on 2026-11-18 together with the vault; the MCP surface does not expose vault authorization state, because get_forward_vault returns no OAuth fields, so status Active is user-reported from the Forward app UI rather than machine-verified"
+      }
     },
     "environment": {
       "id": "env_00vv81dihmfb5x64n60y",
@@ -344,7 +353,8 @@
     },
     "limitations": [
       "the MCP surface exposes no identity object (no list/create identity tool), so identity_id stays null in the roles block and the pre-existing vault's null identity_id cannot be completed from here; the role specs' identity binding is therefore still a release blocker, recorded rather than papered over",
-      "the MCP surface exposes no channel/Slack listing tool, so channel bindings are only observable inside the Forward template's Channels tab; the step-5 PAUSE/RESUME test therefore runs through the cloud template, as the user stated on 2026-11-22"
+      "the MCP surface exposes no channel/Slack listing tool, so channel bindings are only observable inside the Forward template's Channels tab; the step-5 PAUSE/RESUME test therefore runs through the cloud template, as the user stated on 2026-11-22",
+      "the MCP surface does not expose vault authorization state: get_forward_vault returns no OAuth/provider fields, so the Active MCP OAuth at https://mcp.moomoo.com/mcp is user-reported; the step-2 one-time read-only session probe is the only way to observe which tool scopes the authorization actually grants"
     ],
     "bindings_written": "none: every role/skill binding field in this lock stays null; this block is the only place discovered IDs are recorded, because agents/evaluate.py rejects any non-null *_id or expected_* inside the roles/skills blocks"
   }
