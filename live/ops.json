@@ -1,0 +1,47 @@
+{
+  "schema_version": "pstar-ops/1",
+  "purpose": "Operational parameters that are NOT frozen strategy rules. live/config.pstar.json is deliberately untouched here: its digest is bound into the sealed target contract (config_checksum), so adding an operational knob to it would invalidate the 2026-11-23 entry batch. Everything in this file is an operator/monitoring parameter and is read by live/pause_switch.py and skills/pstar-risk-check/scripts/risk_check.py.",
+  "provenance": "prompt 08 part A item 1, user decision of 2026-11-21 (cloud executes the final exit and risk reductions, Slack PAUSE/RESUME is the only human control)",
+  "pause_switch": {
+    "mechanism": "moomoo watchlist enumeration",
+    "why_this_mechanism": "The prompt asked, in order: (1) a moomoo watchlist flag, (2) Qoder shared workspace memory / project wiki, (3) a file in a git repo both sides pull. Measured on 2026-11-22: (1) works - quote_modify_user_security accepts ADD/DEL on an existing CUSTOM group and quote_user_security reads it back, and both the local Desktop chat and a cloud session reach the same moomoo account through the same MCP, so the state is shared and survives between cloud sessions; its ceiling is that it carries only which symbols are in the group (no timestamps, no metadata) and the MCP cannot create a group or store a non-ticker string. (2) is documented in notes/handbook-notes.md but is unverifiable from this repository: no cloud session has written a memory a local chat later read, so it cannot be claimed as the switch. (3) is impossible as delivered: `git remote -v` is empty, so there is nothing for either side to pull. Conclusion: option 1, with the day ring below supplying the only expiry the channel can carry, and time/source recorded in the journal row and the Slack thread rather than in the flag.",
+    "group": "PSTAR-PAUSE",
+    "group_type": "CUSTOM",
+    "group_provisioning": "the MCP has no group-creation tool (quote_modify_user_security accepts only ADD, DEL, MOVE_OUT and fails with `group_name not found` for an unknown group), so the user creates the empty PSTAR-PAUSE watchlist once in the moomoo app before the first write; until then every read reports `unknown` and entries stay blocked",
+    "state": {
+      "paused": "US.SQQQ",
+      "running": "US.SOXL"
+    },
+    "lease": {
+      "local-entry": "US.XLE",
+      "cloud-executor": "US.XLF"
+    },
+    "lease_day_ring": ["US.XLI", "US.XLK", "US.XLB", "US.XLV", "US.XLU", "US.XLY", "US.XLP", "US.KRE", "US.KWEB", "US.XME", "US.PICK", "US.XOP"],
+    "lease_hours_local_entry": "16:00",
+    "lease_hours_cloud_executor": "16:30",
+    "ambiguous_is_paused": true,
+    "never_blocks": ["FINAL_EXIT", "EMERGENCY_EXIT"],
+    "sentinel_disjointness": "no sentinel may appear in etf_universe, etf_sleeve, spy_route, discretionary_symbols or the sealed target weights: a flag symbol is never tradable, so a book that contains one would make the switch ambiguous",
+    "verified": "2026-11-22: all 16 codes resolve on quote_market_snapshot with sec_status NORMAL and trust_valid true, and none is in the P* book"
+  },
+  "risk_check": {
+    "order_working_minutes_alert": 30,
+    "warn_ticker_share_of_initial": 0.37,
+    "warn_margin": 0.85,
+    "warn_drawdown": -0.04,
+    "warn_note": "The WARN line sits below the frozen ALERT/KILL rules in live/config.pstar.json (trim 39% of initial assets, margin 95%, drawdown -8%): a warning posts to Slack and changes no order, so it is an operational knob and lives here rather than in the sealed config. position_count_warn_fraction is the fraction of max_positions above which the position count itself is a warning.",
+    "position_count_warn_fraction": 0.95,
+    "order_budget_warn_fraction": 0.8,
+    "anomaly_kinds": ["broker_rejection", "order_working_too_long", "partial_fill", "unexpected_symbol", "untagged_order", "order_budget", "check_failed"],
+    "peak_equity": {
+      "file": "reports/live/golive/state/risk_peak_equity.json",
+      "fallback_basis": "max(initial_equity, highest equity in the previous end-of-day report) when no peak file exists; the script says which basis it used in every report",
+      "end_of_day_reports": "reports/live/*/*/summary*.json"
+    }
+  },
+  "slack": {
+    "channel": "#trading-agent",
+    "control_words": ["PAUSE", "RESUME"],
+    "control_source": "the user's own Slack account only, as the whole message, never quoted and never from another person"
+  }
+}

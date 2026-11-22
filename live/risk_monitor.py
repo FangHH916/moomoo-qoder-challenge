@@ -59,6 +59,38 @@ def measure(config: dict, positions, equity: float, initial_equity: float,
                                 * initial_equity)}
 
 
+def warn_lines(config: dict, ops: dict, state: dict) -> list[str]:
+    """The WARN line, which posts to Slack and changes no order.
+
+    The thresholds are in `live/ops.json` because they are monitoring knobs, not frozen rules: every ALERT and
+    KILL number this function is deliberately softer than lives in `live/config.pstar.json`, whose digest is
+    bound into the sealed target contract. Both the `pstar-risk-check` skill and `golive.py plan --risk-action`
+    call this so a warning means the same thing on both sides.
+    """
+    risk = ops.get("risk_check") or {}
+    try:
+        ticker, margin = float(risk["warn_ticker_share_of_initial"]), float(risk["warn_margin"])
+        drawdown = float(risk["warn_drawdown"])
+        positions = int(config["max_positions"] * float(risk["position_count_warn_fraction"]))
+    except (KeyError, TypeError, ValueError) as exc:
+        raise RiskError(f"live/ops.json risk_check is missing a WARN threshold: {exc}") from exc
+    lines = []
+    if state["max_ticker"] and state["max_ticker_vs_initial"] > ticker:
+        lines.append(f"{state['max_ticker']} is {state['max_ticker_vs_initial']:.1%} of initial assets, above "
+                     f"the {ticker:.0%} warning line (the trim rule starts at "
+                     f"{config['trim_ticker_above_of_initial']:.0%}).")
+    if state["margin"] > margin:
+        lines.append(f"margin {state['margin']:.1%} is above the {margin:.0%} warning line (the cut starts at "
+                     f"{config['delever_margin_above']:.0%}).")
+    if state["drawdown"] <= drawdown:
+        lines.append(f"drawdown {state['drawdown']:.2%} of the peak is past the {drawdown:.0%} warning line "
+                     f"(the flatten rule starts at {config['drawdown_limit']:.0%}).")
+    if state["positions"] > positions:
+        lines.append(f"{state['positions']} positions is past the {positions}-position warning line "
+                     f"({config['max_positions']} is the cap).")
+    return lines
+
+
 def flatten(state: dict, protected=()) -> dict:
     """Reduce every position the strategy owns to zero; protected names are left alone."""
     return {name: 0 for name, quantity in state["quantities"].items()

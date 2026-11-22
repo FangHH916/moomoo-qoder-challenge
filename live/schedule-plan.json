@@ -2,22 +2,80 @@
   "kind": "inactive-local-schedule-specification",
   "registered": false,
   "timezone": "America/New_York",
-  "start_at": "2026-11-20T09:00:00-05:00",
-  "stop_at": "2026-11-27T16:30:00-05:00",
+  "owner_role": "coordinator",
+  "dispatch": "one Coordinator schedule owns the calendar; the Risk Auditor and the Executor run in their own isolated Forward Sessions when the Coordinator dispatches them, and no trading role is scheduled directly. R14 keeps the auditor Session and the executor Session distinct.",
+  "start_at": "2026-11-23T09:45:00-05:00",
+  "stop_at": "2026-11-27T13:30:00-05:00",
   "identity_id": null,
   "coordinator_template_id": null,
   "environment_id": null,
-  "execution": {"session_mode": "new_session", "max_concurrent_runs": 1, "max_attempts": 1, "timeout_ms": 300000},
+  "execution": {
+    "session_mode": "new_session",
+    "max_concurrent_runs": 1,
+    "max_attempts": 1,
+    "timeout_ms": 300000
+  },
   "cross_schedule_account_lease_required": true,
+  "shared_pause_switch": {
+    "group": "PSTAR-PAUSE",
+    "source_of_truth": "live/ops.json",
+    "read": "before the first submit and before every reprice round; ambiguous means paused",
+    "writers": ["executor", "local Qoder Desktop chat"],
+    "never_blocks": ["FINAL_EXIT", "EMERGENCY_EXIT"]
+  },
   "jobs": [
-    {"name": "readiness", "cron": "0 9 * * 1-5", "action": "Scout and independent Auditor; no order"},
-    {"name": "rebalance-or-drift", "cron": "35 9 * * 1-5", "action": "Approved five-session cadence or staged bootstrap; otherwise risk check"},
-    {"name": "intraday-risk", "cron": "0,30 10-15 * * 1-5", "action": "Check exchange hours before any market action"},
-    {"name": "eod", "cron": "10 16 * * 1-5", "action": "Full-session report only; skip on November 27"},
-    {"name": "final-exits", "once": "2026-11-27T12:15:00-05:00", "action": "Approved reduce-only limit liquidation; target flat by 12:45 ET"},
-    {"name": "early-close-report", "once": "2026-11-27T13:10:00-05:00", "action": "Reconcile final positions, orders, costs and mark"}
+    {
+      "name": "post_open_check",
+      "cron": "45 9 * * 1-5",
+      "owner": "coordinator",
+      "action": "calendar check, then Risk Auditor risk check and order reconciliation; dispatch the local entry batch only on 2026-11-23"
+    },
+    {
+      "name": "risk_and_order_check",
+      "cron": "0,30 10-15 * * 1-5",
+      "owner": "risk-auditor",
+      "action": "pstar-risk-check on raw paper reads; post to Slack only on KILL, ALERT, WARN, ORDER ANOMALY or CHECK FAILED, plus a 12:00 heartbeat so a silent schedule is distinguishable from a quiet book"
+    },
+    {
+      "name": "end_of_day_report",
+      "cron": "10 16 * * 1-5",
+      "owner": "coordinator",
+      "action": "reconciled report, Advisor second opinion, Slack summary; skipped on 2026-11-27"
+    },
+    {
+      "name": "final_exit",
+      "once_at": "2026-11-27T12:15:00-05:00",
+      "owner": "executor",
+      "action": "golive.py plan --final-exit, marketable limits reprice every five minutes, MARKET only at or after 12:45 ET, each round posted"
+    },
+    {
+      "name": "flat_check",
+      "once_at": "2026-11-27T12:50:00-05:00",
+      "owner": "risk-auditor",
+      "action": "ALERT listing every position still open if the account is not flat"
+    },
+    {
+      "name": "final_report",
+      "once_at": "2026-11-27T13:10:00-05:00",
+      "owner": "coordinator",
+      "action": "final reconciliation, costs and competition mark"
+    }
   ],
-  "calendar_exceptions": {"2026-11-26": "NO_TRADING", "2026-11-27": "NO_REBALANCE_EXIT_ONLY_CLOSE_13:00_ET"},
-  "local_job": {"timezone": "Asia/Singapore", "time": "06:30", "weekdays": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "registered": false},
-  "deployment_blockers": ["Verify accepted start_at/stop_at schema before converting this spec to API payloads", "Bind actual identity/template/skill/vault/channel resources", "Complete permission relay and test-account release evidence"]
+  "calendar_rule": "skip 2026-11-26 as a market holiday; on 2026-11-27 run nothing after 13:00 ET except the final report; a trigger that fires outside the exchange session halts and alerts rather than sending",
+  "calendar_exceptions": {
+    "2026-11-26": "NO_TRADING",
+    "2026-11-27": "NO_REBALANCE_EXIT_ONLY_CLOSE_13:00_ET"
+  },
+  "local_job": {
+    "timezone": "Asia/Singapore",
+    "time": "06:30",
+    "weekdays": ["Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+    "registered": false
+  },
+  "deployment_blockers": [
+    "Verify accepted start_at/stop_at schema before converting this spec to API payloads",
+    "Bind actual identity/template/skill/vault/channel resources",
+    "Complete permission relay and test-account release evidence",
+    "No schedule below is created: `agents/templates.json` records created=false and schedule_ids=null until the platform returns the IDs"
+  ]
 }

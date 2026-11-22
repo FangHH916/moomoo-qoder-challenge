@@ -20,14 +20,21 @@ artifacts and tickets, and refuses anything it cannot prove.
 - **Deterministic Python:** parsing, sizing, pricing, the R0–R21 gate, duplicate protection,
   reconciliation, and the computation of every field in `evidence.json`. No order quantity or price is
   ever computed by hand or edited in a payload, and no evidence flag is ever typed.
-- **The user:** `PAUSE` and `RESUME`, from Slack once the listener lands (next prompt) or in this chat
-  until then. The user is not in the submit path: the rules gate decides, and a control that only asks a
-  human per batch would add latency without adding a check the gate does not already make.
+- **The user:** `PAUSE` and `RESUME` in Slack #trading-agent, as the whole message, from their own account.
+  The cloud Coordinator turns that into the shared flag and replies in the thread; this chat reads the flag
+  before the first submit and before every reprice round. Until Part B lands the listener, the same words in
+  this chat are the control. The user is not in the submit path: the rules gate decides, and a control that
+  only asks a human per batch would add latency without adding a check the gate does not already make.
+- **A pause is not a stop order.** It stops the next ticket this tool would have written; a fill that happens
+  while the flag is being carried from the phone to the watchlist to the chat is already at the exchange, and
+  a local run mid-batch notices the switch at its next round, up to five minutes later.
 
 Tools allowed: `sim_trade_account_list`, `sim_trade_cash_info`, `sim_trade_position_list`,
 `sim_trade_history_order_list`, `sim_trade_max_buy_sell`, `sim_trade_input_order`,
-`sim_trade_cancel_order`, the quote tools. **Never** any `trading_*` / `account_*` tool, no market
-orders, no extended hours, no options.
+`sim_trade_cancel_order`, the quote tools, and — for the shared switch only — `quote_user_security` and
+`quote_modify_user_security` on the `PSTAR-PAUSE` group. **Never** any `trading_*` / `account_*` tool, no
+market orders outside the final-exit flatten window (see *Final exit*), no extended hours, no options, and
+never `op: DEL` on a sentinel.
 
 ## Files and commands
 
@@ -40,15 +47,76 @@ the tool's own `snapshot-<hhmm>.json`, `plan.json`, `cancel-<hhmmss>.json`, `rec
 refused or incomplete — read the printed line, do not retry blindly. `--as-of` takes a timezone-aware
 ISO timestamp (defaults to now UTC).
 
-The commands are `resume`, `pause` (`halt` is its alias), `snapshot`, `evidence`, `plan`, `record`,
+The commands are `resume`, `pause` (`halt` is its alias), `flag`, `snapshot`, `evidence`, `plan`, `record`,
 `reprice`, `reconcile`, `alert`. None of them contacts the broker, and none of them needs a `--hold`
 list: positions this strategy did not open are protected by the planner (step 3 of the run below).
+`flag` adds `flag-write-<hhmmss>.json` (the watchlist payloads) and `switch-hold-<hhmmss>.json` (what a
+blocked round leaves behind: the cancel list, the flag write, the command to run), and it caches the read
+it was given in `reports/live/golive/state/switch.json`.
 
 ## The pause switch
+
+There are two switches and they mean the same thing. The **durable local latch** is a row in `journal/`
+that only this tool writes; the **shared flag** is a moomoo watchlist group both this chat and the cloud
+read, because a `PAUSE` sent from a phone lands on the cloud Coordinator, and the 2026-11-23 entry runs
+here. `pause`/`resume` move the latch and print the writes that move the flag; `flag` reads and writes the
+flag directly.
+
+### The durable local latch
 
 `journal/` keeps one durable control row per account, and R9/R16 reject every strategy order while that
 row says halted. A store with no row at all reads `{"halted": true, "reason": "Never resumed"}`, so a
 fresh account is stopped until it is resumed.
+
+### The shared flag: a moomoo watchlist
+
+`live/ops.json` names the group `PSTAR-PAUSE` and the sentinel symbols it carries. What was measured on
+2026-11-22, in the order the prompt asked:
+
+1. **A watchlist flag works.** `quote_modify_user_security` accepts `ADD`/`MOVE_OUT` on an existing CUSTOM
+   group and `quote_user_security` reads it back; the local Desktop chat and a cloud session reach the same
+   moomoo login through the same MCP, so the write is visible on both sides and it outlives a cloud session.
+   Two hard limits came out of the same probes: the MCP **cannot create a group** (`group_name not found`
+   for a name that does not exist), so the user creates `PSTAR-PAUSE` once in the app; and it **cannot store
+   text** (`invalid symbol` for a made-up code), so the channel carries only which symbols are in the group —
+   no timestamp, no source, no expiry string. Removal must be `MOVE_OUT`: `DEL` strips the symbol from every
+   group the user has, including their own.
+2. **Qoder shared workspace memory / project wiki is not proven.** It is the mechanism the handbook section
+   describes, but nothing in this repository shows a cloud Forward session writing a memory this chat then
+   read, so it cannot be the control a live order depends on. Part B tests it; until it passes it is not used.
+3. **A git file is impossible as delivered.** `git remote -v` is empty: there is nothing for two machines to
+   pull. It becomes available only if the user adds a remote and approves both sides pulling it.
+
+So the flag carries enumeration only, and the encoding is:
+
+| sentinel | meaning |
+| --- | --- |
+| `US.SQQQ` | `paused` — send no new order |
+| `US.SOXL` | `running` |
+| `US.XLE` | the `local-entry` lease: this Desktop chat trades now |
+| `US.XLF` | the `cloud-executor` lease: the cloud Executor trades now |
+| one of 12 sector ETFs | the day the lease was taken (Eastern day-of-year mod 12) — the only expiry the channel can hold |
+
+Time, source and reason are not in the flag: they are in the `GOLIVE_FLAG` / `GOLIVE_PAUSE` journal row and
+the Slack thread. Both state sentinels present, neither present, two lease tokens, or a lease day token with
+no holder all read as `unknown`, and `unknown` blocks entries (it never blocks a `FINAL_EXIT` or
+`EMERGENCY_EXIT` reduction). A flag read older than `account_max_age_seconds` (300 s, the same window as the
+account and quote freshness rules) is `unknown` too, so a run that fetched the flag at 09:00 cannot use it at
+10:30. The aliasing limit of the day ring is stated rather than hidden: an unreleased lease token from
+exactly 12 days ago is indistinguishable from today's, which is why releasing a lease removes *all* ring
+codes and why the ring is only ever a coarse self-expiry.
+
+```
+python -m live.golive flag --account 5832812 --read flag-1035.json
+python -m live.golive flag --account 5832812 --read flag-1035.json --set paused  --lease cloud-executor \
+       --source "slack PAUSE 1763912345"
+python -m live.golive flag --account 5832812 --read flag-1600.json --set running --lease none \
+       --source "slack RESUME 1763912999"
+```
+
+`--set` never writes the watchlist: it prints the `quote_modify_user_security` payloads and writes them to
+`flag-write-<hhmmss>.json`, and the agent sends them and re-reads the group. The re-read must return exactly
+`expected_codes`; if it does not, the flag was not shared and the round does not proceed.
 
 ```
 python -m live.golive resume --account 5832812 --source "user in chat"
@@ -88,28 +156,58 @@ python -m live.golive halt   --account 5832812 --source "…" --orders orders-10
 
 ## Automatic run
 
-1. `resume`/`pause` state first: read the control row (or run any command and look at what R16 says). If
-   the account is paused, send nothing and stop — a paused run is the switch working, not an error.
+1. Both switches first: read the local control row (or run any command and look at what R16 says), then
+   fetch the watchlist group (`quote_user_security group_name=PSTAR-PAUSE`), save it, and run
+   `flag --read flag-<hhmm>.json`. If either says stopped, send nothing: run `pause` with today's order
+   history so `cancel-<hhmmss>.json` is written, send the cancels, `reconcile`, and stop. A run that stops
+   here is the switch working, not an error.
 2. Borrow checks for every planned short: `sim_trade_max_buy_sell`. No freshness limit, so do them first.
-3. Then, back to back: `sim_trade_account_list` + `sim_trade_cash_info` + `sim_trade_position_list` +
+3. Take the lease, then plan. `flag --read <fresh read> --set running --lease local-entry --source "user
+   started the 11-23 entry"` and send the writes; a `cloud-executor` lease that has not expired is the
+   reason not to (the flag refuses the second trader on the same book). Then, back to back:
+   `sim_trade_account_list` + `sim_trade_cash_info` + `sim_trade_position_list` +
    `sim_trade_history_order_list` → `snapshot`; `quote_market_snapshot` for the whole book in as few
-   calls as possible; `evidence --trigger "user started the run"`; **one `plan` for all names**. Never
-   plan one symbol at a time: a single call is what makes the order budget, the position cap and the
-   gross/margin projections describe the batch the gate actually approved.
+   calls as possible; `evidence --trigger "user started the run"`; **one `plan --flag flag-<hhmm>.json` for
+   all names**. Never plan one symbol at a time: a single call is what makes the order budget, the position
+   cap and the gross/margin projections describe the batch the gate actually approved. `plan` refuses before
+   it writes a ticket when the flag says `paused` or `unknown`, and prints the `pause` command to run.
 4. Submit every ticket in `plan.json`'s `submit` list, in plan order, without asking; `record` each
    response file. Anything the gate left out of `submit` is reported as unsent with its rule ids.
 5. If `plan` reports R11 or an expired approval, refresh and re-plan automatically: re-run `snapshot`,
    `evidence` and `plan`. Those commands send nothing, so a refresh costs time, not safety.
-6. Every 5 minutes while anything is working: check the pause switch, fetch today's order history, and run
-   `reprice` for what has not filled — it re-gates the remaining quantity through the same rules. At most
-   3 reprice rounds per name (`MAX_REPRICE_ROUNDS`), then the ticket becomes `skipped_unfilled`. The
-   per-day and competition order caps are unchanged by any of this.
+6. Every 5 minutes while anything is working: re-read the shared flag and save it, fetch today's order
+   history, and run `reprice --flag flag-<hhmm>.json` for what has not filled — it re-gates the remaining
+   quantity through the same rules, and a flag that turned `paused` or `unknown` between rounds converts
+   every due ticket into cancel-only: the parent is cancelled, no child is issued, and
+   `switch-hold-<hhmmss>.json` says what to run. At most 3 reprice rounds per name
+   (`MAX_REPRICE_ROUNDS`), then the ticket becomes `skipped_unfilled`. The per-day and competition order
+   caps are unchanged by any of this.
 7. Stop at 15:45 ET or when every ticket is filled or skipped, then cancel anything still working,
-   `reconcile`, and post the summary in this chat: filled, skipped, unfilled, gross long and short,
-   margin, largest ticker, fees, and orders used against both the 100/day strategy budget and the 200
-   competition cap.
+   `reconcile`, release the lease (`flag --read <fresh> --set running --lease none --source "…"`), and post
+   the summary in this chat: filled, skipped, unfilled, gross long and short, margin, largest ticker, fees,
+   orders used against both the 100/day strategy budget and the 200 competition cap, and what the switch
+   read at the last round.
 8. Anomalies go into that summary **and** into `reports/live/golive/<date>/<account>/alerts.json` — see
    the list below. `reconcile` writes the ones it can see; `alert` records the ones only the agent sees.
+
+### The scheduled cloud run
+
+The 2026-11-27 final exit and the risk reductions run in the cloud Executor session, on the same commands
+with `--side cloud`, and the same gate. What differs is only where the flags come from:
+
+1. Read `PSTAR-PAUSE` (`quote_user_security`) and save it. Paused or unknown does not stop a reduce-only
+   batch — `FINAL_EXIT` and `EMERGENCY_EXIT` pass whatever the flag says — but it does stop anything that
+   would add risk, and the read is what the evidence file records either way.
+2. Risk Auditor only: the three raw reads → `skills/pstar-risk-check/scripts/risk_check.py` →
+   `risk-<hhmm>.json`, posted to Slack when the level is not `OK`.
+3. `snapshot`, then `evidence --side cloud --flag … --auditor-session … --executor-session …` (see below),
+   then one `plan --final-exit` / `plan --risk-action …` for the whole batch. A `local-entry` lease that has
+   not expired stops an entry-shaped cloud batch here; it never stops the flatten or the cancels.
+4. Submit what `submit` lists, `record` each response, reprice every 5 minutes, and at 12:45 ET the plan
+   switches the remainder to MARKET. Every round re-reads the flag and re-runs `evidence`, so a `PAUSE`
+   that lands mid-exit converts the next round to cancel-only for everything that is not a reduction.
+5. By 12:55 ET `reconcile` must show zero positions; if it does not, the leftover is listed in the post and
+   in `alerts.json`, never rounded away.
 
 ### Stage A, and why the 2026-11-23 run is not it
 
@@ -162,23 +260,45 @@ python -m live.golive evidence --account 5832812 --snapshot snapshot-093600.json
     --orders orders-093600.json --trigger "user started the run" --out evidence.json [--working <code>]
 ```
 
-Python computes or fills every field; the chat agent does not write this file by hand. The cloud agents
-have no order tools and are not part of it: in automatic local mode the independent check is this
-deterministic golive/gate run, and the human controls are the pause switch and the Slack alerts.
+Python computes or fills every field; the chat agent does not write this file by hand. In the default
+`--side local` the run is this Qoder Desktop chat: the independent check is the deterministic
+golive/gate run, and the human controls are the pause switch and the Slack alerts.
 
 | field | how the value is obtained |
 |---|---|
-| `release_verified` | git: no uncommitted `.py` under `live/`, `rules/` or `journal/` at the checked-out commit, whose hash is recorded in `release.commit`. Edits to the config's `mode` and `execution_enabled` deliberately do not count, because R10 already ties the targets to the config checksum. No usable git answer means false, never a pass. |
+| `release_verified` | local: git — no uncommitted `.py` under `live/`, `rules/` or `journal/` at the checked-out commit, whose hash is recorded in `release.commit`. Edits to the config's `mode` and `execution_enabled` deliberately do not count, because R10 already ties the targets to the config checksum. No usable git answer means false, never a pass. |
 | `reconciled` | the fresh history has no `WORKING`, `PARTIAL`, `UNKNOWN` or `UNREADABLE` row for this account; otherwise false, with those rows listed in `reconcile.unresolved`. A filled order, a cancelled-without-fill order and a partial fill that was then cancelled are facts, not unknowns, so they never hold the next round. |
 | `snapshot_verified_by_relay` | the file has the shape only `snapshot` writes, the relay line is intact, each raw response it names still hashes to what was recorded, and `sim_trade_account_list` asserts this account (i.e. it was captured with `--accounts`) |
-| `lease_verified` | true, on the recorded basis: local mode, decided by the user 2026-11-20 — this Qoder Desktop chat is the only order sender and no cloud agent exists or has order tools |
-| `permission_policy_verified` | true, on the recorded basis: automatic execution decided by the user on 2026-11-21 — every order passes the deterministic gate, and the user can pause at any time with Slack `PAUSE` |
+| `lease_verified` | local: true, on the recorded basis — local mode, decided by the user 2026-11-20: this Qoder Desktop chat takes the `local-entry` lease at the start of the run and releases it at the end |
+| `permission_policy_verified` | local: true, on the recorded basis — automatic execution decided by the user on 2026-11-21: every order passes the deterministic gate, and the user can pause at any time with Slack `PAUSE` |
 | `approval` | `approval_id` `golive-<date>-<account>-<hhmmss>`, `issued_at` now, `expires_at` now + 240 s, `verified_by_relay` true, auditor session `golive-deterministic-checks`, guard session `qoder-desktop-chat`, `confirmed_by` `user-started run`, `trigger` from `--trigger`, basis "the independent check is the deterministic golive/gate run; the human controls are the pause switch and the Slack alerts" |
 | `borrow.easy_to_borrow_proxy` | `sim_trade_max_buy_sell.max_sell_short_qty` — the accepted proxy: a short passes R5 only when that quantity is at least its planned size, and an un-borrowable name is skipped, never replaced |
 
 Exit code 0 means all five assertions came out true; 2 means at least one is false and `plan` will be held
 by R11/R12/R14/R17. `bases` and the `release` / `reconcile` / `snapshot` blocks say which one and why, in
 the same words the printed line uses.
+
+### `evidence --side cloud` — the scheduled Executor run
+
+```
+python -m live.golive evidence --account 5832812 --side cloud \
+    --snapshot snapshot-121500.json --orders orders-121500.json --flag flag-121500.json \
+    --trigger "scheduled run final-exit" --risk-report risk.json \
+    --auditor-session <risk-auditor session id> --executor-session <executor session id> \
+    --out evidence.json
+```
+
+A cloud session has no git checkout, nobody typing `GO`, and no claim on the local lease, so the same three
+flags are earned from the evidence a cloud session actually has. `plan` reads `side` back out of this file
+and asks for the `cloud-executor` lease instead of `local-entry`.
+
+| field | cloud evidence |
+|---|---|
+| `trigger` | only one of the three shapes that may start a cloud run: `scheduled run [job]`, `slack PAUSE <ts>` / `slack RESUME <ts>`, `risk KILL\|ALERT <report>`. Anything else raises — free text is how a chat message asks for a favour, and in the cloud it would be a human approval wearing a costume. |
+| `release_verified` | every skill pinned on a role in `agents/templates.json` names the exact cloud skill id and version that `agents/release-lock.json` sealed (`release.pinned` lists `role/skill → id@version`). A role on `latest`, a pin that differs, or a pin nobody sealed is false. Git is never consulted, because there is no checkout there to consult. |
+| `lease_verified` | the raw `quote_user_security` read of `PSTAR-PAUSE` passed as `--flag`: true when the `cloud-executor` lease is held, or when no unexpired lease is held so it can be taken. A live `local-entry` lease is false — one order stream per book. No `--flag` file is false, not "assume nobody else is trading". The two exemptions are the batches that only take risk off: a `slack PAUSE` cancel list and a `KILL` flatten (`--risk-report` level), which is why a pause still works while the local entry is mid-round. |
+| `permission_policy_verified` | `agents/templates.json` records `tool_policy.platform_denial_verified` with an `observed_at`, and the Executor is the only role listing order tools. Until someone has watched the platform refuse an order tool outside the Executor, this is false with a basis prefixed `limitation: ` — the refusal is recorded as a known gap rather than assumed, and `plan` then fails R17 instead of trading on an unproven policy. |
+| `approval` | `auditor_session_id` = the Risk Auditor session that ran `pstar-risk-check`, `guard_session_id` = the Executor session that will send, and the two must differ or the command raises (R14 rejects an approval whose auditor is its executor, and a cloud role has no human on either side). `confirmed_by` says the deterministic gate decided it. |
 
 ## Price policy
 

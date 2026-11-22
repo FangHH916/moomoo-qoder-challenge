@@ -13,8 +13,9 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from live.contracts import digest, load_config, load_strategy_config, timestamp, validate_targets
+from live.order_planner import client_order_id
 from rules.gate import evaluate_order
-from rules.gate_pstar import allowed_target_age
+from rules.gate_pstar import allowed_target_age, market_flatten_window
 from rules.pstar_harness import ACCOUNTS, EQUITY, Harness, config_for, owned
 from rules.trading_calendar import is_session, target_age
 
@@ -23,13 +24,13 @@ LEGACY_EXAMPLE = Path(__file__).with_name("example-order-legacy.json")
 FAIL = "failed_rules"
 
 
-def shift_clock(harness: Harness, day: str) -> Harness:
-    """Run the fixture at 09:35 ET on that session day, moving everything that ages with the clock.
+def shift_clock(harness: Harness, day: str, at: str = "14:35") -> Harness:
+    """Run the fixture at that ET-session time, moving everything that ages with the clock.
 
     R10 is the only rule a dated exception touches, so a test of one needs a session and an attestation
     timestamp; the book itself stays the committed one, which is the point of an age exception.
     """
-    now = f"{day}T14:35:00+00:00"
+    now = f"{day}T{at}:00+00:00"
     harness.context["now"] = now
     harness.snapshot["as_of"] = now
     for row in harness.context["quotes"].values():
@@ -627,6 +628,86 @@ class TargetFreshnessAndApprovals(unittest.TestCase):
                 result = harness.result(0)
                 self.assertIn("R21", result[FAIL])
                 self.assertIn("R10", result[FAIL])
+
+
+class FinalExitOrderTypes(unittest.TestCase):
+    """The single MARKET case the user approved on 2026-11-21, and everything that stays LIMIT DAY.
+
+    `golive plan --final-exit` sends marketable limits from `final_exit_start` and reprices every five
+    minutes; whatever is still open when `final_flatten_at` passes goes out at the market. Only that last
+    round may be a market order, and only on that day.
+    """
+
+    DAY = "2026-11-27"
+    AFTER = "17:50"          # 12:50 ET, past the frozen 12:45 ET flatten deadline
+    BEFORE = "16:44"         # 12:44 ET, one minute of limit rounds still left
+
+    def flatten(self, at=AFTER, order_type="MARKET", intent="FINAL_EXIT", side="SELL", quantity=4):
+        """A book that holds four shares, and the ticket that closes exactly that holding."""
+        harness = Harness()
+        name = longs_of(harness)[0]
+        harness.place([(name, quantity)])
+        order = {"account_id": harness.context["account_id"], "symbol": name, "side": side,
+                 "quantity": quantity,
+                 "limit_price": None if order_type == "MARKET" else round(harness.prices[name], 2),
+                 "order_type": order_type, "time_in_force": "DAY", "session": "RTH", "intent": intent,
+                 "sleeve": harness.targets["sleeves"].get(name),
+                 "weight": harness.targets["weights"].get(name, 0.0),
+                 "reason": "fixture: scheduled final exit", "workflow": "paper-trading-gate",
+                 "target_checksum": harness.targets["checksum"]}
+        order["client_order_id"] = client_order_id(harness.targets, name, side, quantity)
+        return shift_clock(harness, self.DAY, at), order
+
+    def test_the_window_is_the_flatten_deadline_on_that_day_only(self):
+        config = load_strategy_config()
+        flatten = timestamp(config["final_flatten_at"])
+        self.assertTrue(market_flatten_window(config, flatten))
+        self.assertFalse(market_flatten_window(config, flatten - timedelta(seconds=1)))
+        # The Eastern-date clause is the whole point: a later day is not an open market-order window.
+        self.assertFalse(market_flatten_window(config, flatten + timedelta(days=3)))
+
+    def test_a_market_flatten_ticket_passes_the_rules_after_the_deadline(self):
+        harness, order = self.flatten()
+        result = harness.check_order(order)
+        self.assertTrue(result["eligible"], result["failed_rules"])
+        self.assertNotIn("R0", result["failed_rules"])
+
+    def test_the_same_ticket_is_refused_one_minute_early(self):
+        harness, order = self.flatten(at=self.BEFORE)
+        result = harness.check_order(order)
+        self.assertFalse(result["eligible"])
+        self.assertIn("R7", result["failed_rules"])
+
+    def test_a_limit_flatten_needs_no_deadline(self):
+        harness, order = self.flatten(at=self.BEFORE, order_type="LIMIT")
+        result = harness.check_order(order)
+        self.assertTrue(result["eligible"], result["failed_rules"])
+
+    def test_market_is_refused_for_every_other_intent(self):
+        for intent in ("EMERGENCY_EXIT", "ENTRY", "EXIT", "REBALANCE"):
+            with self.subTest(intent=intent):
+                harness, order = self.flatten(intent=intent)
+                self.assertIn("R7", harness.check_order(order)["failed_rules"])
+
+    def test_market_is_refused_when_it_is_not_a_reduction(self):
+        harness, order = self.flatten(side="BUY")       # buys more of a name the book already holds long
+        result = harness.check_order(order)
+        self.assertIn("R7", result["failed_rules"])
+        self.assertIn("R18", result["failed_rules"])
+
+    def test_no_market_order_survives_the_day_it_was_approved_for(self):
+        harness, order = self.flatten()
+        shift_clock(harness, "2026-11-30", self.AFTER)
+        result = harness.check_order(order)
+        self.assertIn("R7", result["failed_rules"])
+        self.assertIn("R13", result["failed_rules"])    # the competition window is closed
+
+    def test_a_market_ticket_still_needs_a_fresh_relay_verified_quote(self):
+        harness, order = self.flatten()
+        harness.context["quotes"][order["symbol"]]["as_of"] = "2026-11-27T17:30:00+00:00"
+        result = harness.check_order(order)
+        self.assertIn("R0", result["failed_rules"])     # no price to check the order against
+        self.assertFalse(result["eligible"])
 
 
 class StrategySwitch(unittest.TestCase):

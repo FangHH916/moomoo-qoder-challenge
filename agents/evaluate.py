@@ -17,10 +17,10 @@ import unittest
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-ROLES = ("coordinator", "scout", "guard", "risk-auditor", "advisor")
+ROLES = ("coordinator", "scout", "executor", "risk-auditor", "advisor")
 SKILLS = (
     "validate-trading-targets", "paper-trading-gate", "reconcile-paper-fills",
-    "report-trading-day", "research-factor-evidence",
+    "report-trading-day", "research-factor-evidence", "pstar-risk-check", "pstar-executor",
 )
 FIXTURE_IDS = (
     "normal-rebalance-and-expired-permission", "wrong-account-and-injected-news",
@@ -28,15 +28,15 @@ FIXTURE_IDS = (
 )
 SOURCE_PATHS = (
     "notes/handbook-notes.md", "docs/submission-checklist.md",
-    "live/config.pstar.json", "live/config.v2.json",
+    "live/config.pstar.json", "live/config.v2.json", "live/ops.json", "live/schedule-plan.json",
     "research/r10_deploy.py",
     "research/factors.py", "research/pipeline.py", "research/pipeline_v2.py",
     "research/pipeline_v3.py", "research/lab_factors.py", "research/lab_cache.py",
     "agents/AGENTS.md", "agents/templates.json", "agents/evaluations.json",
-    "agents/evaluate.py",
+    "agents/evaluate.py", "agents/package_skills.py",
 ) + tuple(f"agents/{role}.md" for role in ROLES) + tuple(
     f"skills/{skill}/SKILL.md" for skill in SKILLS
-)
+) + tuple(f"skills/{skill}/skill.json" for skill in SKILLS if (ROOT / "skills" / skill / "skill.json").is_file())
 PAPER_ORDER_TOOLS = {"sim_trade_input_order", "sim_trade_cancel_order"}
 LIVE_TOOL_PREFIXES = ("trading_", "account_", "crypto_account_")
 PSTAR_STRATEGY = "pstar"
@@ -173,20 +173,20 @@ def validate_metadata() -> None:
     for name in ("AGENTS",) + ROLES:
         text = local_path(f"agents/{name}.md").read_text(encoding="utf-8")
         for field in ("Retrieved at:", "Agent ID: null", "Cloud version: null",
-                      "Local revision: 0.3.5", "Change summary:"):
+                      "Local revision: 0.3.6", "Change summary:"):
             require(field in text, f"{name}: missing {field}")
         require("no cloud retrieval" in text, f"{name}: retrieval scope unclear")
         require("BLOCKED" in text, f"{name}: missing activation status")
         require(not re.search(r"\bTO" + r"DO\b", text, re.I), f"{name}: unresolved placeholder")
     actual = {path.parent.name for path in (ROOT / "skills").glob("*/SKILL.md")}
-    require(actual == set(SKILLS), "Expected exactly the five requested skills")
+    require(actual == set(SKILLS), "Expected exactly the seven packaged skills")
     for skill in SKILLS:
         validate_skill(local_path(f"skills/{skill}/SKILL.md").read_text(encoding="utf-8"), skill)
 
 
 def validate_source_lock(lock: dict) -> None:
     require(lock["activation"] == "BLOCKED", "Release must remain blocked")
-    require(lock["local_revision"] == "0.3.5", "Unexpected local revision")
+    require(lock["local_revision"] == "0.3.6", "Unexpected local revision")
     require(set(lock["source_sha256"]) == set(SOURCE_PATHS), "Source manifest coverage mismatch")
     for path, expected in lock["source_sha256"].items():
         require(bool(re.fullmatch(r"[0-9a-f]{64}", expected)), f"Invalid source hash: {path}")
@@ -204,7 +204,7 @@ def validate_source_lock(lock: dict) -> None:
     require(lock["validated_mcp_contract_sha256"] is None, "MCP contract remains unverified")
 
 
-def validate_templates(t: dict, config: dict) -> None:
+def validate_templates(t: dict, config: dict, schedule_plan: dict | None = None) -> None:
     require(t["artifact_type"] == "inactive_desired_specification_not_api_payload", "Not an API payload")
     require(t["activation"] == "BLOCKED" and t["execution_enabled"] is False, "Execution enabled")
     require(t["schedules_created"] is False and t["schedule_intent"]["active"] is False, "Schedules active")
@@ -228,9 +228,11 @@ def validate_templates(t: dict, config: dict) -> None:
         require(role["effective_tools"] == [] and role["can_execute"] is False, f"{name}: active tools")
         require(role["strategy_creation"] is False, f"{name}: strategy authoring granted")
         require(set(role["skills"]).issubset(SKILLS), f"{name}: unknown skill")
-        if name != "guard":
-            require(role["desired_order_tools"] == [], f"{name}: order tools outside Guard")
-            require("paper-trading-gate" not in role["skills"], f"{name}: execution workflow outside Guard")
+        if name != "executor":
+            require(role["desired_order_tools"] == [], f"{name}: order tools outside the Executor")
+            require("paper-trading-gate" not in role["skills"], f"{name}: execution workflow outside the Executor")
+            require("pstar-executor" not in role["skills"], f"{name}: ships the Executor runtime")
+            require(role.get("desired_switch_writes", []) == [], f"{name}: may write the shared switch")
         for tool in role["desired_read_tools"]:
             require(tool in t["mcp_contract"]["schema_hashes"], f"{name}: unknown read tool")
             require(not tool.startswith(LIVE_TOOL_PREFIXES), f"{name}: live-namespaced tool")
@@ -238,9 +240,94 @@ def validate_templates(t: dict, config: dict) -> None:
         require(role["output_path"].startswith(f"agents/runtime/{name}/"), f"{name}: output ownership")
         outputs.append(role["output_path"])
     require(len(set(outputs)) == len(ROLES), "Shared role output path")
-    guard = t["roles"]["guard"]
-    require(set(guard["desired_order_tools"]) == PAPER_ORDER_TOOLS, "Guard order tools are not the paper pair")
-    require(guard["desired_order_permissions"] == {tool: "always_ask" for tool in guard["desired_order_tools"]}, "Unguarded mutation tool")
+    executor = t["roles"]["executor"]
+    require(set(executor["desired_order_tools"]) == PAPER_ORDER_TOOLS, "Executor order tools are not the paper pair")
+    require(executor["desired_order_permissions"] == {tool: "always_ask" for tool in executor["desired_order_tools"]}, "Unguarded mutation tool")
+    require(executor["desired_switch_writes"] == ["quote_modify_user_security"], "the shared switch has a writer other than the Executor")
+    require(executor["accounts"] == {"only": t["rules"]["account_ids"]["competition"],
+                                     "refuse": [t["rules"]["account_ids"]["test"]], "live": "never"},
+            "Executor is not bound to the competition account alone")
+    require(executor["may_origin_a_trade"] is False and executor["may_trade_on_scout_output"] is False,
+            "the Executor may originate a trade")
+    require(executor["lease_holder"] == "cloud-executor", "the Executor does not name its lease holder")
+
+    pins = t.get("skill_versions") or {}
+    used = {name for role in t["roles"].values() for name in role["skills"]}
+    require(t["skills_are_pinned"] is True, "a cloud role could resolve a skill to latest")
+    require(used == set(SKILLS), f"skill pins do not cover every skill a role loads: {sorted(used ^ set(SKILLS))}")
+    require(set(pins) == set(SKILLS), "Skill pin coverage mismatch")
+    for name, pin in pins.items():
+        require(pin["cloud_skill_id"] is None and pin["version"] is None,
+                f"{name}: a cloud skill binding is claimed before Part B discovered it")
+        require(bool(re.fullmatch(r"[0-9a-f]{64}", pin["local_content_sha256"] or "")),
+                f"{name}: the packaged content is not hashed")
+
+    policy = t["tool_policy"]
+    require(policy["order_role"] == "executor" and policy["other_roles"] == "deny",
+            "the tool policy names a second role with order tools")
+    require(policy["platform_denial_verified"] is False and policy["observed_at"] is None,
+            "a platform refusal is recorded that nobody has observed yet")
+    require(len(policy["denial_tests"]) == 2, "the two Part B denial tests are missing")
+
+    coordinator = t["roles"]["coordinator"]
+    require(coordinator["accepts_only"] == ["PAUSE", "RESUME"], "the Coordinator accepts a word that is not the switch")
+    require(coordinator.get("slack_user_id") is None and coordinator.get("slack_channel_id") is None,
+            "a Slack identity is recorded that Part B has not discovered")
+
+    auditor = t["roles"]["risk-auditor"]
+    require(auditor["only_writer_of"] == ["KILL", "ALERT", "WARN", "ORDER ANOMALY", "CHECK FAILED"],
+            "a risk verdict has more than one writer")
+    require(auditor["session_must_differ_from"] == "executor", "R14's session split is not in the template")
+
+    switch = t["shared_pause_switch"]
+    ops_switch = load("live/ops.json")["pause_switch"]
+    require(switch["group"] == ops_switch["group"], "switch group drift")
+    require(switch["never_blocks"] == ["FINAL_EXIT", "EMERGENCY_EXIT"] == ops_switch["never_blocks"],
+            "a paused account would block a flatten")
+    require(ops_switch["ambiguous_is_paused"] is True and "paused" in switch["ambiguous_read"],
+            "an unreadable switch is not treated as paused")
+    cloud = t["workflow"]["cloud_execution"]
+    require(cloud["decided"] == "2026-11-21" and cloud["decided_by"] == "user", "cloud execution decision missing")
+    require(cloud["recorded_in_revision"] == t["local_revision"], "cloud execution decision not tied to this revision")
+    require("golive" in cloud["executor_authority"] and "Slack PAUSE" in cloud["executor_authority"],
+            "the Executor's authority is stated more loosely than the user decided")
+    dispatch = cloud["child_dispatch"]
+    require(dispatch["only_dispatcher"] == "coordinator"
+            and dispatch["trading_roles_never_scheduled_directly"] is True,
+            "a trading role is dispatched or scheduled outside the Coordinator")
+    require(dispatch["verified_in_cloud"] is False and dispatch["observed_at"] is None,
+            "Collaboration for child dispatch is recorded as enabled before Part B turned it on")
+    for name, role in t["roles"].items():
+        require(("dispatch_role_session" in role.get("relay_operations", [])) == (name == "coordinator"),
+                f"{name}: relay operations disagree with the single dispatcher")
+    jobs = {job["name"]: job for job in t["schedule_intent"]["jobs"]}
+    require(t["schedule_intent"]["timezone"] == "America/New_York"
+            and t["schedule_intent"]["max_concurrent_runs"] == 1
+            and t["schedule_intent"]["session_policy"] == "new_session", "schedule defaults drift")
+    require(jobs["post_open_check"]["cron"] == "45 9 * * 1-5"
+            and jobs["risk_and_order_check"]["cron"] == "0,30 10-15 * * 1-5"
+            and jobs["end_of_day_report"]["cron"] == "10 16 * * 1-5", "intraday schedule drift")
+    require(jobs["final_exit"]["once_at"] == "2026-11-27T12:15:00-05:00"
+            and jobs["flat_check"]["once_at"] == "2026-11-27T12:50:00-05:00"
+            and jobs["final_report"]["once_at"] == "2026-11-27T13:10:00-05:00", "final-day schedule drift")
+    require(t["schedule_intent"]["created"] is False and t["schedule_intent"]["schedule_ids"] is None,
+            "schedules are claimed as created")
+
+    plan = schedule_plan if schedule_plan is not None else load("live/schedule-plan.json")
+    intent = t["schedule_intent"]
+    require(plan["timezone"] == intent["timezone"] and plan["owner_role"] == intent["owner_role"],
+            "the local schedule spec names another timezone or owner")
+    require(plan["start_at"].startswith(intent["start_date"])
+            and plan["stop_at"].startswith(intent["stop_date"]), "schedule window drift")
+    require(plan["shared_pause_switch"]["group"] == switch["group"], "schedule switch group drift")
+    peers = {job["name"]: job for job in plan["jobs"]}
+    require(set(peers) == set(jobs), f"the local spec and the template intent name different jobs: "
+                                     f"{sorted(set(peers) ^ set(jobs))}")
+    for name, job in jobs.items():
+        require(job.get("cron") == peers[name].get("cron")
+                and job.get("once_at") == peers[name].get("once_at"), f"{name}: trigger drift")
+        require(peers[name]["owner"] in t["roles"], f"{name}: scheduled role is not a role")
+
     require(permissions["denied_tool_prefixes"] == list(LIVE_TOOL_PREFIXES), "Live tool namespaces not denied")
     require(t["roles"]["risk-auditor"]["session"] == "separate_isolated_forward", "Auditor not separate")
     require(all(tool.startswith("sim_trade_") and tool not in PAPER_ORDER_TOOLS for tool in t["roles"]["risk-auditor"]["desired_read_tools"]), "Auditor not paper-account-read-only")
@@ -322,9 +409,12 @@ def validate_evaluations(evaluations: dict) -> None:
     fixtures = evaluations["fixtures"]
     require(tuple(item["id"] for item in fixtures) == FIXTURE_IDS, "Exactly four fixed fixtures are required")
     require(evaluations["cloud_status"] == "UNVERIFIED", "Cloud evaluation was not performed")
-    require(evaluations["cloud_execution_requires_separate_authorization"] is True, "Cloud authorization missing")
+    authorized = evaluations["cloud_execution_authorized_by"]
+    require("2026-11-21" in authorized, "cloud execution has no dated user decision")
+    require("APPROVE" in authorized, "a Part B step is claimed as pre-approved")
     for fixture in fixtures:
         require(fixture["prompt"].startswith("Evaluation only:"), "Fixture is not clearly synthetic")
+        require("Guard" not in fixture["prompt"], f"{fixture['id']}: prompt still names the retired Guard role")
         require(fixture["local_assertions"] and fixture["cloud_assertions"], "Missing assertions")
         for assertion in fixture["local_assertions"]:
             require(assertion["source"] in SOURCE_PATHS, "Unpinned assertion source")
@@ -366,7 +456,7 @@ def build_report() -> dict:
     fixtures = fixture_results(evaluations)
     return {
         "scope": "offline_specification_invariants_only",
-        "local_revision": "0.3.5", "activation": "BLOCKED",
+        "local_revision": "0.3.6", "activation": "BLOCKED",
         "cloud_prompt_evaluation": "UNVERIFIED", "runtime_gate_tested": False,
         "status": "FAIL" if errors or any(f["failures"] for f in fixtures) else "PASS",
         "spec_errors": errors, "fixtures": fixtures,
@@ -394,6 +484,30 @@ class RegressionSelfCheck(unittest.TestCase):
         validate_evaluations(self.evaluations)
         self.assertEqual(len(self.evaluations["fixtures"]), 4)
 
+    def test_cloud_authorization_rewrite_rejected(self):
+        evaluations = copy.deepcopy(self.evaluations)
+        evaluations["cloud_execution_authorized_by"] = "decided by the agent during a run"
+        with self.assertRaises(ValueError):
+            validate_evaluations(evaluations)
+
+    def test_retired_role_name_in_a_fixture_rejected(self):
+        evaluations = copy.deepcopy(self.evaluations)
+        evaluations["fixtures"][0]["prompt"] += " What must happen before Guard places an order?"
+        with self.assertRaises(ValueError):
+            validate_evaluations(evaluations)
+
+    def test_second_order_role_also_breaks_a_fixture(self):
+        self.assert_fixture_rejects("/tool_policy/order_role", "risk-auditor")
+
+    def test_lease_holder_move_also_breaks_a_fixture(self):
+        self.assert_fixture_rejects("/roles/executor/lease_holder", "local-entry")
+
+    def test_ambiguous_switch_move_also_breaks_a_fixture(self):
+        self.assert_fixture_rejects("/shared_pause_switch/ambiguous_read", "treated as running")
+
+    def test_coordinator_accepting_more_words_breaks_a_fixture(self):
+        self.assert_fixture_rejects("/roles/coordinator/accepts_only", ["PAUSE", "RESUME", "REBALANCE"])
+
     def test_wrong_account_mutation(self):
         self.assert_fixture_rejects("/rules/account_ids", {"test": 5832812, "competition": 5832812})
 
@@ -415,19 +529,76 @@ class RegressionSelfCheck(unittest.TestCase):
     def test_lease_mutation(self):
         self.assert_fixture_rejects("/workflow/lock", "none")
 
-    def assert_templates_reject(self, mutate, expected: str):
+    def assert_templates_reject(self, mutate, expected: str, schedule_plan=None):
         templates = copy.deepcopy(self.templates)
         mutate(templates)
         with self.assertRaisesRegex(ValueError, expected):
-            validate_templates(templates, load("live/config.pstar.json"))
+            validate_templates(templates, load("live/config.pstar.json"), schedule_plan)
+
+    def test_schedule_spec_trigger_drift_rejected(self):
+        plan = copy.deepcopy(load("live/schedule-plan.json"))
+        plan["jobs"][1]["cron"] = "0,30 10-15 * * 1-4"
+        with self.assertRaisesRegex(ValueError, "trigger drift"):
+            validate_templates(copy.deepcopy(self.templates), load("live/config.pstar.json"), plan)
+
+    def test_schedule_spec_extra_job_rejected(self):
+        plan = copy.deepcopy(load("live/schedule-plan.json"))
+        plan["jobs"].append({"name": "evening-entry", "cron": "30 18 * * 1-5", "owner": "executor"})
+        with self.assertRaisesRegex(ValueError, "different jobs"):
+            validate_templates(copy.deepcopy(self.templates), load("live/config.pstar.json"), plan)
+
+    def test_second_dispatcher_rejected(self):
+        def mutate(templates):
+            templates["roles"]["risk-auditor"]["relay_operations"].append("dispatch_role_session")
+
+        self.assert_templates_reject(mutate, "single dispatcher")
+
+    def test_child_dispatch_claimed_as_enabled_rejected(self):
+        def mutate(templates):
+            templates["workflow"]["cloud_execution"]["child_dispatch"]["verified_in_cloud"] = True
+
+        self.assert_templates_reject(mutate, "Part B turned it on")
 
     def test_live_order_tool_rejected(self):
         def mutate(templates):
-            role = templates["roles"]["guard"]
+            role = templates["roles"]["executor"]
             role["desired_order_tools"] = ["sim_trade_input_order", "trading_order_place"]
             role["desired_order_permissions"] = {tool: "always_ask" for tool in role["desired_order_tools"]}
 
         self.assert_templates_reject(mutate, "paper pair")
+
+    def test_second_order_role_rejected(self):
+        self.assert_templates_reject(
+            lambda templates: templates["roles"]["risk-auditor"].__setitem__("desired_order_tools",
+                                                                            ["sim_trade_cancel_order"]),
+            "order tools outside the Executor",
+        )
+
+    def test_unobserved_platform_denial_rejected(self):
+        def mutate(templates):
+            templates["tool_policy"]["platform_denial_verified"] = True
+            templates["tool_policy"]["observed_at"] = "2026-11-27T12:15:00Z"
+
+        self.assert_templates_reject(mutate, "nobody has observed")
+
+    def test_unpinned_skill_version_rejected(self):
+        self.assert_templates_reject(
+            lambda templates: templates["skill_versions"]["pstar-executor"].__setitem__("version", "latest"),
+            "before Part B discovered it",
+        )
+
+    def test_switch_writer_outside_the_executor_rejected(self):
+        self.assert_templates_reject(
+            lambda templates: templates["roles"]["coordinator"].__setitem__(
+                "desired_switch_writes", ["quote_modify_user_security"]),
+            "may write the shared switch",
+        )
+
+    def test_schedule_claimed_as_created_rejected(self):
+        self.assert_templates_reject(
+            lambda templates: templates["schedule_intent"].__setitem__("created", True),
+            "claimed as created",
+        )
 
     def test_live_account_read_rejected(self):
         def mutate(templates):
@@ -443,7 +614,7 @@ class RegressionSelfCheck(unittest.TestCase):
 
     def test_hash_tampering_rejected(self):
         lock = load("agents/release-lock.json")
-        lock["source_sha256"]["agents/guard.md"] = "0" * 64
+        lock["source_sha256"]["agents/executor.md"] = "0" * 64
         with self.assertRaisesRegex(ValueError, "Source hash mismatch"):
             validate_source_lock(lock)
 

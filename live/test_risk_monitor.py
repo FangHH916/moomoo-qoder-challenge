@@ -3,13 +3,16 @@
 The frozen thresholds are the ones the realistic backtest measured - a ticker above 39% of initial
 assets is cut to 38%, margin above 95% is scaled to 90%, and -8% from the peak flattens and halts.
 Positions the strategy did not open are measured but never traded.
+The WARN layer below those three rules comes from `live/ops.json`, names the rule it forewarns, and places
+nothing: `warn_lines` is what both `skills/pstar-risk-check` and `golive.py plan --risk-action` post.
 """
 from __future__ import annotations
 
 import unittest
 
 from live.contracts import finite
-from live.risk_monitor import RiskError, actions, flatten, measure
+from live.pause_switch import load_ops
+from live.risk_monitor import RiskError, actions, flatten, measure, warn_lines
 from live.test_pstar import config_for
 
 EQUITY = 100_000.0
@@ -177,6 +180,77 @@ class Halt(unittest.TestCase):
         self.assertTrue(finite(result["margin_after"]) and finite(result["delever_scale"]))
         self.assertEqual([result["target_shares"]["SPY"], result["share_changes"], result["orders_required"]],
                          [10, {"AAA": 4, "BBB": 6}, 2])
+
+
+class Warnings(unittest.TestCase):
+    """The WARN layer of `live/ops.json`: it posts to Slack and must never be mistaken for an action.
+
+    Every line also names the frozen rule it forewarns, so the Slack reader can tell a warning from the
+    trim, the margin cut and the flatten without reading the config.
+    """
+
+    OPS = load_ops()
+
+    def state(self, positions, equity=EQUITY, peak=EQUITY):
+        return measure(CONFIG, positions, equity, EQUITY, peak)
+
+    def lines(self, positions, equity=EQUITY, peak=EQUITY):
+        return warn_lines(CONFIG, self.OPS, self.state(positions, equity, peak))
+
+    def test_a_book_inside_every_line_warns_of_nothing(self):
+        self.assertEqual(self.lines([position("SPY", 10), position("AAOI", -4, 50.0)]), [])
+        self.assertEqual(self.lines([]), [])
+
+    def test_a_name_between_the_warning_and_the_trim_line_warns_without_trading(self):
+        state = self.state([position("SPY", 38)])          # 38% of initial: past 37%, below the 39% trim
+        self.assertEqual(warn_lines(CONFIG, self.OPS, state),
+                         ["SPY is 38.0% of initial assets, above the 37% warning line "
+                          "(the trim rule starts at 39%)."])
+        self.assertEqual(actions(CONFIG, state)["share_changes"], {}, "a WARN places no order")
+
+    def test_margin_between_the_warning_and_the_cut_only_warns(self):
+        # five equal names of $35,000: $175,000 long gross is 87.5% margin, no single name past 37%.
+        lines = self.lines([position(name, 35) for name in ("SPY", "QQQ", "IWM", "DIA", "RSP")])
+        self.assertEqual(lines, ["margin 87.5% is above the 85% warning line "
+                                 "(the cut starts at 95%)."])
+        self.assertEqual(actions(CONFIG, self.state(
+            [position(name, 35) for name in ("SPY", "QQQ", "IWM", "DIA", "RSP")]))["delever_scale"], 1.0)
+
+    def test_a_drawdown_past_the_warning_line_names_the_flatten_it_forewarns(self):
+        self.assertEqual(self.lines([position("SPY", 10)], equity=95_000.0, peak=100_000.0),
+                         ["drawdown -5.00% of the peak is past the -4% warning line "
+                          "(the flatten rule starts at -8%)."])
+
+    def test_the_position_count_is_a_warning_before_it_is_a_cap(self):
+        lines = self.lines([position(f"N{i}", 1, 10.0) for i in range(96)])
+        self.assertEqual(lines, ["96 positions is past the 95-position warning line (100 is the cap)."])
+        self.assertEqual(self.lines([position(f"N{i}", 1, 10.0) for i in range(95)]), [])
+
+    def test_every_line_fires_at_once_and_keeps_the_documented_order(self):
+        # SPY past 37%, $190,000 of small names to push margin past 85%, a -5% drawdown, 96 positions.
+        positions = [position("SPY", 38)] + [position(f"N{i}", 2) for i in range(95)]
+        state = self.state(positions, equity=95_000.0, peak=100_000.0)
+        self.assertEqual([line.split(" ")[0] for line in warn_lines(CONFIG, self.OPS, state)],
+                         ["SPY", "margin", "drawdown", "96"])
+        self.assertTrue(all("warning line" in line for line in warn_lines(CONFIG, self.OPS, state)))
+
+    def test_the_warning_thresholds_are_softer_than_the_frozen_rules_they_forewarn(self):
+        risk, config = self.OPS["risk_check"], CONFIG
+        self.assertLess(risk["warn_ticker_share_of_initial"], config["trim_ticker_above_of_initial"])
+        self.assertEqual(config["trim_ticker_above_of_initial"], config["ticker_cap_of_initial"] + 0.01)
+        self.assertLess(risk["warn_margin"], config["delever_margin_above"])
+        self.assertGreater(risk["warn_drawdown"], config["drawdown_limit"])
+        self.assertLess(risk["position_count_warn_fraction"], 1.0)
+        self.assertLess(int(config["max_positions"] * risk["position_count_warn_fraction"]),
+                        config["max_positions"])
+
+    def test_a_missing_knob_is_an_error_rather_than_a_quiet_no_warning(self):
+        for ops in ({}, {"risk_check": {}}, {"risk_check": {"warn_margin": 0.85}}):
+            with self.subTest(ops=ops):
+                with self.assertRaises(RiskError):
+                    warn_lines(CONFIG, ops, self.state([position("SPY", 38)]))
+        with self.assertRaises(RiskError):
+            warn_lines({**CONFIG, "max_positions": None}, self.OPS, self.state([]))
 
 
 if __name__ == "__main__":

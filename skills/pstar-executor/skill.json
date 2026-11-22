@@ -1,0 +1,19 @@
+{
+  "seeds": [
+    "live/golive.py",
+    "skills/pstar-risk-check/scripts/risk_check.py"
+  ],
+  "include": [
+    "live/config.pstar.json",
+    "live/ops.json",
+    "live/targets/competition/2026-11-19-pstar.json"
+  ],
+  "requirements": [
+    "python>=3.11",
+    "exchange-calendars==4.13.3",
+    "pandas==3.1.1",
+    "numpy==2.5.5",
+    "tzdata==2026.6"
+  ],
+  "notes": "The Executor's deterministic half: every quantity, price, rule result and cancel list the cloud run sends comes from these files, so the pinned skill version is the code review. `rules/trading_calendar.py` needs exchange_calendars (and pandas/numpy/tzdata through it) to answer whether a date is a US trading session, which is the first thing every scheduled run checks. The target book is included because the final exit has to say which names are outside it; nothing here fetches a quote, a position or an order - the raw MCP responses are passed in as files by the Executor role."
+}

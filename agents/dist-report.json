@@ -5,62 +5,158 @@
   "skills": [
     {
       "archive": "agents/dist/paper-trading-gate.zip",
-      "archive_sha256": "fe3f3933ea107fc0f2b2c92816c793a0455d11fdd131ff5f7dc5081fbf83d0fc",
-      "content_sha256": "7a2edcf9c63d4d12f92c75e4f3c1e432d180af073cff63681a73d6358899a5e1",
+      "archive_sha256": "9590acd4ff91c30bdff77f09bb1b42c298e8f8a12f65966b5ca437c0b0a5a2ff",
+      "content_sha256": "9e1dee5531e8df86505645ce9e02aded4cacfb8d665b2b1ca578b0499554a402",
       "members": [
         "SKILL.md"
       ],
       "name": "paper-trading-gate",
       "sources": {
-        "SKILL.md": "46c22309c40f48d37b5f7092c068e5dd03176535d0636eae9d2a45af00b9dfb5"
+        "SKILL.md": "d0b24dd1d5229e34ab5149ce29a5cbbea771c15a04ef22947cfde51b969720f5"
+      }
+    },
+    {
+      "archive": "agents/dist/pstar-executor.zip",
+      "archive_sha256": "dac94240a94af86ae7d628e39b9c1d3dae6db1f28d3bd9a88c16494c88f4af8f",
+      "content_sha256": "7d2d1026ba43e4c856aece9f916a58217d9fb1472c6c9b5117379258cf7c0150",
+      "members": [
+        "RUNTIME.json",
+        "SKILL.md",
+        "journal/__init__.py",
+        "journal/store.py",
+        "live/__init__.py",
+        "live/config.pstar.json",
+        "live/contracts.py",
+        "live/eligibility.py",
+        "live/golive.py",
+        "live/ops.json",
+        "live/order_planner.py",
+        "live/pause_switch.py",
+        "live/pstar.py",
+        "live/relay.py",
+        "live/risk_monitor.py",
+        "live/targets/competition/2026-11-19-pstar.json",
+        "rules/__init__.py",
+        "rules/gate.py",
+        "rules/gate_pstar.py",
+        "rules/trading_calendar.py",
+        "skill.json",
+        "skills/pstar-risk-check/scripts/risk_check.py"
+      ],
+      "name": "pstar-executor",
+      "requirements": [
+        "python>=3.11",
+        "exchange-calendars==4.13.3",
+        "pandas==3.1.1",
+        "numpy==2.5.5",
+        "tzdata==2026.6"
+      ],
+      "runtime": [
+        "journal/__init__.py",
+        "journal/store.py",
+        "live/__init__.py",
+        "live/config.pstar.json",
+        "live/contracts.py",
+        "live/eligibility.py",
+        "live/golive.py",
+        "live/ops.json",
+        "live/order_planner.py",
+        "live/pause_switch.py",
+        "live/pstar.py",
+        "live/relay.py",
+        "live/risk_monitor.py",
+        "live/targets/competition/2026-11-19-pstar.json",
+        "rules/__init__.py",
+        "rules/gate.py",
+        "rules/gate_pstar.py",
+        "rules/trading_calendar.py",
+        "skills/pstar-risk-check/scripts/risk_check.py"
+      ],
+      "sources": {
+        "RUNTIME.json": "60763c33148bbb3e874e94f1962d8c2c0d120b3b5b09674ee11b82ca5eedf121",
+        "SKILL.md": "d2e3663f614dfaeebb946b782f226802b93b2f809d61f8a4fe5a5105d5abeec6",
+        "journal/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "journal/store.py": "2b328d8db21425417136ac5851f483e4964493cc434fae5b4c0c50f619a1a2c5",
+        "live/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "live/config.pstar.json": "c5d157601358c6ac3445679cfbafb17071e8b6e6c1582d63d13c9933fddae7dd",
+        "live/contracts.py": "0b2db442ab8776c5262c6859b28dd9ab6fc3e234bc67d43b64c5b8a5c866d464",
+        "live/eligibility.py": "244be07108cf72d21414215d5e13ddf53ad58a5f7e4c3302eda0866ea38906e6",
+        "live/golive.py": "fc6c676b488cb77b434cd9117151742017f39c9e96018f6961da17d990567cae",
+        "live/ops.json": "d32f3b471462d29759376418ba00eebc72c03cadbaeba608e4d211f2c519490e",
+        "live/order_planner.py": "5c0a778009fc0c59505a4459266d89a6ab1fac9ba2db65705f94d3f04dce1913",
+        "live/pause_switch.py": "f355a81fda6fc6952423e2bc44b5293170bacc443b3fc4584aad7c35f36bcf37",
+        "live/pstar.py": "59137b9bfebbf044927a035c8b98612c6376bf88ccdbfc0fcc0cde9a1e7ae96d",
+        "live/relay.py": "b83257721699bb761e3b6860ff68d9695ec466fde751f0b8ec5bfebfc12d1aa6",
+        "live/risk_monitor.py": "3f338e00a149b9b79a4aa129eb76d6ae76da6b97aea55659636ea0871d3c4967",
+        "live/targets/competition/2026-11-19-pstar.json": "f088761983edaea7119d4f8474de59f1307fdc5a60b5c7159d86f3ecdaafd5f3",
+        "rules/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "rules/gate.py": "373302f82f3edb54e3bcad766491eb4c707b850a17537353f7a9587c3fccb06c",
+        "rules/gate_pstar.py": "4304aa9bad9610c2956948ec2c43991818f10df35f342a124646583a5d76f5ca",
+        "rules/trading_calendar.py": "730851196d8f45f389817b792bbb4965ceb78b1dd7b2d48770470ceabccae59e",
+        "skill.json": "35d92c2f4d8026ba2e077bee01d52973d6f724cc921db8b08402c65f42f45373",
+        "skills/pstar-risk-check/scripts/risk_check.py": "e2b592379e79bbceaa35f7c8f170eef8ec9619fab7957a6afa6cf7b6a144a266"
+      }
+    },
+    {
+      "archive": "agents/dist/pstar-risk-check.zip",
+      "archive_sha256": "8c6007b0ddbff1decf08cc9de7f5b5f2fdcb1be2633255866167ca2756c81cf5",
+      "content_sha256": "fbfaf26814c754eaad81667fc43fc7a5dfc8c3ff21426db9bc10e856c6d24adc",
+      "members": [
+        "SKILL.md",
+        "scripts/risk_check.py"
+      ],
+      "name": "pstar-risk-check",
+      "sources": {
+        "SKILL.md": "93e73100f5b40c24cbce4ff818f19a5c26b47d0c95a955ddfedfac345e90f96d",
+        "scripts/risk_check.py": "e2b592379e79bbceaa35f7c8f170eef8ec9619fab7957a6afa6cf7b6a144a266"
       }
     },
     {
       "archive": "agents/dist/reconcile-paper-fills.zip",
-      "archive_sha256": "aed207d502bc1c916d1ef052888d24210f47fe0f11000077b8bcded4c724aa9c",
-      "content_sha256": "7c7ab0e8b7af1ad453709e9ad72826d7d7ad61a6e5115a9e0f2473e3bb43e14a",
+      "archive_sha256": "089ec95917530cf645e9af92a3b142558aea99a633bc71590e9d6fc1562c4247",
+      "content_sha256": "7502dc2b64a94cd9f0e56bb0df69fb299137a3766c946e12082e52024c14dc8d",
       "members": [
         "SKILL.md"
       ],
       "name": "reconcile-paper-fills",
       "sources": {
-        "SKILL.md": "c41dbe77cb9985c25fa545e3e4443710c872f6c4cc997eb4af7730e56cb857f5"
+        "SKILL.md": "5f7f49ac85ce8e90c36e1f982d032c9cb2a80fa7962acd5fd978c1dfa4a8f87b"
       }
     },
     {
       "archive": "agents/dist/report-trading-day.zip",
-      "archive_sha256": "f62753fe64db1772257d857be6e96bca569cdc307364940b4f63585b6f02c0a5",
-      "content_sha256": "655a17c8f2f44bd6a4bc1296c4de4d503e3d73df62baca28131cf54ea442906a",
+      "archive_sha256": "171311b3e722248ee45de066ba78ae211f7aca807127f6be49bca56db4c05082",
+      "content_sha256": "a13ec422596db3192472ae0d8acb3101ddb1b52617966eaac0068e1d69216932",
       "members": [
         "SKILL.md"
       ],
       "name": "report-trading-day",
       "sources": {
-        "SKILL.md": "a90227de1279b45d2fc18e13e30b8d370461db7f9d275aee9f34be50352540f5"
+        "SKILL.md": "ce4307098045d29c50f61da38d9d80f617a5e0e5029752b39ddc0918be006d81"
       }
     },
     {
       "archive": "agents/dist/research-factor-evidence.zip",
-      "archive_sha256": "5155b80b02e8c76ffec4037cd3ca7ccb418fc594170f86c9c9054fd48526d568",
-      "content_sha256": "d6ad6cf66af79b9e18767ed6127e81ac1ac50e4421b9699547d7085d7f79a221",
+      "archive_sha256": "048f9195f22732d4aeeda13d4c5600f7785d223d5e4bf8490829bb6a9befd923",
+      "content_sha256": "9ae3488250ac0743db7b2d94d7018d62dfb736f4700cae6c5c75001d95f50312",
       "members": [
         "SKILL.md"
       ],
       "name": "research-factor-evidence",
       "sources": {
-        "SKILL.md": "c2da8e3594b6265e21f11f1399098cdc6d15edcd015bc1d59f0d388f36193e03"
+        "SKILL.md": "cb08a14338d815dbb2ff3ba997e231e1445b1812bb64ffbcb056240f6a61ed39"
       }
     },
     {
       "archive": "agents/dist/validate-trading-targets.zip",
-      "archive_sha256": "f236b535bc2ef7053ff55f28459a681650bf15f26bd90c057ac53ec7cff5e4f6",
-      "content_sha256": "5523ee3b13b8c5d8062048097c159bd1884e2498cf55f706d97026bd2516d362",
+      "archive_sha256": "50427ff56ad826ae84a14eaadada2553a0f1f1fcfa7f1fce6c1a785a3af6f228",
+      "content_sha256": "67c97cde3f9e032c0b2c4bab6aca0edaff3241b4e214c582bea0dfd687f60fd8",
       "members": [
         "SKILL.md"
       ],
       "name": "validate-trading-targets",
       "sources": {
-        "SKILL.md": "5ada991d903cdb427ac3d8f018e66e956b277e1f9cc148fb468800f67b9de1c2"
+        "SKILL.md": "61b2ec221ebebbf833b0c26d00a38695caebe198f4e0d19ae4adaa22d2fd8e0b"
       }
     }
   ],

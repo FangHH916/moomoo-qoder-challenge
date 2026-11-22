@@ -1,14 +1,14 @@
 {
   "schema_version": "local-release-lock/1",
-  "release_name": "paper-forward-local-0.3.5",
-  "retrieved_at": "2026-11-21T05:38:01Z",
-  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift",
-  "local_revision": "0.3.5",
+  "release_name": "paper-forward-local-0.3.6",
+  "retrieved_at": "2026-11-22T05:45:00Z",
+  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.6 the locked set covers seven packaged skills and their skill.json manifests, the agents/executor.md role spec that replaced agents/guard.md, live/ops.json (the shared pause switch and the lease vocabulary) and agents/package_skills.py; the seal records the locally built content and archive digests of those seven zips, while every cloud skill id, version and uploaded-archive hash stays null until Part B observes it",
+  "local_revision": "0.3.6",
   "activation": "BLOCKED",
   "cloud_verification_status": "UNVERIFIED",
   "validated_mcp_contract_sha256": null,
   "binding_policy": "Reject null, missing or mismatched runtime bindings; freeze release-specific Forward templates; no historical child pin claim.",
-  "source_hash_algorithm": "sha256_raw_file_bytes",
+  "source_hash_algorithm": "sha256_file_bytes_with_crlf_folded_to_lf",
   "self_hash_policy": "The manifest does not hash itself; offline evaluation reports its raw SHA-256 separately.",
   "roles": {
     "coordinator": {
@@ -21,7 +21,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/coordinator.md",
-      "local_source_sha256": "d00ee21e7b974214e9968a711c43f20846c55e92b49cfb43162d64190277affe"
+      "local_source_sha256": "37f11c7e3dd9569d1d5051fc23d54df8334bdd4d2b5b2d76a1281132b49d0884"
     },
     "scout": {
       "agent_id": null,
@@ -33,9 +33,9 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/scout.md",
-      "local_source_sha256": "81552d21ec7dade892b6e50bff54ec71378baaf7b2b2f7953dcded524786d516"
+      "local_source_sha256": "4e00573bab5e932543f7cbab4d21293f67ab7b4207f541156e383149fefc8488"
     },
-    "guard": {
+    "executor": {
       "agent_id": null,
       "template_id": null,
       "identity_id": null,
@@ -44,8 +44,8 @@
       "session_id": null,
       "expected_cloud_version": null,
       "expected_template_sha256": null,
-      "local_source": "agents/guard.md",
-      "local_source_sha256": "c189fb33676dd03c734993d20cd6e8b0520b18960e7e66e603795a3cc4943e33"
+      "local_source": "agents/executor.md",
+      "local_source_sha256": "5c2eb2b3510e1bab8c8274202c437495efcfaa2b4549a771d420a55f67b5cecd"
     },
     "risk-auditor": {
       "agent_id": null,
@@ -57,7 +57,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/risk-auditor.md",
-      "local_source_sha256": "e5f91160e7a32e48b97a3e8f2417e58d7c7dfe7c9e0a67d626a7e3ec2de56a9f"
+      "local_source_sha256": "752c4f5daaa2facabc5bbcdf72f17b2b31662e9294f0f704f07b2666abab47c5"
     },
     "advisor": {
       "agent_id": null,
@@ -69,7 +69,7 @@
       "expected_cloud_version": null,
       "expected_template_sha256": null,
       "local_source": "agents/advisor.md",
-      "local_source_sha256": "21a594faf5a1c6fd9f33078af4ae0db0cf71784befa0547501138833e99905fe"
+      "local_source_sha256": "e332f58261e544139a41660269d814f69724ed4362f6b0aded6531fbc1fe69fb"
     }
   },
   "skills": {
@@ -79,7 +79,10 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/validate-trading-targets/SKILL.md",
-      "local_source_sha256": "6835d7e07d71e66a6d40d349ecc266f44e0ce02cfd3c671c5b29e3f94c5efbc3"
+      "local_source_sha256": "61b2ec221ebebbf833b0c26d00a38695caebe198f4e0d19ae4adaa22d2fd8e0b",
+      "local_content_sha256": "67c97cde3f9e032c0b2c4bab6aca0edaff3241b4e214c582bea0dfd687f60fd8",
+      "local_archive_sha256": "50427ff56ad826ae84a14eaadada2553a0f1f1fcfa7f1fce6c1a785a3af6f228",
+      "local_archive_members": 1
     },
     "paper-trading-gate": {
       "cloud_skill_id": null,
@@ -87,7 +90,10 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/paper-trading-gate/SKILL.md",
-      "local_source_sha256": "382d9ba03530576a4ead2d1f531ae5dee3250acf0776fe9096d5d5547d958e5f"
+      "local_source_sha256": "d0b24dd1d5229e34ab5149ce29a5cbbea771c15a04ef22947cfde51b969720f5",
+      "local_content_sha256": "9e1dee5531e8df86505645ce9e02aded4cacfb8d665b2b1ca578b0499554a402",
+      "local_archive_sha256": "9590acd4ff91c30bdff77f09bb1b42c298e8f8a12f65966b5ca437c0b0a5a2ff",
+      "local_archive_members": 1
     },
     "reconcile-paper-fills": {
       "cloud_skill_id": null,
@@ -95,7 +101,10 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/reconcile-paper-fills/SKILL.md",
-      "local_source_sha256": "c41dbe77cb9985c25fa545e3e4443710c872f6c4cc997eb4af7730e56cb857f5"
+      "local_source_sha256": "5f7f49ac85ce8e90c36e1f982d032c9cb2a80fa7962acd5fd978c1dfa4a8f87b",
+      "local_content_sha256": "7502dc2b64a94cd9f0e56bb0df69fb299137a3766c946e12082e52024c14dc8d",
+      "local_archive_sha256": "089ec95917530cf645e9af92a3b142558aea99a633bc71590e9d6fc1562c4247",
+      "local_archive_members": 1
     },
     "report-trading-day": {
       "cloud_skill_id": null,
@@ -103,7 +112,10 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/report-trading-day/SKILL.md",
-      "local_source_sha256": "6bc1ff94e5457376e3b0bd152315d974e292bb359bfe000a3dd8e00740f9391d"
+      "local_source_sha256": "ce4307098045d29c50f61da38d9d80f617a5e0e5029752b39ddc0918be006d81",
+      "local_content_sha256": "a13ec422596db3192472ae0d8acb3101ddb1b52617966eaac0068e1d69216932",
+      "local_archive_sha256": "171311b3e722248ee45de066ba78ae211f7aca807127f6be49bca56db4c05082",
+      "local_archive_members": 1
     },
     "research-factor-evidence": {
       "cloud_skill_id": null,
@@ -111,7 +123,32 @@
       "expected_cloud_content_sha256": null,
       "expected_uploaded_archive_sha256": null,
       "local_source": "skills/research-factor-evidence/SKILL.md",
-      "local_source_sha256": "f2a3bdfa3ce2d5f9baeb1859f39b4848835b0b994fed8f7a6c03f048cae97750"
+      "local_source_sha256": "cb08a14338d815dbb2ff3ba997e231e1445b1812bb64ffbcb056240f6a61ed39",
+      "local_content_sha256": "9ae3488250ac0743db7b2d94d7018d62dfb736f4700cae6c5c75001d95f50312",
+      "local_archive_sha256": "048f9195f22732d4aeeda13d4c5600f7785d223d5e4bf8490829bb6a9befd923",
+      "local_archive_members": 1
+    },
+    "pstar-risk-check": {
+      "cloud_skill_id": null,
+      "expected_cloud_version": null,
+      "expected_cloud_content_sha256": null,
+      "expected_uploaded_archive_sha256": null,
+      "local_source": "skills/pstar-risk-check/SKILL.md",
+      "local_source_sha256": "93e73100f5b40c24cbce4ff818f19a5c26b47d0c95a955ddfedfac345e90f96d",
+      "local_content_sha256": "fbfaf26814c754eaad81667fc43fc7a5dfc8c3ff21426db9bc10e856c6d24adc",
+      "local_archive_sha256": "8c6007b0ddbff1decf08cc9de7f5b5f2fdcb1be2633255866167ca2756c81cf5",
+      "local_archive_members": 2
+    },
+    "pstar-executor": {
+      "cloud_skill_id": null,
+      "expected_cloud_version": null,
+      "expected_cloud_content_sha256": null,
+      "expected_uploaded_archive_sha256": null,
+      "local_source": "skills/pstar-executor/SKILL.md",
+      "local_source_sha256": "d2e3663f614dfaeebb946b782f226802b93b2f809d61f8a4fe5a5105d5abeec6",
+      "local_content_sha256": "7d2d1026ba43e4c856aece9f916a58217d9fb1472c6c9b5117379258cf7c0150",
+      "local_archive_sha256": "dac94240a94af86ae7d628e39b9c1d3dae6db1f28d3bd9a88c16494c88f4af8f",
+      "local_archive_members": 22
     }
   },
   "release_blockers": [
@@ -130,24 +167,27 @@
     "P* target provenance is only as good as one `research/r10_deploy.py live` run: its data refresh (Alpaca bars and SEC 8-K dates) has never been executed against a network or broker in this release, because every test injects a runner and no account or cloud call was authorized",
     "Pre-trade ETF and short eligibility is verified against a supplied eligibility table, never against live broker quotes, borrow or fund-size data; the skipped-name deviation path has therefore not been observed on a real book",
     "The `dashboard/` UI renders a fictional demo fixture (AAPL/MSFT/NVDA longs) that is not the P* book, so its numbers must never be read as strategy output; the four strategy-specific `skills/*/SKILL.md` playbooks are retargeted at P* in revision 0.3.3 and `skills/reconcile-paper-fills/SKILL.md` is strategy-neutral",
-    "The Slack `PAUSE`/`RESUME` listener is not implemented and the cloud agent that is to run the 2026-11-27 final exit on a schedule does not exist yet, so the switch the 2026-11-21 decision made the only human control is currently a CLI command and a journal row, not something the user can send from a phone",
+    "The role specs, the schedule intent and the shared-switch tooling for the Slack `PAUSE`/`RESUME` listener and the scheduled 2026-11-27 cloud final exit exist at revision 0.3.6, but no cloud resource has been created and no PAUSE roundtrip has been observed end to end, so the switch the 2026-11-21 decision made the only human control is still a CLI command and a journal row rather than something the user has been shown to be able to send from a phone",
     "Automatic execution removes the typed approval from the send path and replaces it with the deterministic gate plus the pause switch, so a run that submits the whole `plan` list is only as safe as `plan.json`, the 300-second quote and snapshot freshness window, and the reprice-round ceiling",
     "The 2026-11-19 competition book is entered one session late under a single dated R10 exception (day 2026-11-23, `decided_by` user 2026-11-21) that has never been exercised at a broker; no other day is allowed to reuse it",
     "The 1-7 moomoo order status-code enumeration is documentation-derived knowledge carried in the 2026-11-21 instruction, not machine-verified: the MCP metadata for sim_trade_history_order_list publishes request fields only, and of the seven codes only 4 and 5 have been observed, in the 2026-11-20 history of 5322438. Code 0, any further undocumented code, and whether a cancelled-with-no-fill order reprices cleanly, have not been observed on a real book"
   ],
   "source_sha256": {
-    "agents/AGENTS.md": "4059b52bc73be464b5b55e7270b009d267f763b40f6a0f1693f4c4e9a810c76d",
-    "agents/advisor.md": "21a594faf5a1c6fd9f33078af4ae0db0cf71784befa0547501138833e99905fe",
-    "agents/coordinator.md": "d00ee21e7b974214e9968a711c43f20846c55e92b49cfb43162d64190277affe",
-    "agents/evaluate.py": "e5141b8effdd10ee69a2b79393a454bad2c4fac3cccd090f1a83af19e51dec7d",
-    "agents/evaluations.json": "bca63b8cd411fe71163d8bea109f525dca560ae31ee8a90acee75c61f0c5c080",
-    "agents/guard.md": "c189fb33676dd03c734993d20cd6e8b0520b18960e7e66e603795a3cc4943e33",
-    "agents/risk-auditor.md": "e5f91160e7a32e48b97a3e8f2417e58d7c7dfe7c9e0a67d626a7e3ec2de56a9f",
-    "agents/scout.md": "81552d21ec7dade892b6e50bff54ec71378baaf7b2b2f7953dcded524786d516",
-    "agents/templates.json": "99a055eb1bd4f5ed7642681d9cd3aaf38e21a4f0c9476448bffd4397af50f2f9",
+    "agents/AGENTS.md": "b21576cbe5f350116dd8bb42c909ebc1e313ca079f85a6ba4d6805fd5d9eb421",
+    "agents/advisor.md": "e332f58261e544139a41660269d814f69724ed4362f6b0aded6531fbc1fe69fb",
+    "agents/coordinator.md": "37f11c7e3dd9569d1d5051fc23d54df8334bdd4d2b5b2d76a1281132b49d0884",
+    "agents/evaluate.py": "11d7f4fe7771ba6889e3629881f099ce9f14f140712b3b68c368878bf422bcd0",
+    "agents/evaluations.json": "f9998cdac0bef9094396c3acca6a9f8805a71ad2018f8f0dd0285dab447b1de9",
+    "agents/executor.md": "5c2eb2b3510e1bab8c8274202c437495efcfaa2b4549a771d420a55f67b5cecd",
+    "agents/package_skills.py": "1fe906d7996ff9688a294493b9e16d7af3f6115914760e25a76c21d44fb46812",
+    "agents/risk-auditor.md": "752c4f5daaa2facabc5bbcdf72f17b2b31662e9294f0f704f07b2666abab47c5",
+    "agents/scout.md": "4e00573bab5e932543f7cbab4d21293f67ab7b4207f541156e383149fefc8488",
+    "agents/templates.json": "9fed268ce3112d2911a13cb93e05d5017c36f79d54f12b98c0e9bcf14cb29825",
     "docs/submission-checklist.md": "5c10fea07903e98b1f6c891a4e4dcb374bca155eecdf227e8ebb76135f5c529a",
     "live/config.pstar.json": "c5d157601358c6ac3445679cfbafb17071e8b6e6c1582d63d13c9933fddae7dd",
     "live/config.v2.json": "12fcb393cedd63df77b75eef4fdf73c2da0be29778b7ed6fbd0effc43b10001a",
+    "live/ops.json": "d32f3b471462d29759376418ba00eebc72c03cadbaeba608e4d211f2c519490e",
+    "live/schedule-plan.json": "e4e72c7401a3b0cd31ae2f80c2f657d103561673af22681b2bc41427cb3d8597",
     "notes/handbook-notes.md": "4504e51a3ea8bab6f17b8cbdf59e1d8559bd077c5544f11cb3237575c196e538",
     "research/factors.py": "bb431605ada41825949e5a6c02b2122dc607cd6ff1802450a2048d8bf3a970fb",
     "research/lab_cache.py": "617fc905b06e1e77177ae976741af8bb094c7953195b89e9541d7cb0c46e5710",
@@ -156,10 +196,13 @@
     "research/pipeline_v2.py": "7affd82184af4b76733cecde441e06bb1a8bc5e18bd59bdd7c4f976650b2b405",
     "research/pipeline_v3.py": "f8537dd03bfe1c3dcc367b7f95140c7301d3b696d0cdb5807c956b0450f02529",
     "research/r10_deploy.py": "d8f7cf9c731670f5908ed9d5b78c424a68cabd537f7c872d0f00077a18cba7a8",
-    "skills/paper-trading-gate/SKILL.md": "382d9ba03530576a4ead2d1f531ae5dee3250acf0776fe9096d5d5547d958e5f",
-    "skills/reconcile-paper-fills/SKILL.md": "c41dbe77cb9985c25fa545e3e4443710c872f6c4cc997eb4af7730e56cb857f5",
-    "skills/report-trading-day/SKILL.md": "6bc1ff94e5457376e3b0bd152315d974e292bb359bfe000a3dd8e00740f9391d",
-    "skills/research-factor-evidence/SKILL.md": "f2a3bdfa3ce2d5f9baeb1859f39b4848835b0b994fed8f7a6c03f048cae97750",
-    "skills/validate-trading-targets/SKILL.md": "6835d7e07d71e66a6d40d349ecc266f44e0ce02cfd3c671c5b29e3f94c5efbc3"
+    "skills/paper-trading-gate/SKILL.md": "d0b24dd1d5229e34ab5149ce29a5cbbea771c15a04ef22947cfde51b969720f5",
+    "skills/pstar-executor/SKILL.md": "d2e3663f614dfaeebb946b782f226802b93b2f809d61f8a4fe5a5105d5abeec6",
+    "skills/pstar-executor/skill.json": "35d92c2f4d8026ba2e077bee01d52973d6f724cc921db8b08402c65f42f45373",
+    "skills/pstar-risk-check/SKILL.md": "93e73100f5b40c24cbce4ff818f19a5c26b47d0c95a955ddfedfac345e90f96d",
+    "skills/reconcile-paper-fills/SKILL.md": "5f7f49ac85ce8e90c36e1f982d032c9cb2a80fa7962acd5fd978c1dfa4a8f87b",
+    "skills/report-trading-day/SKILL.md": "ce4307098045d29c50f61da38d9d80f617a5e0e5029752b39ddc0918be006d81",
+    "skills/research-factor-evidence/SKILL.md": "cb08a14338d815dbb2ff3ba997e231e1445b1812bb64ffbcb056240f6a61ed39",
+    "skills/validate-trading-targets/SKILL.md": "61b2ec221ebebbf833b0c26d00a38695caebe198f4e0d19ae4adaa22d2fd8e0b"
   }
 }

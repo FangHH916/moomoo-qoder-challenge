@@ -57,6 +57,17 @@ def allowed_target_age(config: dict, signal_date: str, day: str) -> tuple[int, s
     return limit, decided_by
 
 
+def market_flatten_window(config: dict, now) -> bool:
+    """The only window a MARKET ticket may be sent in: the scheduled final-exit flatten (prompt 08 item 2).
+
+    `final_flatten_at` is 2026-11-27T12:45 ET in the deployed config. The Eastern-date test is not
+    decoration: without it a MARKET ticket on any later day would fall inside "now >= flatten", and the
+    frozen rule set is supposed to be able to send nothing once the competition is over.
+    """
+    flatten = timestamp(config["final_flatten_at"])
+    return now >= flatten and now.astimezone(ET).date() == flatten.astimezone(ET).date()
+
+
 def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
     checks = []
 
@@ -74,7 +85,13 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
             raise ValueError("Positive finite equity required")
         if not isinstance(order["quantity"], int) or isinstance(order["quantity"], bool) or order["quantity"] <= 0:
             raise ValueError("Positive whole-share quantity required")
-        if order["side"] not in ("BUY", "SELL") or not finite(order["limit_price"]) or order["limit_price"] <= 0:
+        if order["side"] not in ("BUY", "SELL"):
+            raise ValueError("Invalid side")
+        order_type = order["order_type"]
+        if not isinstance(order_type, str) or order_type.upper() not in ("LIMIT", "MARKET"):
+            raise ValueError("Unknown order type")
+        order_type = order_type.upper()
+        if order_type == "LIMIT" and (not finite(order.get("limit_price")) or order["limit_price"] <= 0):
             raise ValueError("Invalid side or price")
         if order["intent"] not in ("REBALANCE", "ENTRY", "EXIT", "EMERGENCY_EXIT", "FINAL_EXIT"):
             raise ValueError("Invalid order intent")
@@ -92,12 +109,20 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
         quote = (context.get("quotes") or {}).get(symbol, {})
         quote_ok = (quote.get("verified_by_relay") is True and finite(quote.get("price"))
                     and quote["price"] > 0 and _recent(quote["as_of"], now, config["quote_max_age_seconds"]))
-        prices[symbol] = quote.get("price") if quote_ok else order["limit_price"]
+        prices[symbol] = quote.get("price") if quote_ok else order.get("limit_price")
+        if order_type == "MARKET" and not quote_ok:
+            raise ValueError("A MARKET order needs a fresh relay-verified quote")
         delta = order["quantity"] * (1 if order["side"] == "BUY" else -1)
         old, new = positions.get(symbol, 0), positions.get(symbol, 0) + delta
         reducing = old != 0 and old * delta < 0 and abs(delta) <= abs(old)
         reversal = old * new < 0
         emergency = order["intent"] in ("EMERGENCY_EXIT", "FINAL_EXIT") and reducing
+        # The one MARKET case the user approved: whatever is still open when the final-exit flatten deadline
+        # passes goes out at the market instead of another limit round. Everything else stays LIMIT DAY.
+        market_flatten = (order_type == "MARKET" and order["intent"] == "FINAL_EXIT" and reducing
+                          and market_flatten_window(config, now))
+        # An order outside that window is refused by R7 itself, not by an exception here, so the auditor
+        # reads the order-type rule and its threshold instead of a generic input-contract failure.
         day = now.astimezone(ET).date().isoformat()
         drawdown = equity / snap["peak_equity"] - 1
         final_exit = now >= timestamp(config["final_exit_start"])
@@ -127,7 +152,10 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
             book[symbol] = max(0.0, book.get(symbol, 0) - abs(delta) * prices[symbol])
         else:
             book = longs if delta > 0 else shorts
-            book[symbol] = book.get(symbol, 0) + abs(delta) * max(order["limit_price"], prices[symbol])
+            # A market order has no limit to project with, so the fresh quote the gate already demanded is
+            # what sizes the exposure it would add. R7 is what refuses such an order in the first place.
+            worst = prices[symbol] if order_type == "MARKET" else max(order["limit_price"], prices[symbol])
+            book[symbol] = book.get(symbol, 0) + abs(delta) * worst
         long_gross, short_gross = sum(longs.values()), sum(shorts.values())
         names = {s for s, q in projected.items() if q != 0} | {o["symbol"] for o in pending}
         executed = set(context["executed_order_ids"])
@@ -189,13 +217,15 @@ def evaluate_pstar_order(order: dict, context: dict, config: dict) -> dict:
               f"{config['competition_order_cap']} (the {config['emergency_flatten_reserve']}-order "
               "emergency reserve stays inside the cap)",
               {"names": len(names), "orders_used_or_pending": used_plus_pending}, "HOLD")
-        check("R7", order["order_type"] == "LIMIT" and order.get("time_in_force") == "DAY"
-              and order.get("session") == "RTH" and trading_window(now, emergency)
-              and quote_ok and abs(order["limit_price"] / quote["price"] - 1) * 10000
-              <= config["limit_band_bps"] + 1e-8,
+        check("R7", (order_type == "MARKET" and market_flatten)
+              or (order_type == "LIMIT" and order.get("time_in_force") == "DAY"
+                  and order.get("session") == "RTH" and trading_window(now, emergency)
+                  and quote_ok and abs(order["limit_price"] / quote["price"] - 1) * 10000
+                  <= config["limit_band_bps"] + 1e-8),
               "RTH limit DAY, 09:35-15:45 ET; "
-              f"{config['limit_band_bps']}bps of the live quote; emergency exits all day",
-              order["limit_price"], "HOLD")
+              f"{config['limit_band_bps']}bps of the live quote; emergency exits all day; MARKET only for a "
+              f"FINAL_EXIT reduction on or after {config['final_flatten_at']}",
+              "MARKET" if order_type == "MARKET" else order["limit_price"], "HOLD")
         trim_at = config["trim_ticker_above_of_initial"] * initial
         offending = sorted(s for s in set(longs) | set(shorts)
                            if max(longs.get(s, 0), shorts.get(s, 0)) > trim_at + 1e-7)

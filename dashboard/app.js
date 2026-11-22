@@ -2,7 +2,7 @@
 
 (() => {
   const $ = (id) => document.getElementById(id);
-  const agentNames = ["Coordinator", "Scout", "Guard", "Auditor", "Advisor"];
+  const agentNames = ["Coordinator", "Scout", "Executor", "Auditor", "Advisor"];
   const decisionKinds = ["HOLD", "BLOCK", "APPROVE"];
   let state = null;
   let decisionFilter = "ALL";
