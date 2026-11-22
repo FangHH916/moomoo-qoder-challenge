@@ -2,7 +2,7 @@
   "schema_version": "local-release-lock/1",
   "release_name": "paper-forward-local-0.3.6",
   "retrieved_at": "2026-11-22T18:07:35Z",
-  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.6 the locked set covers seven packaged skills and their skill.json manifests, the agents/executor.md role spec that replaced agents/guard.md, live/ops.json (the shared pause switch and the lease vocabulary) and agents/package_skills.py; the seal records the locally built content and archive digests of those seven zips, while every cloud skill id, version and uploaded-archive hash stays null until Part B observes it; Part B step 1 (read-only, recorded_at 2026-11-22T18:07:35Z) called ten Forward/CAS listing tools only - no create, update, delete, upload or run - and observed the Personal space and the pre-existing 2026-11-18 resources listed in the discovery block; no cloud resource was created, modified, deleted, uploaded or run, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; no token or secret was printed or written, and the template response's user_id is not recorded",
+  "retrieval_scope": "local source review only; no cloud resource retrieval, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; since 0.3.5 the locked source hashes are taken over each file's bytes with CRLF folded to LF, so a core.autocrlf checkout verifies the seal rather than reporting drift; since 0.3.6 the locked set covers seven packaged skills and their skill.json manifests, the agents/executor.md role spec that replaced agents/guard.md, live/ops.json (the shared pause switch and the lease vocabulary) and agents/package_skills.py; the seal records the locally built content and archive digests of those seven zips, while every cloud skill id, version and uploaded-archive hash stays null until Part B observes it; Part B step 1 (read-only, recorded_at 2026-11-22T18:07:35Z) called ten Forward/CAS listing tools only - no create, update, delete, upload or run - and observed the Personal space and the pre-existing 2026-11-18 resources listed in the discovery block; no cloud resource was created, modified, deleted, uploaded or run, no account call, no order placed, cancelled or modified, no account paused or resumed, no schedule and no cloud configuration change; no token or secret was printed or written, and the template response's user_id is not recorded; Part B step 2 (read-only probes, recorded in the discovery block) ran two one-time vault permission probes on 2026-11-22: probe 1 (18:44:26Z, 3.5 credits) and probe 2 (18:51:11Z, 0.33 credits), each creating exactly one probe template and one probe session that were both archived right afterwards; each session called only the four always_allow read-only moomoo tools (sim_trade_account_list, sim_trade_cash_info, sim_trade_position_list, quote_user_security on PSTAR-PAUSE), no order, cancel, modify, subscribe or live-trading tool was invoked, no confirmation request appeared and no live trading tool or account was seen; no role template, skill, schedule or channel was created",
   "local_revision": "0.3.6",
   "activation": "BLOCKED",
   "cloud_verification_status": "UNVERIFIED",
@@ -458,6 +458,66 @@
         "live_trading_tools_or_accounts_seen": "none: all 8 accounts are paper (account_type 1 or 2), and no trading_*/account_*/crypto_account_* tool appeared"
       },
       "disposition": "per the user stop condition, reported to the user and stopped before building any role template on the vault"
+    },
+    "step2_probe_2": {
+      "ran_at": "2026-11-22T18:51:11Z",
+      "purpose": "second one-time read-only probe, approved by the user on 2026-11-23, to resolve probe 1's ambiguity: probe 1 could not distinguish an OAuth scope without paper order tools from order tools hidden by the always_deny default, so this probe marks the three paper order tools always_ask (visible, every invocation needs a human confirmation) and instructs the agent never to invoke them",
+      "template": {
+        "id": "tmpl_5e9c4dc6cdc5e50bbf2d332d",
+        "name": "pstar-vault-probe-2",
+        "status": "archived",
+        "archived_at": "2026-11-22T18:53:28Z",
+        "vault": "vault_00vv83bc3xp1c4wi0wv2",
+        "skills": [],
+        "channels": "none attached, as in probe 1",
+        "mcp_toolset_policy": "always_deny default; always_allow for the same four read-only tools as probe 1 (sim_trade_account_list, sim_trade_cash_info, sim_trade_position_list, quote_user_security); sim_trade_input_order, sim_trade_cancel_order and sim_trade_modify_order each always_ask; quote_modify_user_security stayed denied",
+        "system_prompt": "instructed to list every visible tool verbatim including the always_ask ones, to never invoke any order, cancel, modify, subscribe or live-trading tool, to reject and report any confirmation request, and to stop and report any live trading tool or account"
+      },
+      "session": {
+        "id": "sess_00wah1aq6at4wtm6t5q7",
+        "status": "terminated",
+        "archived_at": "2026-11-22T18:53:28Z",
+        "credits": 0.33,
+        "confirmation_requests": "none: no order/cancel/modify tool was invoked, so nothing asked for a human confirmation",
+        "denied_tool_attempts": "none: all four tool uses evaluated allow with evaluation.type always_allow, so there is no refusal text to quote"
+      },
+      "findings": {
+        "visible_tools": [
+          "quote_user_security",
+          "sim_trade_account_list",
+          "sim_trade_cash_info",
+          "sim_trade_position_list",
+          "sim_trade_input_order (always_ask)",
+          "sim_trade_cancel_order (always_ask)",
+          "sim_trade_modify_order (always_ask)"
+        ],
+        "order_tools_visible": true,
+        "order_tools_visibility_resolution": "all three paper order tools are visible when marked always_ask, so the vault OAuth scope demonstrably includes the paper order tools; probe 1's false was the always_deny default hiding them, not a scope gap, exactly as the user judged",
+        "accounts": "the same eight paper accounts as probe 1, including 5832812 (account_type 2, 'Moomoo x Qoder AI Paper Trading Agent Challenge', market_id 100)",
+        "competition_account_present": true,
+        "account_5832812_read": {
+          "balance": "92213.38",
+          "total_asset": "99911.68",
+          "long_mv": "7698.3",
+          "short_mv": "0",
+          "positions": [
+            {
+              "symbol": "IWM",
+              "qty": "30",
+              "buy_avg_price": "259.521",
+              "mv": "7698.3",
+              "profit": "-87.33"
+            }
+          ],
+          "note": "identical to probe 1, consistent with the known 2026-11-20 IWM buy left at the broker"
+        },
+        "pstar_pause_readable": true,
+        "pstar_pause_codes": [
+          "US.SOXL"
+        ],
+        "live_trading_tools_or_accounts_seen": "none: all 8 accounts are paper (account_type 1 or 2), and no trading_*/account_*/crypto_account_* tool appeared"
+      },
+      "disposition": "ambiguity resolved in the user's favour: the vault can serve the Executor role's paper order tools; reported to the user and stopped, with both the probe session and the probe template archived, before building any role template"
     }
   }
 }
