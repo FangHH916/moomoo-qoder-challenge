@@ -354,8 +354,110 @@
     "limitations": [
       "the MCP surface exposes no identity object (no list/create identity tool), so identity_id stays null in the roles block and the pre-existing vault's null identity_id cannot be completed from here; the role specs' identity binding is therefore still a release blocker, recorded rather than papered over",
       "the MCP surface exposes no channel/Slack listing tool, so channel bindings are only observable inside the Forward template's Channels tab; the step-5 PAUSE/RESUME test therefore runs through the cloud template, as the user stated on 2026-11-22",
-      "the MCP surface does not expose vault authorization state: get_forward_vault returns no OAuth/provider fields, so the Active MCP OAuth at https://mcp.moomoo.com/mcp is user-reported; the step-2 one-time read-only session probe is the only way to observe which tool scopes the authorization actually grants"
+      "the MCP surface does not expose vault authorization state: get_forward_vault returns no OAuth/provider fields, so the Active MCP OAuth at https://mcp.moomoo.com/mcp is user-reported; the step-2 one-time read-only session probe is the only way to observe which tool scopes the authorization actually grants",
+      "the platform compiles the runtime agent with a second MCP server (forward-built-in-tools) whose schedule-management tools and file_publish were auto-injected with always_allow in the probe (observed, not requested); the step 3-4 role templates must therefore explicitly deny schedule tools for every role except the Coordinator"
     ],
-    "bindings_written": "none: every role/skill binding field in this lock stays null; this block is the only place discovered IDs are recorded, because agents/evaluate.py rejects any non-null *_id or expected_* inside the roles/skills blocks"
+    "bindings_written": "none: every role/skill binding field in this lock stays null; this block is the only place discovered IDs are recorded, because agents/evaluate.py rejects any non-null *_id or expected_* inside the roles/skills blocks",
+    "identity": {
+      "identity_id": "idn_5fa0d561b708c147e82fd5ae",
+      "source": "user-provided 2026-11-23 from the Forward app UI; the MCP surface exposes no identity tool, so this value cannot be discovered programmatically",
+      "first_used_for": "the step-2 read-only vault permission probe session",
+      "note": "recorded only here in the discovery block, like the vault id; never copied into README, docs/ or AGENTS.md bodies"
+    },
+    "step2_probe": {
+      "ran_at": "2026-11-22T18:44:26Z",
+      "purpose": "one-time read-only probe of which tool scopes the moomoo-mcp vault OAuth actually grants, before any real role template is built on it",
+      "template": {
+        "id": "tmpl_c5c2216db7436a764bcde41e",
+        "name": "pstar-vault-probe",
+        "status": "archived",
+        "vault": "vault_00vv83bc3xp1c4wi0wv2",
+        "skills": [],
+        "channels": "none attached: the MCP has no channel tool and the template was created without any channel binding, so nothing was posted to Slack",
+        "mcp_toolset_policy": "always_deny default; always_allow only for sim_trade_account_list, sim_trade_cash_info, sim_trade_position_list, quote_user_security; quote_modify_user_security stayed denied"
+      },
+      "session": {
+        "id": "sess_00wagfmdspt6pavabhpt",
+        "status": "terminated",
+        "archived_at": "2026-11-22T18:45:18Z",
+        "credits": 3.5,
+        "denied_tool_attempts": "none: all four tool uses evaluated always_allow; no order/cancel/modify tool was seen or attempted, so there is no refusal text to quote"
+      },
+      "findings": {
+        "visible_tools": [
+          "quote_user_security",
+          "sim_trade_account_list",
+          "sim_trade_cash_info",
+          "sim_trade_position_list"
+        ],
+        "order_tools_visible": false,
+        "order_tools_visibility_caveat": "the template mcp_toolset default is always_deny, so non-allowlisted tools are hidden by policy: this probe cannot distinguish an OAuth scope without paper order tools from a scope whose order tools the deny policy hides; the paper account reads all returned ret_code 0, so the scope demonstrably covers the paper-trading account surface",
+        "accounts": {
+          "5322433": {
+            "title": "SG Stock Paper Trading",
+            "account_type": 1,
+            "market_id": 14
+          },
+          "5322434": {
+            "title": "JP Stock Paper Trading",
+            "account_type": 1,
+            "market_id": 16
+          },
+          "5322435": {
+            "title": "US Futures Paper Trading",
+            "account_type": 1,
+            "market_id": 11
+          },
+          "5322436": {
+            "title": "SG Futures Paper Trading",
+            "account_type": 1,
+            "market_id": 12
+          },
+          "5322438": {
+            "title": "US Margin Account [Paper Trading]",
+            "account_type": 1,
+            "market_id": 100
+          },
+          "5322439": {
+            "title": "KR Margin Account [Paper Trading]",
+            "account_type": 1,
+            "market_id": 102
+          },
+          "5322440": {
+            "title": "HK Stock Paper Trading",
+            "account_type": 1,
+            "market_id": 1
+          },
+          "5832812": {
+            "title": "Moomoo x Qoder AI Paper Trading Agent Challenge",
+            "account_type": 2,
+            "market_id": 100
+          }
+        },
+        "competition_account_present": true,
+        "account_5832812_read": {
+          "balance": "92213.38",
+          "total_asset": "99911.68",
+          "long_mv": "7698.3",
+          "short_mv": "0",
+          "positions": [
+            {
+              "symbol": "IWM",
+              "qty": "30",
+              "buy_avg_price": "259.521",
+              "mv": "7698.3",
+              "profit": "-87.33"
+            }
+          ],
+          "note": "matches the known 2026-11-20 IWM buy left at the broker"
+        },
+        "pstar_pause_readable": true,
+        "pstar_pause_codes": [
+          "US.SOXL"
+        ],
+        "live_trading_tools_or_accounts_seen": "none: all 8 accounts are paper (account_type 1 or 2), and no trading_*/account_*/crypto_account_* tool appeared"
+      },
+      "disposition": "per the user stop condition, reported to the user and stopped before building any role template on the vault"
+    }
   }
 }
