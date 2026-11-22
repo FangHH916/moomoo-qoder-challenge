@@ -57,7 +57,7 @@ Goal: refresh the submission deck now that the cloud part of prompt 08 is live, 
 2. **Evidence.** Every cloud claim must come from a file in the repository: an `AGENTS.md` entry, a binding in `templates.json`, or a test log.
    - If the repository does not prove a step, label it "not yet verified" on the slide instead of claiming it. Examples: the PAUSE round trip, the denial tests, the final-exit dry run.
    - Give me the list of cloud claims, with the file each one comes from.
-3. Add the GitHub link to the title slide and to the "Reproduce it" slide.
+3. Add the GitHub link to the title slide and to the "Reproduce it" slide. The public repository is a filtered copy: it has no `docs/submission/`, no `status.ps1`, and no `reports/backtest*` or `reports/smoke*`. Commit hashes on GitHub differ from the local ones. So the "Reproduce it" slide may only cite files and commands that exist in the public repository, and it must not cite local commit hashes as GitHub links.
 4. Update `docs/submission/report-content.md` §5 and §6 to match: these are the statements the prompt 08 chat listed as out of date. Do not change the Q5 or Q7 answers.
 5. **No live results.** Add nothing from the competition account: no returns, no P&L, no equity, no position values. The backtest slides stay as they are.
 6. **Build checks.** In `build_report.py`, add a check that fails the build if the deck still calls the cloud read-only, says `can_execute: false`, or names Guard. Keep every existing check. Rebuild and show me the output of the checks.
@@ -118,7 +118,7 @@ When done, show me the slide-by-slide summary of changes, the check output, and 
 2. **证据。** 每条关于云端的说法都必须来自仓库里的文件：`AGENTS.md` 的条目、`templates.json` 里的绑定，或者测试日志。
    - 仓库证明不了的步骤，在页面上标"not yet verified"（尚未验证），不要说成已完成。比如：PAUSE 来回测试、禁止下单测试、最终平仓演练。
    - 把所有云端说法列给我，每条注明出自哪个文件。
-3. 在标题页和 "Reproduce it" 页加上 GitHub 链接。
+3. 在标题页和 "Reproduce it" 页加上 GitHub 链接。公开仓库是筛选过的副本：里面没有 `docs/submission/`、`status.ps1`、`reports/backtest*`、`reports/smoke*`，GitHub 上的提交号也和本地不一样。所以 "Reproduce it" 页只能写公开仓库里有的文件和命令，也不要把本地提交号当成 GitHub 链接。
 4. 相应更新 `docs/submission/report-content.md` 的 §5 和 §6，也就是 08 对话列出的已过时说法。Q5 和 Q7 的答案不要改。
 5. **不放实盘结果。** 比赛账户的任何数字都不加：不写收益、盈亏、权益，也不写持仓金额。回测那几页保持不变。
 6. **构建检查。** 在 `build_report.py` 里加一条检查：报告里只要还说云端只读、写着 `can_execute: false`，或者出现 Guard，构建就失败。原有的检查全部保留。重新构建，把检查输出给我看。
