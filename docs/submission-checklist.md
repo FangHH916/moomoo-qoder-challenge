@@ -1,132 +1,137 @@
 # 最终提交清单
 
+更新于 2026-11-22（下午）。✅ 已完成，⏳ 进行中或待做，⬜ 可选、未做，➖ 不适用。
+
 - 提交入口：https://survey.alibabacloud.com/uone/sg/survey/Zd8GZRUDs （表单标题 "Qoder x moomoo Agent Trading Competition"）
-- 截止：**2026-11-30 23:59 SGT**。计划 **11-29 晚上提交**，留一天缓冲。可以提前交，交了之后不用继续交易。
-- 表单第 6 题的 "Submission guidelines HERE" 链接指向 Participant Handbook：https://moomoo-qoder-challenge-rgkelnyuzbm.qoder.website/
-- 表单要你本人填写和点提交，Claude 不代填个人信息、不代点提交。
+- 截止：**2026-11-30 23:59 SGT**。
+- 计划：**等 08 的云端部分上线、报告更新完，再提交**（用户 11-22 选的方案 A），目标 11-29。
+  - 可以提前交，交了之后不用继续交易。
+- 表单第 6 题旁边的 "Submission guidelines HERE" 链接指向参赛手册（Participant Handbook）：https://moomoo-qoder-challenge-rgkelnyuzbm.qoder.website/ 。这是说明，不是要填的链接。
+- 表单由用户本人填写并点提交。Claude 不代填个人信息，也不代点提交。
+- 用户 11-22 决定：表单、报告和仓库里**都不写比赛账户的实际收益**。只写回测数字，并标明是回测。评委会直接查看账户 5832812。
 
 ## 一、表单 10 题（* 为必填）
 
-| # | 题目 | 限制 | 准备什么 | 谁来做 |
+| # | 题目 | 限制 | 内容 | 状态 |
 |---|---|---|---|---|
-| 1* | Full Name | ≤100 字 | 姓名，和 Luma 报名一致 | 你 |
-| 2* | Business Email | ≤100 字 | 用 **Luma 报名邮箱**（Qoder Pro 和比赛账户都绑在这个邮箱上） | 你 |
-| 3* | Country（单选） | — | Singapore | 你 |
-| 4* | Phone Number | ≤100 字，格式 `+65 9123 4567` | 和 Moomoo SG 账户一致的手机号 | 你 |
-| 5* | One sentence about your project | ≤100 字符（英文，非常短） | 一句话概括项目，Claude 起草 | Claude 起草，你确认 |
-| 6* | Presentation Submission Link | ≤100 字符 | **Qoder 生成的 deck / HTML 报告的链接**（如 Qoder Sites）。必须设成评委能打开（"Anyone can access" 或邀请主办方）。链接要短于 100 字符 | Qoder 生成，Claude 检查内容，你发布 |
-| 7* | Project Description | ≤1000 字符 | 英文项目介绍：策略、agent 架构、风控、结果、Qoder 用法，Claude 起草 | Claude 起草，你确认 |
-| 8 | Github Link | ≤100 字符，选填 | 可运行的 agent 包代码仓库。评委要能访问（公开仓库或给主办方权限） | Claude 整理仓库，你决定公开方式 |
-| 9* | 同意把项目资料分享给评委 | 只有 Yes | 选 Yes | 你 |
-| 10* | 同意阿里云联系你（营销） | 只有 Yes，必选 | 选 Yes（必选项，以后可退订） | 你 |
+| 1* | Full Name | ≤100 字 | 姓名，和 Luma 报名一致 | 用户填 |
+| 2* | Business Email | ≤100 字 | Luma 报名邮箱（Qoder Pro 和比赛账户都绑在这个邮箱上） | 用户填 |
+| 3* | Country（单选） | — | Singapore | 用户填 |
+| 4* | Phone Number | ≤100 字，格式 `+65 9123 4567` | 和 Moomoo SG 账户一致的手机号 | 用户填 |
+| 5* | One sentence about your project | ≤100 字符 | `docs/submission/report-content.md` 的 Q5（96 字符） | ✅ |
+| 6* | Presentation Submission Link | ≤100 字符 | https://trading-agent-deck-w89b43az0ul.qoder.website/ （Qoder Sites，不登录能打开） | ✅ 链接可用；⏳ 08 上线后用 prompt 11 更新云端那几页，重新发布到同一网址 |
+| 7* | Project Description | ≤1000 字符 | `report-content.md` 的 Q7（998 字符，不含收益数字，提交 5598503） | ✅ 提交前核对云端说法 |
+| 8 | Github Link | ≤100 字符，选填 | https://github.com/FangHH916/moomoo-qoder-challenge （公开，MIT） | ✅ 每次 Qoder 有新提交后要再 push |
+| 9* | 同意把项目资料分享给评委 | 只有 Yes | Yes | 用户选 |
+| 10* | 同意阿里云联系你（营销） | 只有 Yes，必选 | Yes（以后可退订） | 用户选 |
 
 ## 二、作品内容要求（来自 Handbook、T&C、FAQ、两份 deck）
 
-必须有：
-- [ ] **Qoder 生成的演示材料**（deck 或 HTML 报告）——第 6 题链接
-- [ ] **可运行的交易 agent 包**（agent 模板 / AGENTS.md、skills、规则门代码、定时任务配置、README 说明怎么重跑）
-- [ ] 策略说明（交易逻辑和 edge、为什么能赚钱）
-- [ ] 风控限制（R1–Rn 规则门表、策略失效条件、仓位上限、回撤应对、kill switch）
-- [ ] 交易决策日志（包括被拒绝的决策和原因）
-- [ ] 成交记录和结果（比赛账户 5832812 的收益、回撤、Sharpe）
-- [ ] Demo：什么有效、什么失败、为什么
+- ✅ **Qoder 生成的演示材料**：第 6 题的 HTML 报告。由 prompt 10 生成，`docs/submission/build_report.py` 会重新核算每个数字。
+- ⏳ **可运行的交易 agent 包**：
+  - 已有：AGENTS.md、角色说明、templates.json、skills（7 个，含 `pstar-risk-check`、`pstar-executor`）、规则闸门代码、`live/schedule-plan.json`；README 写了怎么重跑。
+  - 08 B 部分还在做：上传云端、固定版本、建定时任务。
+- ✅ **策略说明**：P*15，即 9 只 ETF 趋势组合 + 77 只股票空头组合（15 个文献因子、不拟合），用 Ledoit-Wolf 最小方差混合。
+- ✅ **风控限制**：R1–R21 规则闸门表、单只 38% 上限、保证金 ≤ 90%（超过 95% 减到 90%）、−8% 熔断全平、Slack `PAUSE`。
+- ✅ **交易决策日志**：`journal/decisions.jsonl`，被拒的决策和原因也记。
+- ➖ **比赛账户的实际收益、回撤、Sharpe**：用户 11-22 决定不写，评委直接查账户。
+- ✅ **什么有效、什么失败、为什么**：报告的 "What worked, what failed, what next" 页（LASSO 留出年失败后被淘汰）。
 
-## 二·五、全部加分项（Handbook 6 个标签页 + FAQ + 两份 kickoff deck，逐条对照）
+## 二·五、加分项（Handbook 6 个标签页 + FAQ + 两份 kickoff deck）
 
-评分：风险调整收益 25%（Moomoo deck：按 **Sharpe** 算）｜ Qoder & QCA 使用 30% ｜ 策略与风控 30% ｜ 可复用与文档 15%。所有项都要做。
+评分：风险调整收益 25%（按 **Sharpe** 算）｜ Qoder & QCA 使用 30% ｜ 策略与风控 30% ｜ 可复用与文档 15%。
 
 ### A. Qoder & Qoder Cloud Agents 使用（30%）
-| # | 加分项 | 来源 | 状态 |
-|---|---|---|---|
-| A1 | **本地 Qoder 和 Cloud Agents 都要用**（FAQ：必须两者都用），构建过程用 Qoder 做（主办方看得到 credit 用量） | FAQ | ⏳ |
-| A2 | 项目文件夹作为 Qoder 工作区，所有 skill、代码、dashboard、决策日志放在一起 | Handbook §3 | ✅ D:\Python\moomoo-qoder-challenge |
-| A3 | Desktop 装好 moomoo OpenAPI connector、moomoo-skill、Qoder Cloud Agents plugin | Handbook §3.1–3.3 | ✅（用户已能列出账户） |
-| A4 | Cloud Vault（MCP OAuth，`https://mcp.moomoo.com/mcp`），挂到每个需要 moomoo 的 agent；凭证 URL 与 agent 的 MCP URL 完全一致 | Handbook §4.1、docs | ⏳ |
-| A5 | moomoo skills 打包成 QCA zip（每个 skill 一个 zip）并上传 Skill Center | Handbook §4.2 | ⏳ |
-| A6 | **多 agent 编排**：Coordinator 定时调度 → Researcher/Scout、Executor/Guard、Risk Auditor（单独 session，只负责说"不"+ 每日回撤报告）；coordinator prompt 写明 "never let the executor act on the researcher's output without the auditor's approval" | Handbook §8.2、§9 | ⏳ |
-| A7 | 开启 **Collaboration**；加 **Advisor**（只建议不执行）用于关键决策的第二意见 | Handbook §9 | ⏳ |
-| A8 | 每个 agent 单一职责、明确文件归属；委派条件和输出格式写进 coordinator 系统提示；凭证只给需要的 agent（coordinator 不拿凭证） | Handbook §9 | ⏳ |
-| A9 | **Pin** 子 agent 版本和 trading agent 的 skill 版本（不用 latest） | Handbook §8.2、§9 | ⏳ |
-| A10 | **Channel（Slack）** 推送盘前扫描、风控警报、交易日志总结——Handbook 原话：这算 usage 分里"automation"那一半 | Handbook §5 | ✅ 已接通 #trading-agent |
-| A11 | **Forward Mode 定时任务**：盘前扫描、盘中循环、收盘报告；写明 IANA 时区（America/New_York）、开始/结束时间（比赛窗口）、跳过休市日；建好后确认任务 ID、规则、下次触发时间；先手动 /run 测试再长期运行 | Handbook §6、Qoder deck | ⏳ |
-| A12 | 一个 coordinator 定时跑、按需触发其他 agent，而不是每个 agent 各自排程（例：15 分钟） | FAQ | ⏳ |
-| A13 | **Dashboard**（Handbook：评分明确奖励 dashboard 和报告）：持仓、P&L、净值曲线、挂单、回撤、决策日志、agent 状态；先本地跑通；服务端用 PAT 读 QCA sessions/events（PAT 放 .env） | Handbook §7、Qoder deck | ⏳ |
-| A14 | Dashboard 加 **Qoder 用量视图**（FAQ 建议）；可部署到 **Qoder Sites**（设成仅自己/受邀访问） | FAQ | ⏳ |
-| A15 | **录屏**：dashboard 实时运行（Handbook "Bonus tip"），可让 Qoder 录 | Handbook §7 | ⏳ |
-| A16 | 用 shared workspace memory（global/project）+ project wiki 让 agent 共享上下文 | FAQ | ⏳ |
-| A17 | 省 credits：稳定后简单任务换轻模型，复杂分析用强模型；换模型前重测 | FAQ、Qoder deck | ⏳ |
-| A18 | 用 Qoder 生成 PRD（多轮：目标→规则→证明），用 QCA plugin + QCA Assistant 调试 | Qoder deck | ⏳ |
-| A19 | 可接多个 MCP（TradingView、QuantConnect 等）或外部数据源（我们用 Alpaca 历史数据做回测） | Moomoo deck、FAQ | ✅ Alpaca 回测数据 |
+| # | 加分项 | 状态 |
+|---|---|---|
+| A1 | **本地 Qoder 和 Cloud Agents 都要用**（FAQ 硬性要求） | ✅ 本地：prompt 01–10 全部用 Qoder Desktop 完成；⏳ 云端：08 B 部分 |
+| A2 | 项目文件夹作为 Qoder 工作区 | ✅ D:\Python\moomoo-qoder-challenge |
+| A3 | Desktop 装好 moomoo OpenAPI connector、moomoo-skill、QCA plugin | ✅ |
+| A4 | Cloud Vault（MCP OAuth，`https://mcp.moomoo.com/mcp`），只挂给要读 moomoo 的角色 | ⏳ 用户重做 OAuth，**这次要勾 Paper Trading 权限** |
+| A5 | skills 打包成 zip 并上传 Skill Center | ✅ 打包（`agents/package_skills.py`）；⏳ 上传 |
+| A6 | 多 agent 编排：Coordinator → Scout、Risk Auditor、Executor（Guard 已改名 Executor） | ✅ 角色说明（6f3e49c）；⏳ 云端配置 |
+| A7 | 开启 Collaboration；Advisor 给第二意见 | ⏳ 08 B 部分 |
+| A8 | 每个角色单一职责；只有 Executor 有下单工具，且只能用于 5832812；Coordinator 不拿凭证 | ✅ 角色说明；⏳ 云端禁用测试 |
+| A9 | Pin 子 agent 和 skill 版本（不用 latest） | ✅ `agents/release-lock.json`；⏳ 云端 pin |
+| A10 | Slack 推送：风控警报、异常订单、每日总结；Slack `PAUSE` / `RESUME` | ✅ 频道 #trading-agent 已接通；⏳ PAUSE 来回测试 |
+| A11 | Forward Mode 定时任务（America/New_York，跳过 11-26，记录任务 ID 和下次触发时间，先手动跑一次） | ⏳ 08 B 部分 |
+| A12 | 一个 Coordinator 定时跑，再调度其他角色 | ✅ 设计；⏳ 建任务 |
+| A13 | Dashboard：持仓、P&L、净值曲线、挂单、回撤、决策日志、agent 状态 | ✅ 本地 `dashboard/` |
+| A14 | Dashboard 加 Qoder 用量视图 / 部署到 Qoder Sites | ⬜ 可选 |
+| A15 | 录屏 / 演示视频 | ⬜ 可选 |
+| A16 | shared workspace memory + project wiki | ➖ Qoder 实测无法证明跨会话可用，暂停开关改用 moomoo 自选股分组 `PSTAR-PAUSE` |
+| A17 | 轻模型跑 30 分钟检查，强模型跑收盘报告 | ⏳ 08 B 部分 |
+| A18 | 用 Qoder 写 PRD（多轮）、用 QCA plugin 调试 | ✅ prompt 01/02、`docs/PRD.md` |
+| A19 | 接外部数据源 | ✅ Alpaca 历史数据做回测 |
 
 ### B. 策略与风控（30%）
-| # | 加分项 | 来源 | 状态 |
-|---|---|---|---|
-| B1 | 清晰的交易逻辑和 edge（多因子：清洗→去极值→行业+市值中性化→LASSO 合成） | Event Details、T&C | ⏳ 回测中 |
-| B2 | **策略失效条件**（defined conditions that invalidate the strategy） | Event Details | ⏳ |
-| B3 | **仓位限制**：单只 ≤35–38%（比赛上限 40%）、持仓数、做空总规模、期权风险 | T&C、Moomoo deck | ⏳ |
-| B4 | **回撤应对**：单日 −2% 停开仓、连亏减仓、−8% 全平停机 | Event Details | ⏳ |
-| B5 | **Kill switch**（含手动一键停） | Event Details、Qoder deck | ⏳ |
-| B6 | 规则门是**确定性代码**（不靠 LLM），R1 账户白名单（test=5322438 / competition=5832812） | Qoder deck（"Keep risk checks deterministic"） | ⏳ |
-| B7 | 止盈止损计划 | FAQ | ⏳ |
-| B8 | 按时段区分：盘前/常规/盘后标志，盘前盘后只用限价单 | Moomoo deck（A.I.M 的 I） | ⏳ |
-| B9 | 节假日处理：11-26 不交易，11-27 在 02:00 SGT 前平日内仓 | Moomoo deck（A.I.M 的 M） | ⏳ |
-| B10 | 期权到期日收盘前自动平仓；多腿拆单 + 单腿成交保护 | Moomoo deck、FAQ | ⏳ |
-| B11 | 自主度分级：测试期每单人工批准 → 限额内自动 → 超限停/复核；审批有过期时间 | Qoder deck | ⏳ |
-| B12 | 下单前展示 symbol/side/size/理由/风控检查，执行前复核；提交 ≠ 成交，必须对账 | Qoder deck、Handbook §5 | ⏳ |
-| B13 | 先在 5322438 测试：下单→成交→平仓→看盈亏，再上比赛账户 | FAQ | ⏳ |
+| # | 加分项 | 状态 |
+|---|---|---|
+| B1 | 清晰的交易逻辑和 edge | ✅ P*15（LASSO 多因子留出年失败，已淘汰） |
+| B2 | 策略失效条件 | ✅ −8% 熔断、R9 锁定；研究阶段的预注册淘汰规则 |
+| B3 | 仓位限制：单只 ≤ 38%（比赛上限 40%）、持仓数、保证金 | ✅ 闸门规则 |
+| B4 | 回撤应对 | ✅ −4% 警告、−8% 全平并锁定 |
+| B5 | Kill switch，含手动一键停 | ✅ 熔断；Slack `PAUSE`（停新单 + 撤挂单）。⏳ 用户在 moomoo app 建空分组 `PSTAR-PAUSE` 并让 Qoder 初始化成 running，**周一 11-23 21:00 SGT 前** |
+| B6 | 规则闸门是确定性代码，R1 账户白名单（5322438 / 5832812） | ✅ `rules/gate_pstar.py` |
+| B7 | 止盈止损计划 | ✅ 单只超 39% 减回 38%；保证金超 95% 减到 90%；−8% 全平；11-27 最终平仓 |
+| B8 | 只用限价单、只在常规时段 | ✅ R7：LIMIT DAY；唯一例外是 11-27 12:45 ET 以后的最终平仓市价单 |
+| B9 | 节假日：11-26 不交易；11-27 半天，收盘前全部平仓 | ✅ 设计：云端 Executor 12:15–12:45 ET（新加坡 11-28 01:15–01:45）平仓，12:50 检查；⏳ 11-25 收盘前完成演练 |
+| B10 | 期权到期平仓、多腿拆单 | ➖ 不交易期权 |
+| B11 | 自主度分级 | ✅ 测试期每批 `CONFIRM`；用户 11-21 改为自动执行，靠规则闸门 + Slack `PAUSE` + 异常推送 |
+| B12 | 下单前展示代码、方向、数量、规则检查；提交 ≠ 成交，必须对账 | ✅ `golive.py plan` / `record` / `reconcile` |
+| B13 | 先在 5322438 测试，再上比赛账户 | ✅ |
 
 ### C. 风险调整收益（25%）
-| # | 加分项 | 来源 | 状态 |
-|---|---|---|---|
-| C1 | 以 Sharpe 为目标设计（控制波动，不赌高收益；高风险即使赚钱也可能低分） | Moomoo deck、FAQ | ⏳ |
-| C2 | 交易日志里计入手续费和滑点 | FAQ | ⏳ |
-| C3 | 计入模拟撮合的部分成交（成交量 ×20 规则） | T&C、Qoder deck | ⏳ |
+| # | 加分项 | 状态 |
+|---|---|---|
+| C1 | 以 Sharpe 为目标设计 | ✅ 回测 Sharpe 1.17（全期）/ 1.68（留出年），年化波动 6.3% |
+| C2 | 回测和日志计入手续费、滑点 | ✅ realistic 回测 |
+| C3 | 计入部分成交 | ✅ 部分成交会作为异常推送并对账 |
 
 ### D. 可复用与文档（15%）
-| # | 加分项 | 来源 | 状态 |
-|---|---|---|---|
-| D1 | 可直接参考的 **agent 模板**（AGENTS.md / template 配置） | Event Details | ⏳ |
-| D2 | **可复用 skill 和脚本**（规则门、交易日志、日报、因子研究 skill） | Event Details | ⏳ |
-| D3 | **AGENTS.md 本地副本 + 带时间戳注释**（Retrieved at / Agent ID / Cloud version / Local revision / Change summary） | Handbook §8.1 | ⏳ |
-| D4 | **版本控制**：git，每次改动前保存、写原因、保留最终提交版本；更新后对比云端配置确认只改了想改的 | Handbook §8.1 | ✅ git 已建 |
-| D5 | **固定 3–4 个评估 prompt**，每次改 prompt/skill 后重跑并 diff，再放进"生产" agent | Handbook §8.2 | ⏳ |
-| D6 | **决策日志作为一等产物**：每个决策一行结构化记录（含被拒的和原因），dashboard 画出来 | Handbook §8.2 | ⏳ |
-| D7 | 建 **baseline**，展示改进了什么；**样本外测试**（调参和评估分开） | Qoder deck | ⏳ |
-| D8 | **可复现**：README 写清楚怎么重跑 | Qoder deck | ⏳ |
-| D9 | Qoder 生成的 deck / HTML 报告清楚解释 agent 怎么工作 | Event Details、FAQ | ⏳ |
-| D10 | 诚实 demo：什么有效、什么失败、为什么 | Event Details、Qoder deck | ⏳ |
-| D11 | 用 .MD 版本持续迭代策略，记录每次优化 | Moomoo deck | ⏳ |
+| # | 加分项 | 状态 |
+|---|---|---|
+| D1 | 可直接参考的 agent 模板（AGENTS.md / templates.json） | ✅ |
+| D2 | 可复用 skill 和脚本 | ✅ 7 个 skill + 规则闸门 + golive 工具 |
+| D3 | AGENTS.md 带时间戳的版本记录 | ✅；⏳ 云端 ID 待 08 B 部分写入 |
+| D4 | 版本控制 | ✅ git，已推到公开 GitHub 仓库 |
+| D5 | 固定评估 prompt，改动后重跑并对比差异 | ✅ 4 个固定 prompt + `agents/evaluate.py --self-check`；⏳ 云端对比 |
+| D6 | 决策日志作为一等产物 | ✅ |
+| D7 | baseline + 样本外测试 | ✅ 预注册、封存留出年 |
+| D8 | README 写清楚怎么重跑 | ✅；⏳ README 顶部 "Status" 一行还是旧状态，08 B 部分第 8 步更新 |
+| D9 | 报告清楚解释 agent 怎么工作 | ✅；⏳ 云端那几页用 prompt 11 更新 |
+| D10 | 诚实复盘：什么有效、什么失败 | ✅ |
+| D11 | 用编号的 .md 迭代 | ✅ `prompts/01–11` |
 
-### 已有的附加材料
-- [ ] Dashboard 截图或录屏（持仓、盈亏、净值、回撤、决策日志、agent 状态）
-- [ ] （可选）demo 旁白用用户自己的克隆声音：GPT-SoVITS v2 Windows 整合包（RTX 3050 Laptop 4GB：推理可以，微调 batch 1–2），录 1–3 分钟英文样本。等回测跑完、内存空出来再装，11-26 休市日前后做。
-- [ ] **1–2 分钟演示视频**（Handbook 第 7 节的 bonus tip，非必须）：dashboard 实时画面 → QCA agent 运行和定时触发 → Slack 消息 → 一笔交易从提议到规则门（最好录到一次拦截）到成交入日志。表单没有上传位，传到网盘（Google Drive / YouTube 不公开）后把链接写进 deck 和第 7 题。11-27 或 11-28 录。
-- [ ] 自己写的可复用 skill（规则门、交易日志、日报），上传 QCA 并 pin 版本
-- [ ] 回测报告：多因子 + 中性化 + LASSO，年化/月化收益、Sharpe、最大回撤、换手率；baseline 对比；成本和部分成交计入；Deflated Sharpe
-- [ ] AGENTS.md 版本记录 + git 提交历史（可复现）
-- [ ] 诚实复盘：每天"什么失败了、为什么、改了什么"
-
-评委能直接看到：比赛账户收益、Qoder credit 用量（所以构建过程要用 Qoder 做）。
+### 附加材料
+- ✅ 回测报告：Sharpe、回撤、分年收益、成本、样本外、Deflated Sharpe（报告第 6–7 页）
+- ✅ AGENTS.md 版本记录 + git 历史
+- ⬜ Dashboard 截图或录屏（可选）
+- ⬜ 1–2 分钟演示视频（可选，表单没有上传栏）
 
 ## 三、提交前检查
 
-- [ ] 第 6 题链接在**无痕窗口**里能打开（不是"Only you can access"）
-- [ ] 链接、仓库、截图里**没有** token / PAT / Alpaca key / Slack token
-- [ ] 所有交易都在 5832812 上，没有碰过真实账户，没用过 Reset Card
-- [ ] 第 5、7 题字数在限制内
-- [ ] 最后一个交易日（11-27 半天）的日内仓位在 02:00 SGT 前已平
-- [ ] 前 10 名 12-08 现场汇报，提前准备好演示
+- ✅ 第 6 题链接在不登录的状态下能打开（11-22 实测）
+- ✅ 仓库、报告里没有 token、PAT、Alpaca key、Slack token（11-22 扫过全部 git 历史）
+- ✅ 报告、表单、仓库都没有比赛账户的实际收益
+- ✅ 第 5、7 题字数在限制内（96 / 998）
+- ⏳ 报告和 Q7 里的云端说法，和 08 实际上线的情况一致
+- ⏳ README 顶部状态已更新
+- ⏳ 所有交易都在 5832812 上，没碰真实账户，没用 Reset Card（比赛结束时核对）
+- ⏳ 11-27 收盘前已全部平仓（12:50 ET 检查，13:10 ET 最终报告）
+- ⏳ GitHub 已推到最新提交
+- ⬜ 前 10 名 12-08 现场汇报，提前准备
 
 ## 四、时间表
 
-| 日期 | 事项 |
+| 日期（SGT） | 事项 |
 |---|---|
-| 11-18 | 回测、skill 索引 |
-| 11-19 | 定策略参数 → 写给 Qoder 的 prompt → Qoder 搭 agent → 5322438 测试 |
-| 11-20 晚 | 切到比赛账户 5832812 |
-| 11-20 ~ 11-25 | 自动交易，每天复盘一次；同时做 dashboard、skill |
-| 11-26 | 休市：修 bug、整理文档 |
-| 11-27 | 半天，02:00 SGT 前平仓 |
-| 11-28 ~ 11-29 | Qoder 生成 deck、录屏、整理仓库、起草第 5/7 题 → **11-29 提交** |
+| 11-22 | ✅ 08 A 部分（6f3e49c）、Q7 新版、GitHub 公开仓库；⏳ 08 B 部分 |
+| 11-23 21:00 前 | 用户建 `PSTAR-PAUSE` 分组，Qoder 初始化成 running；Slack PAUSE 和 30 分钟检查上线 |
+| 11-23 22:35 后 | 用户在 09 的对话里贴启动句，本地自动补仓（用 11-19 目标） |
+| 11-24 ~ 11-26 | 云端每天检查和报告；**11-25 收盘前**完成最终平仓演练；11-26 休市，作为缓冲 |
+| 11-28 01:15–01:45 | 云端自动最终平仓（11-27 12:15–12:45 ET），01:50 检查是否已全部平仓 |
+| 08 上线后 | 贴 prompt 11 更新报告 → 检查 → push GitHub |
+| 11-29 | 用户提交表单 |
 | 11-30 23:59 | 最终截止 |
 | 12-08 | 前 10 名汇报 |
