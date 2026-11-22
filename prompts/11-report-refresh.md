@@ -2,6 +2,7 @@
 
 用法：
 - **等 08 的 Qoder 对话做完 B 部分**（云端部署、测试、定时任务、文档都做完）再贴。贴之前把 08 对话的最终汇报转给 Claude 看一眼。
+- 还要等 Claude 把 dashboard 截图放进 `docs/media/`（11-24 收盘后）；视频有了更好，没有也可以先贴，之后再补发一次。
 - 贴到**做报告（prompt 10）的那个 Qoder 对话**里；那个对话关了的话，新开一个也行，它会从仓库读现状。
 - 只贴下面 EN 部分（从 `Goal:` 到 `...the published URL when done.`）。
 - Qoder 提交后，由 Claude 推到 GitHub。
@@ -59,7 +60,11 @@ Goal: refresh the submission deck now that the cloud part of prompt 08 is live, 
    - Give me the list of cloud claims, with the file each one comes from.
 3. Add the GitHub link to the title slide and to the "Reproduce it" slide. The public repository is a filtered copy: it has no `docs/submission/`, no `status.ps1`, and no `reports/backtest*` or `reports/smoke*`. Commit hashes on GitHub differ from the local ones. So the "Reproduce it" slide may only cite files and commands that exist in the public repository, and it must not cite local commit hashes as GitHub links.
 4. Update `docs/submission/report-content.md` §5 and §6 to match: these are the statements the prompt 08 chat listed as out of date. Do not change the Q5 or Q7 answers.
-5. **No live results.** Add nothing from the competition account: no returns, no P&L, no equity, no position values. The backtest slides stay as they are.
+5. **Live demo material (my decision of 2026-11-23: live numbers may be shown).**
+   - Add one "Live demo" slide before "Reproduce it" with the dashboard screenshots in `docs/media/` (`dashboard-*.png`). Copy them into the site folder and reference them relatively. Caption each with its "as of" time, the account 5832812, and "paper account".
+   - If `docs/media/demo.mp4` or a video link in `docs/media/VIDEO.md` exists, add it to that slide and to the title slide.
+   - Remove the labels that say no live returns are published, and the equity redaction in `build_report.py`, since the screenshots now show live figures. Do not write any live return, Sharpe or drawdown figure in the slide text yourself: only what the screenshots show.
+   - The backtest slides stay as they are.
 6. **Build checks.** In `build_report.py`, add a check that fails the build if the deck still calls the cloud read-only, says `can_execute: false`, or names Guard. Keep every existing check. Rebuild and show me the output of the checks.
 7. **Privacy, as before.** No name, email, phone number, token, vault ID, session ID or schedule ID. The GitHub link is allowed.
 8. **Republish** to the same site, https://trading-agent-deck-w89b43az0ul.qoder.website/, still visible to "anyone with the link". Do not create a new site. Then open it without logging in, and confirm that the URL is unchanged and the new content is there.
@@ -120,7 +125,11 @@ When done, show me the slide-by-slide summary of changes, the check output, and 
    - 把所有云端说法列给我，每条注明出自哪个文件。
 3. 在标题页和 "Reproduce it" 页加上 GitHub 链接。公开仓库是筛选过的副本：里面没有 `docs/submission/`、`status.ps1`、`reports/backtest*`、`reports/smoke*`，GitHub 上的提交号也和本地不一样。所以 "Reproduce it" 页只能写公开仓库里有的文件和命令，也不要把本地提交号当成 GitHub 链接。
 4. 相应更新 `docs/submission/report-content.md` 的 §5 和 §6，也就是 08 对话列出的已过时说法。Q5 和 Q7 的答案不要改。
-5. **不放实盘结果。** 比赛账户的任何数字都不加：不写收益、盈亏、权益，也不写持仓金额。回测那几页保持不变。
+5. **实盘演示材料（我 2026-11-23 的决定：可以展示实盘数字）。**
+   - 在 "Reproduce it" 前面加一页 "Live demo"，放 `docs/media/` 里的 dashboard 截图（`dashboard-*.png`）。把图片复制进网页目录，用相对路径引用。每张图注明截图时间、账户 5832812、"paper account"（模拟账户）。
+   - 如果有 `docs/media/demo.mp4`，或者 `docs/media/VIDEO.md` 里有视频链接，就放到这一页和标题页。
+   - 截图里已经有实盘数字了，所以删掉"不公布实盘收益"的标注，以及 `build_report.py` 里对净值的打码。但不要在页面文字里自己写实盘收益、夏普或回撤数字，只展示截图里有的。
+   - 回测那几页保持不变。
 6. **构建检查。** 在 `build_report.py` 里加一条检查：报告里只要还说云端只读、写着 `can_execute: false`，或者出现 Guard，构建就失败。原有的检查全部保留。重新构建，把检查输出给我看。
 7. **隐私规则照旧。** 不出现姓名、邮箱、电话、token、vault ID、session ID、schedule ID。GitHub 链接可以出现。
 8. **重新发布**到同一个站点 https://trading-agent-deck-w89b43az0ul.qoder.website/，仍然设成"anyone with the link"（任何有链接的人可看）。不要新建站点。发布后在不登录的状态下打开，确认网址没变、内容已经更新。
