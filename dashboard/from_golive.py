@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -42,10 +43,11 @@ def day_dirs(account):
 
 
 def day_close(folder):
-    snap = latest(folder, "snapshot-*.json")
-    if not snap:
+    snapshots = [load(p) for p in folder.glob("snapshot-*.json")]
+    snapshots = [s for s in snapshots if s.get("as_of") and num(s.get("equity")) is not None]
+    if not snapshots:
         return None
-    data = load(snap)
+    data = max(snapshots, key=lambda s: datetime.fromisoformat(s["as_of"].replace("Z", "+00:00")))
     equity = num(data.get("equity"))
     return (data.get("as_of"), equity, data) if equity is not None else None
 
@@ -118,16 +120,26 @@ def build(account):
         stored = num(load(peak_file).get("peak_equity"))
         if stored and str(load(peak_file).get("account_id")) == account:
             peak = max(peak, stored)
-    trading = [d for d in days if latest(d, "positions*.json")]
-    newest = trading[-1] if trading else days[-1]
+    # The normalized snapshot is the atomic account view. Never combine today's
+    # equity with an older day's standalone position/order response.
+    current_positions = last.get("positions")
+    current_orders = None
+    if isinstance(last.get("open_orders"), list):
+        current_orders = [{
+            "order_id": str(o.get("order_id")), "timestamp": o.get("submitted_at"),
+            "symbol": o.get("symbol"), "side": o.get("side"),
+            "quantity": o.get("quantity"), "filled_quantity": o.get("filled"),
+            "price": o.get("avg_fill_price") or o.get("limit_price"),
+            "type": o.get("order_type"), "status": o.get("state", "UNKNOWN"),
+        } for o in last["open_orders"]]
     return {
         "as_of": as_of, "mode": "competition" if account == "5832812" else "test",
         "account_id": account, "account_type": str(last.get("account_type") or "SIMULATE"),
         "equity": equity, "initial_equity": initial,
-        "previous_close_equity": closes[-2][1] if len(closes) > 1 else initial,
-        "peak_equity": peak, "positions": positions(newest), "orders": orders(newest),
+        "previous_close_equity": num(last.get("previous_close_equity")),
+        "peak_equity": peak, "positions": current_positions, "orders": current_orders,
         "equity_history": history, "agents": agents(), "usage": {"credits": None, "as_of": None},
-        "source": f"live/golive.py reads under reports/live/golive/*/{account}/ (newest day {newest.parent.name})",
+        "source": f"Saved golive snapshot for {account}, as of {as_of}; not a live connection or daily close series",
     }
 
 

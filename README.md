@@ -2,7 +2,16 @@
 
 A US-only paper-trading entry built with Qoder and QCA. Start with [the PRD](docs/PRD.md) and [the agent registry](agents/AGENTS.md).
 
-**Status: local scaffold; cloud and order execution inactive.** No real accounts, orders, schedules or cloud configuration are changed by setup or fixture commands. Research/backtest files are preserved. Fixture results are not competition returns.
+**Status (24 November 2026): local paper execution evidenced; cloud deployment unverified.** The saved 23 November run reconciled 68 submitted orders as filled, with 69 positions at the snapshot timestamp. Cloud role bindings, schedules and Slack PAUSE/RESUME still require end-to-end verification. Setup and dashboard commands do not place orders. Backtests and saved paper-account observations are labeled separately.
+
+## Demonstration
+
+- [Narrated evidence walkthrough](docs/demo_v1.mp4) ? English narration, saved account evidence, explicit cloud limitations.
+- [Interactive dashboard snapshot](docs/dashboard-review_v1.html) ? download and open locally; no server or login required.
+- [Dashboard screenshot](docs/dashboard_v2.png) ? 23 November 2026, 15:28:46 UTC.
+- [Evidence and caption files](docs/DEMO.md).
+
+The video is a walkthrough of saved evidence, not a live recording of QCA or Slack. No completed cloud-control or final-exit demonstration is claimed.
 
 The deployment default is the frozen portfolio **P\***, in the round-14 variant `pstar15`. It is computed in exactly one place, `research/r10_deploy.py`, and never re-implemented: `live/pstar.py` runs that file, verifies its output and converts it into a sealed targets contract. The previous default `frozen-short-alpha-half` (Plan A) is retired to `strategy: legacy-a` — its code, rules and tests stay, but it is not selected and cannot execute.
 

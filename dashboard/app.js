@@ -202,7 +202,7 @@
       empty(container, snapshot.positions ? "No open positions" : "No positions supplied", "Exposure is not inferred from orders or fills.");
       return;
     }
-    for (const position of snapshot.positions) {
+    for (const position of snapshot.positions.slice().sort((a, b) => Math.abs(b.quantity * b.price) - Math.abs(a.quantity * a.price))) {
       const marketValue = position.quantity * position.price;
       const weight = snapshot.equity > 0 ? marketValue / snapshot.equity : null;
       const row = el("div", "exposure-row");

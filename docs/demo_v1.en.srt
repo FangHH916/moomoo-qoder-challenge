@@ -1,0 +1,102 @@
+1
+00:00:00,000 --> 00:00:05,018
+Hi, I am Tony. This is my entry for the Moomoo and
+
+2
+00:00:05,018 --> 00:00:10,035
+Qoder paper trading challenge. This dashboard shows saved competition account
+records from
+
+3
+00:00:10,035 --> 00:00:14,217
+November twenty-third. It is a snapshot, not a live connection.
+
+4
+00:00:14,217 --> 00:00:19,085
+The deployed strategy is P-star fifteen. It combines an ETF trend sleeve
+
+5
+00:00:19,085 --> 00:00:23,953
+with a stock short book. An earlier machine learning model failed its
+
+6
+00:00:23,953 --> 00:00:28,822
+holdout test and was retired. The final realistic backtest recorded a Sharpe
+
+7
+00:00:28,822 --> 00:00:33,690
+ratio of one point one seven after modeled costs. Backtest results are
+
+8
+00:00:33,690 --> 00:00:35,312
+separate from competition returns.
+
+9
+00:00:35,312 --> 00:00:41,133
+On November twenty-third, local Qoder submitted sixty-eight paper orders. The
+saved reconciliation
+
+10
+00:00:41,133 --> 00:00:46,954
+records all sixty-eight as fully filled, with no missing or working orders.
+
+11
+00:00:46,954 --> 00:00:52,775
+The account then held sixty-nine positions. Equity was approximately one
+hundred thousand,
+
+12
+00:00:52,775 --> 00:00:57,140
+two hundred and forty dollars at that recorded time.
+
+13
+00:00:57,140 --> 00:01:02,984
+Python computes order sizes and checks deterministic limits: the account
+whitelist, concentration,
+
+14
+00:01:02,984 --> 00:01:08,827
+margin, freshness and the kill switch. Five low-priced stocks were rejected by
+
+15
+00:01:08,827 --> 00:01:14,670
+the price-band rule. Rejected decisions and execution anomalies remain
+visible. Actual broker
+
+16
+00:01:14,670 --> 00:01:19,053
+fees are unavailable, so estimates are labeled as estimates.
+
+17
+00:01:19,053 --> 00:01:24,321
+The cloud team is specified, and the vault and Slack connection have
+
+18
+00:01:24,321 --> 00:01:29,590
+been recorded. However, role deployment, scheduled execution and the full
+Slack pause
+
+19
+00:01:29,590 --> 00:01:34,858
+test are not yet verified. The dashboard states that limitation instead of
+
+20
+00:01:34,858 --> 00:01:37,492
+presenting planned automation as completed work.
+
+21
+00:01:37,492 --> 00:01:43,045
+The repository includes reusable skills, rule tests and decision logs. The
+interactive
+
+22
+00:01:43,045 --> 00:01:48,597
+snapshot lets reviewers inspect positions, orders and the audit trail. The aim
+
+23
+00:01:48,597 --> 00:01:54,149
+is reproducible decisions, with clear evidence for what worked and what still
+
+24
+00:01:54,149 --> 00:01:56,000
+needs testing. Thank you.
